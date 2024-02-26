@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"github.com/gtkmk/finder_api/adapter/http/routes/user"
 	"github.com/gtkmk/finder_api/core/port"
+	"github.com/gtkmk/finder_api/infra/client"
+	"github.com/gtkmk/finder_api/infra/notification"
 	"log"
 	"net/http"
 	"os"
@@ -79,11 +81,14 @@ func (httpServer *HttpServer) Start() error {
 }
 
 func (httpServer *HttpServer) registerRutes() {
+	notificationService := notification.NewNotification(client.NewHttpClient("url"))
+
 	user.NewUserRoutes(
 		httpServer.app,
 		httpServer.connection,
 		httpServer.uuidGenerator,
 		httpServer.passwordEncryptor,
+		notificationService,
 	).Register()
 }
 

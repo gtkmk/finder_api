@@ -1,0 +1,13 @@
+{{#ifCond requestType '===' 'Find'}}
+    {{camelCase model}}Routes.GET(
+{{else ifCond requestType '===' 'Create'}}
+    {{camelCase model}}Routes.POST(
+{{else ifCond requestType '===' 'Update'}}
+    {{camelCase model}}Routes.PATCH(
+{{else ifCond requestType '===' 'Delete'}}
+    {{camelCase model}}Routes.DELETE(
+{{/ifCond}}
+		routesConstants.{{pascalCase requestType}}{{pascalCase fileName}}RouteConst,
+		{{camelCase model}}Routes.jwt.IsAuthorizedMiddleware(),
+		{{camelCase model}}Routes.{{camelCase model}}Handlers[{{requestType}}{{pascalCase model}}{{pascalCase fileName}}Const].Handle,
+	)

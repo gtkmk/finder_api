@@ -1,0 +1,32 @@
+package {{camelCase model}}Usecase
+
+import (
+	"github.com/em-cash/simulador.em.cash/core/port"
+	"github.com/em-cash/simulador.em.cash/core/port/repositories"
+    sharedMethodsInterface "github.com/em-cash/simulador.em.cash/core/port/sharedMethods"
+)
+
+type {{requestType}}{{pascalCase model}}{{pascalCase fileName}} struct {
+    {{camelCase model}}Database repositories.{{pascalCase model}}RepositoryInterface
+    transaction       port.ConnectionInterface
+    rollBackAndReturn sharedMethodsInterface.RollBackAndReturnErrorInterface
+    customError       port.CustomErrorInterface
+}
+
+func New{{requestType}}{{pascalCase model}}{{pascalCase fileName}}(
+    {{camelCase model}}Database repositories.{{pascalCase model}}RepositoryInterface,
+    transaction port.ConnectionInterface,
+    rollBackAndReturn sharedMethodsInterface.RollBackAndReturnErrorInterface,
+    customError port.CustomErrorInterface,
+) *{{requestType}}{{pascalCase model}}{{pascalCase fileName}} {
+	return &{{requestType}}{{pascalCase model}}{{pascalCase fileName}}{
+        {{camelCase model}}Database:   {{camelCase model}}Database,
+        transaction:       transaction,
+        rollBackAndReturn: rollBackAndReturn,
+        customError:       customError,
+	}
+}
+
+func ({{camelCase requestType}}{{pascalCase model}}{{pascalCase fileName}} *{{requestType}}{{pascalCase model}}{{pascalCase fileName}}) Execute({{camelCase model}}Id string) error {
+	return nil
+}

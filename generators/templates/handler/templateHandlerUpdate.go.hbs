@@ -1,0 +1,112 @@
+package {{camelCase model}}Handler
+
+import (
+    "github.com/em-cash/simulador.em.cash/adapter/http/routes"
+    "github.com/em-cash/simulador.em.cash/adapter/http/routesConstants"
+    "github.com/em-cash/simulador.em.cash/core/domain/customError"
+    "github.com/em-cash/simulador.em.cash/core/domain/helper/constants"
+    "github.com/em-cash/simulador.em.cash/core/domain/success"
+    "github.com/em-cash/simulador.em.cash/core/port"
+    "github.com/em-cash/simulador.em.cash/core/port/repositories"
+    {{camelCase model}}Usecase "github.com/em-cash/simulador.em.cash/core/usecase/{{camelCase model}}"
+    "github.com/em-cash/simulador.em.cash/core/usecase/sharedMethods"
+    "github.com/em-cash/simulador.em.cash/infra/database/repository"
+    "github.com/em-cash/simulador.em.cash/infra/requestEntity/{{camelCase model}}RequestEntity"
+    "github.com/gin-gonic/gin"
+)
+
+type {{requestType}}{{pascalCase model}}{{pascalCase fileName}}Handler struct {
+    connection       port.ConnectionInterface
+    uuid             port.UuidInterface
+    contextExtractor port.HttpContextValuesExtractorInterface
+    {{camelCase model}}Database repositories.{{pascalCase model}}RepositoryInterface
+    customError      port.CustomErrorInterface
+}
+
+func New{{requestType}}{{pascalCase model}}{{pascalCase fileName}}Handler(
+    connection port.ConnectionInterface,
+    uuid port.UuidInterface,
+    contextExtractor port.HttpContextValuesExtractorInterface,
+) port.HandlerInterface {
+    return &{{requestType}}{{pascalCase model}}{{pascalCase fileName}}Handler{
+        connection:       connection,
+        uuid:             uuid,
+        contextExtractor: contextExtractor,
+        customError:      customError.NewCustomError(),
+    }
+}
+
+func ({{camelCase requestType}}{{pascalCase model}}{{pascalCase fileName}}Handler *{{requestType}}{{pascalCase model}}{{pascalCase fileName}}Handler) Handle(context *gin.Context) {
+    jsonResponse := routes.NewJsonResponse(context, {{camelCase requestType}}{{pascalCase model}}{{pascalCase fileName}}Handler.connection, {{camelCase requestType}}{{pascalCase model}}{{pascalCase fileName}}Handler.uuid)
+
+    decoded{{pascalCase model}}, err := {{camelCase requestType}}{{pascalCase model}}{{pascalCase fileName}}Handler.define{{pascalCase model}}(context)
+
+    if err != nil {
+        jsonResponse.ThrowError(
+            routesConstants.MessageKeyConst,
+            err,
+            routesConstants.BadRequestConst,
+        )
+
+        return
+    }
+
+    transaction, err := {{camelCase requestType}}{{pascalCase model}}{{pascalCase fileName}}Handler.connection.BeginTransaction()
+
+    if err != nil {
+        jsonResponse.ThrowError(
+            routesConstants.MessageKeyConst,
+            {{camelCase requestType}}{{pascalCase model}}{{pascalCase fileName}}Handler.customError.ThrowError(err.Error()),
+            routesConstants.InternarServerErrorConst,
+        )
+        return
+    }
+
+    {{camelCase requestType}}{{pascalCase model}}{{pascalCase fileName}}Handler.openTableConnection(transaction)
+
+    rollBackAndReturn := sharedMethods.NewRollBackAndReturnError(transaction)
+
+    if err := {{camelCase model}}Usecase.New{{requestType}}{{pascalCase model}}{{pascalCase fileName}}(
+        {{camelCase requestType}}{{pascalCase model}}{{pascalCase fileName}}Handler.{{camelCase model}}Database,
+        decoded{{pascalCase model}},
+        transaction,
+        rollBackAndReturn,
+        {{camelCase requestType}}{{pascalCase model}}{{pascalCase fileName}}Handler.customError,
+    ).Execute(); err != nil {
+        jsonResponse.ThrowError(
+            routesConstants.MessageKeyConst,
+            err,
+            routesConstants.BadRequestConst,
+        )
+        return
+    }
+
+    jsonResponse.SendJson(routesConstants.DataKeyConst, success.SuccessfullyCompletedActionConst, routesConstants.StatusOk)
+}
+
+func ({{camelCase requestType}}{{pascalCase model}}{{pascalCase fileName}}Handler *{{requestType}}{{pascalCase model}}{{pascalCase fileName}}Handler) define{{pascalCase model}}(context *gin.Context) (
+    map[string]interface{},
+    error,
+) {
+    decoded{{pascalCase model}}, err := {{camelCase model}}RequestEntity.CreateNew{{pascalCase model}}DecodeRequest(context)
+
+    if err != nil {
+        return nil, {{camelCase requestType}}{{pascalCase model}}{{pascalCase fileName}}Handler.customError.ThrowError(err.Error())
+    }
+
+    if err := decoded{{pascalCase model}}.Validate(); err != nil {
+        return nil, {{camelCase requestType}}{{pascalCase model}}{{pascalCase fileName}}Handler.customError.ThrowError(err.Error())
+    }
+
+    if err != nil {
+        return nil, {{camelCase requestType}}{{pascalCase model}}{{pascalCase fileName}}Handler.customError.ThrowError(constants.SomethingWentWrongConst, err.Error())
+    }
+
+    {{camelCase model}} := map[string]interface{}{"id": "decoded{{pascalCase model}}.field"}
+
+    return {{camelCase model}}, nil
+}
+
+func ({{camelCase requestType}}{{pascalCase model}}{{pascalCase fileName}}Handler *{{requestType}}{{pascalCase model}}{{pascalCase fileName}}Handler) openTableConnection(transaction port.ConnectionInterface) {
+    {{camelCase requestType}}{{pascalCase model}}{{pascalCase fileName}}Handler.{{camelCase model}}Database = repository.New{{pascalCase model}}Repository(transaction)
+}
