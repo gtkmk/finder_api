@@ -5,7 +5,7 @@ import (
 	"github.com/gtkmk/finder_api/adapter/http/routes"
 	"github.com/gtkmk/finder_api/adapter/http/routesConstants"
 	"github.com/gtkmk/finder_api/core/domain/customError"
-	"github.com/gtkmk/finder_api/core/domain/helper/constants"
+	"github.com/gtkmk/finder_api/core/domain/helper"
 	"github.com/gtkmk/finder_api/core/port"
 	"github.com/gtkmk/finder_api/core/port/repositories"
 	userUsecase "github.com/gtkmk/finder_api/core/usecase/user"
@@ -40,7 +40,7 @@ func NewPatchResetPasswordHandler(
 func (resetForgotPasswordHandler *ResetForgotPasswordHandler) Handle(context *gin.Context) {
 	jsonResponse := routes.NewJsonResponse(context, resetForgotPasswordHandler.connection, resetForgotPasswordHandler.uuid)
 
-	loggedUserId, _, extractError := resetForgotPasswordHandler.contextExtractor.Extract(context)
+	loggedUserId, extractError := resetForgotPasswordHandler.contextExtractor.Extract(context)
 
 	if extractError != nil {
 		jsonResponse.ThrowError(
@@ -76,7 +76,7 @@ func (resetForgotPasswordHandler *ResetForgotPasswordHandler) Handle(context *gi
 	if passwordRequest.Id != loggedUserId {
 		jsonResponse.ThrowError(
 			routesConstants.MessageKeyConst,
-			resetForgotPasswordHandler.ThrowError(constants.WithoutPermissionConst),
+			resetForgotPasswordHandler.ThrowError(helper.InviteExpiredGenerateNewEmailConst),
 			routesConstants.ForbiddenRequestConst,
 		)
 		return

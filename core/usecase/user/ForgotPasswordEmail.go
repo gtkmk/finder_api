@@ -2,15 +2,15 @@ package userUsecase
 
 import (
 	"fmt"
+	"github.com/gtkmk/finder_api/core/domain/helper"
 	"os"
 
-	"github.com/em-cash/simulador.em.cash/core/domain/customError"
-	"github.com/em-cash/simulador.em.cash/core/domain/helper/constants"
-	"github.com/em-cash/simulador.em.cash/core/domain/notificationDomain"
-	"github.com/em-cash/simulador.em.cash/core/domain/userDomain"
-	"github.com/em-cash/simulador.em.cash/core/port"
-	"github.com/em-cash/simulador.em.cash/core/port/repositories"
-	"github.com/em-cash/simulador.em.cash/infra/envMode"
+	"github.com/gtkmk/finder_api/core/domain/customError"
+	"github.com/gtkmk/finder_api/core/domain/notificationDomain"
+	"github.com/gtkmk/finder_api/core/domain/userDomain"
+	"github.com/gtkmk/finder_api/core/port"
+	"github.com/gtkmk/finder_api/core/port/repositories"
+	"github.com/gtkmk/finder_api/infra/envMode"
 )
 
 type ForgotPasswordEmail struct {
@@ -38,7 +38,7 @@ func (forgotPasswordEmail *ForgotPasswordEmail) Execute(userEmail string) error 
 	}
 
 	if dbUser == nil {
-		return forgotPasswordEmail.ThrowError(constants.UserNotFoundConst)
+		return forgotPasswordEmail.ThrowError(helper.UserNotFoundConst)
 	}
 
 	if err := forgotPasswordEmail.userRepository.UpdateResetPasswordStatus(true, userDomain.UserStatusPendingConst, dbUser.Id); err != nil {
@@ -65,7 +65,7 @@ func (forgotPasswordEmail *ForgotPasswordEmail) sendForgotPasswordEmail(
 		"",
 		"",
 		url,
-		"",
+		nil,
 	)
 
 	return forgotPasswordEmail.walletNotification.SendNotifications(notification)

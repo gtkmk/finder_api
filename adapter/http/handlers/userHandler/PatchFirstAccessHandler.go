@@ -1,16 +1,16 @@
 package userHandler
 
 import (
-	"github.com/em-cash/simulador.em.cash/adapter/http/routes"
-	"github.com/em-cash/simulador.em.cash/adapter/http/routesConstants"
-	"github.com/em-cash/simulador.em.cash/core/domain/customError"
-	"github.com/em-cash/simulador.em.cash/core/domain/success"
-	"github.com/em-cash/simulador.em.cash/core/port"
-	"github.com/em-cash/simulador.em.cash/core/port/repositories"
-	userUsecase "github.com/em-cash/simulador.em.cash/core/usecase/user"
-	"github.com/em-cash/simulador.em.cash/infra/database/repository"
-	"github.com/em-cash/simulador.em.cash/infra/requestEntity/userRequestEntity"
 	"github.com/gin-gonic/gin"
+	"github.com/gtkmk/finder_api/adapter/http/routes"
+	"github.com/gtkmk/finder_api/adapter/http/routesConstants"
+	"github.com/gtkmk/finder_api/core/domain/customError"
+	"github.com/gtkmk/finder_api/core/domain/success"
+	"github.com/gtkmk/finder_api/core/port"
+	"github.com/gtkmk/finder_api/core/port/repositories"
+	userUsecase "github.com/gtkmk/finder_api/core/usecase/user"
+	"github.com/gtkmk/finder_api/infra/database/repository"
+	"github.com/gtkmk/finder_api/infra/requestEntity/userRequestEntity"
 )
 
 type PatchFirstAccessHandler struct {

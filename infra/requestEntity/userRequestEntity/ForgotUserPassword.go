@@ -6,7 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gtkmk/finder_api/core/domain/passwordDomain"
-	
+
 	"github.com/gtkmk/finder_api/infra/EmptyBodyVerification"
 	"github.com/gtkmk/finder_api/infra/requestEntityFieldsValidation"
 )
@@ -16,6 +16,10 @@ type ForgotUserPassword struct {
 	Password        string `json:"password"`
 	ConfirmPassword string `json:"confirm_password"`
 }
+
+const (
+	UserIdFieldConst = "o usuário"
+)
 
 func ForgotUserPasswordRequest(req *http.Request) (*ForgotUserPassword, error) {
 	if err := EmptyBodyVerification.ValidateBody(req); err != nil {

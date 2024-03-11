@@ -10,4 +10,6 @@ type UserRepository interface {
 	FindUserById(id string) (*userDomain.User, error)
 	CreateUser(user *userDomain.User) error
 	UpdateResetPasswordStatus(toggle bool, status string, userId string) error
+	SetUserStatus(userId string, status string) error
+	ResetUserPassword(userId string, password string) error
 }

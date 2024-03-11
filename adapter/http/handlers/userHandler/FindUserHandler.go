@@ -21,18 +21,16 @@ type FindUserHandler struct {
 }
 
 type FindUserReturn struct {
-	Id              string                           `json:"id"`
-	Name            string                           `json:"name"`
-	Email           string                           `json:"email"`
-	Cpf             string                           `json:"cpf"`
-	CellphoneNumber string                           `json:"cellphone_number"`
-	CreatorId       string                           `json:"creator_id"`
-	Role            string                           `json:"role"`
-	IsActive        bool                             `json:"is_active"`
-	PermissionGroup permissionDomain.PermissionGroup `json:"permission_group"`
-	Permissions     any                              `json:"permissions"`
-	Unities         any                              `json:"unities"`
-	UserProducts    []*productDomain.Product         `json:"user_products"`
+	Id              string `json:"id"`
+	Name            string `json:"name"`
+	Email           string `json:"email"`
+	Cpf             string `json:"cpf"`
+	CellphoneNumber string `json:"cellphone_number"`
+	CreatorId       string `json:"creator_id"`
+	Role            string `json:"role"`
+	IsActive        bool   `json:"is_active"`
+	Permissions     any    `json:"permissions"`
+	Unities         any    `json:"unities"`
 }
 
 func NewFindUserHandler(

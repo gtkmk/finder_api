@@ -11,6 +11,12 @@ const (
 	XlsxFileExtensionConst   = ".xslx"
 )
 
+const (
+	PostConst           = "identity_front"
+	ProfilePictureConst = "profile_picture"
+	ProfileBannerConst  = "profile_banner"
+)
+
 type Document struct {
 	ID            string
 	Type          string

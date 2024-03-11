@@ -25,7 +25,7 @@ func NewResetPassword(
 }
 
 func (resetPassword *ResetPassword) Execute(userId string, oldPassword string, newPassword string) error {
-	dbUser, err := resetPassword.userRepository.FindUserByIdWithoutPermissions(userId)
+	dbUser, err := resetPassword.userRepository.FindUserById(userId)
 
 	if err != nil {
 		return resetPassword.ThrowError(err.Error())

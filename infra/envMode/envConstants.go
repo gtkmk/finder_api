@@ -7,6 +7,7 @@ const (
 	TempDirConst   = "TEMP_DIR"
 	FrontUrlConst  = "PORTAL_URL"
 	JwtSecretConst = "JWT_SECRET"
+	PortalUrlConst = "PORTAL_URL"
 
 	DataBaseUsernameConst = "DB_USERNAME"
 	DataBasePasswordConst = "DB_PASSWORD"

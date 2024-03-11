@@ -3,8 +3,6 @@ package datetimeDomain
 import (
 	"github.com/gtkmk/finder_api/core/domain/helper"
 	"time"
-
-	
 )
 
 const (

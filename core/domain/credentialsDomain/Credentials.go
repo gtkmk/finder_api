@@ -1,6 +1,8 @@
 package credentialsDomain
 
-import emailDomain "github.com/gtkmk/finder_api/core/domain/email"
+import (
+	"strings"
+)
 
 type Credential struct {
 	Email    string
@@ -8,7 +10,7 @@ type Credential struct {
 }
 
 func NewCredentials(email, password string) *Credential {
-	email = emailDomain.NewEmail(email).AsString()
+	email = strings.ToLower(email)
 
 	return &Credential{
 		email,

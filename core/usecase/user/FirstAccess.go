@@ -1,12 +1,11 @@
 package userUsecase
 
 import (
-	"github.com/em-cash/simulador.em.cash/core/domain/customError"
-	"github.com/em-cash/simulador.em.cash/core/domain/helper/constants"
-
-	"github.com/em-cash/simulador.em.cash/core/domain/userDomain"
-	"github.com/em-cash/simulador.em.cash/core/port"
-	"github.com/em-cash/simulador.em.cash/core/port/repositories"
+	"github.com/gtkmk/finder_api/core/domain/customError"
+	"github.com/gtkmk/finder_api/core/domain/helper"
+	"github.com/gtkmk/finder_api/core/domain/userDomain"
+	"github.com/gtkmk/finder_api/core/port"
+	"github.com/gtkmk/finder_api/core/port/repositories"
 )
 
 type UserFirstAccess struct {
@@ -27,18 +26,18 @@ func NewUserFirstAccess(
 }
 
 func (userFirstAccess *UserFirstAccess) Execute(userId string, password string) error {
-	dbUser, err := userFirstAccess.userRepository.FindUserByIdWithoutPermissions(userId)
+	dbUser, err := userFirstAccess.userRepository.FindUserById(userId)
 
 	if err != nil {
 		return userFirstAccess.ThrowError(err.Error())
 	}
 
 	if dbUser == nil {
-		return userFirstAccess.ThrowError(constants.UserNotFoundConst)
+		return userFirstAccess.ThrowError(helper.UserNotFoundConst)
 	}
 
 	if dbUser.Status == userDomain.UserStatusLoggedConst {
-		return userFirstAccess.ThrowError(constants.FirstAccessLinkAlreadyUsedConst)
+		return userFirstAccess.ThrowError(helper.FirstAccessLinkAlreadyUsedConst)
 	}
 
 	encryptedPassword, err := userFirstAccess.passwordEncryptor.GenerateHashPassword(password)

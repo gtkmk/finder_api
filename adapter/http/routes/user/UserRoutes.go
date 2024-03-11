@@ -15,25 +15,17 @@ import (
 )
 
 const (
-	GetLoggedUserKeyConst                   string = "getLoggedUser"
-	GetManagersListKeyConst                 string = "getManagersList"
-	GetUserKeyConst                         string = "getUser"
-	GetUserListKeyConst                     string = "getUserList"
-	GetUserUnitiesConst                     string = "getUserUnities"
-	PatchUserFirstAccessKeyConst            string = "patchUserFirstAccess"
-	PatchUserForgotPasswordKeyConst         string = "patchUserForgotPassword"
-	PatchResetUserPasswordKeyConst          string = "patchResetUserPassword"
-	PatchUserPermissionGroupKeyConst        string = "patchUserPermissionGroup"
-	PatchUserHandlerKeyConst                string = "patchUserHandler"
-	PostForgotUserPasswordKeyConst          string = "postForgotUserPassword"
-	PostUserProductsHandlerKeyConst         string = "postUserProductsHandler"
-	SignInHandlerKeyConst                   string = "signInHandler"
-	SignOutHandlerKeyConst                  string = "signOutHandler"
-	SignUpHandlerKeyConst                   string = "signUpHandler"
-	GetManagersAndConsultantsListKeyConst   string = "getManagersAndConsultantsList"
-	PostUserMassRegistrationHandlerKeyConst string = "postUserMassRegistrationHandler"
-	GetExportUsersHandlerKeyConst           string = "getExportUsersHandlerKeyConst"
-	GetUserLeaderOptionsConst               string = "getUserLeaderOptionsConst"
+	GetLoggedUserKeyConst           string = "getLoggedUser"
+	GetUserKeyConst                 string = "getUser"
+	GetUserListKeyConst             string = "getUserList"
+	PatchUserFirstAccessKeyConst    string = "patchUserFirstAccess"
+	PatchUserForgotPasswordKeyConst string = "patchUserForgotPassword"
+	PatchResetUserPasswordKeyConst  string = "patchResetUserPassword"
+	PatchUserHandlerKeyConst        string = "patchUserHandler"
+	PostForgotUserPasswordKeyConst  string = "postForgotUserPassword"
+	SignInHandlerKeyConst           string = "signInHandler"
+	SignOutHandlerKeyConst          string = "signOutHandler"
+	SignUpHandlerKeyConst           string = "signUpHandler"
 )
 
 type UserRoutes struct {
@@ -82,12 +74,6 @@ func (userRoutes *UserRoutes) Register() {
 	)
 
 	userRoutes.GET(
-		routesConstants.GetManagersListRouteConst,
-		userRoutes.jwt.IsAuthorizedMiddleware(),
-		userRoutes.userHandlers[GetManagersListKeyConst].Handle,
-	)
-
-	userRoutes.GET(
 		routesConstants.GetUserRouteConst,
 		userRoutes.jwt.IsAuthorizedMiddleware(),
 		userRoutes.userHandlers[GetUserKeyConst].Handle,
@@ -106,21 +92,9 @@ func (userRoutes *UserRoutes) Register() {
 	)
 
 	userRoutes.PATCH(
-		routesConstants.PatchUserPermissionGroupRouteConst,
-		userRoutes.jwt.IsAuthorizedMiddleware(),
-		userRoutes.userHandlers[PatchUserPermissionGroupKeyConst].Handle,
-	)
-
-	userRoutes.PATCH(
 		routesConstants.PatchEditUserRouteConst,
 		userRoutes.jwt.IsAuthorizedMiddleware(),
 		userRoutes.userHandlers[PatchUserHandlerKeyConst].Handle,
-	)
-
-	userRoutes.POST(
-		routesConstants.PostUserProductRouteConst,
-		userRoutes.jwt.IsAuthorizedMiddleware(),
-		userRoutes.userHandlers[PostUserProductsHandlerKeyConst].Handle,
 	)
 
 	userRoutes.POST(
@@ -143,35 +117,6 @@ func (userRoutes *UserRoutes) Register() {
 		userRoutes.userHandlers[PostForgotUserPasswordKeyConst].Handle,
 	)
 
-	userRoutes.POST(
-		routesConstants.PostMassRegistrationRouteConst,
-		userRoutes.jwt.IsAuthorizedMiddleware(),
-		userRoutes.userHandlers[PostUserMassRegistrationHandlerKeyConst].Handle,
-	)
-
-	userRoutes.GET(
-		routesConstants.GetManagerAndConsultantsListConst,
-		userRoutes.jwt.IsAuthorizedMiddleware(),
-		userRoutes.userHandlers[GetManagersAndConsultantsListKeyConst].Handle,
-	)
-
-	userRoutes.GET(
-		routesConstants.GetUserUnitiesRouteConst,
-		userRoutes.jwt.IsAuthorizedMiddleware(),
-		userRoutes.userHandlers[GetUserUnitiesConst].Handle,
-	)
-
-	userRoutes.GET(
-		routesConstants.GetExportUsersRouteConst,
-		userRoutes.jwt.IsAuthorizedMiddleware(),
-		userRoutes.userHandlers[GetExportUsersHandlerKeyConst].Handle,
-	)
-
-	userRoutes.GET(
-		routesConstants.GetUserLeaderOptionsConst,
-		userRoutes.jwt.IsAuthorizedMiddleware(),
-		userRoutes.userHandlers[GetUserLeaderOptionsConst].Handle,
-	)
 }
 
 func createMapOfUserHandlers(
@@ -187,6 +132,11 @@ func createMapOfUserHandlers(
 			connection,
 			passwordEncryption,
 			uuid,
+		),
+		PatchUserFirstAccessKeyConst: userHandler.NewPatchFirstAccessHandler(
+			connection,
+			uuid,
+			passwordEncryption,
 		),
 		SignOutHandlerKeyConst: signHandler.NewSignOutHandler(
 			connection,
@@ -208,6 +158,15 @@ func createMapOfUserHandlers(
 			connection,
 			uuid,
 			passwordEncryption,
+		),
+		GetUserKeyConst: userHandler.NewFindUserHandler(
+			connection,
+			uuid,
+		),
+		PostForgotUserPasswordKeyConst: userHandler.NewPostForgotPasswordHandler(
+			connection,
+			uuid,
+			notificationService,
 		),
 	}
 }

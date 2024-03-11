@@ -1,12 +1,12 @@
 package userUsecase
 
 import (
-	"github.com/em-cash/simulador.em.cash/core/domain/customError"
-	"github.com/em-cash/simulador.em.cash/core/domain/helper/constants"
-	"github.com/em-cash/simulador.em.cash/core/domain/userDomain"
+	"github.com/gtkmk/finder_api/core/domain/customError"
+	"github.com/gtkmk/finder_api/core/domain/helper"
+	"github.com/gtkmk/finder_api/core/domain/userDomain"
 
-	"github.com/em-cash/simulador.em.cash/core/port"
-	"github.com/em-cash/simulador.em.cash/core/port/repositories"
+	"github.com/gtkmk/finder_api/core/port"
+	"github.com/gtkmk/finder_api/core/port/repositories"
 )
 
 type ForgotPassword struct {
@@ -27,18 +27,18 @@ func NewForgotPassword(
 }
 
 func (forgotPassword *ForgotPassword) Execute(userId string, password string) error {
-	dbUser, err := forgotPassword.userRepository.FindUserByIdWithoutPermissions(userId)
+	dbUser, err := forgotPassword.userRepository.FindUserById(userId)
 
 	if err != nil {
 		return forgotPassword.ThrowError(err.Error())
 	}
 
 	if dbUser == nil {
-		return forgotPassword.ThrowError(constants.UserNotFoundConst)
+		return forgotPassword.ThrowError(helper.UserNotFoundConst)
 	}
 
 	if !dbUser.ResetPassword {
-		return forgotPassword.ThrowError(constants.UserDoNotRequestPasswordChangingConst)
+		return forgotPassword.ThrowError(helper.UserDoNotRequestPasswordChangingConst)
 	}
 
 	encryptedPassword, err := forgotPassword.passwordEncryptor.GenerateHashPassword(password)

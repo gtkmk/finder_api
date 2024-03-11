@@ -36,7 +36,7 @@ func NewFindLoggedUserHandler(
 func (findLoggedUserRoute *FindLoggedUserHandler) Handle(context *gin.Context) {
 	jsonResponse := routes.NewJsonResponse(context, findLoggedUserRoute.connection, findLoggedUserRoute.uuid)
 
-	userId, _, extractError := findLoggedUserRoute.contextExtractor.Extract(context)
+	userId, extractError := findLoggedUserRoute.contextExtractor.Extract(context)
 
 	if extractError != nil {
 		jsonResponse.ThrowError(

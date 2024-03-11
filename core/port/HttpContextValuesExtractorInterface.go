@@ -18,7 +18,6 @@ type PermissionJWT struct {
 type HttpContextValuesExtractorInterface interface {
 	Extract(context *gin.Context) (
 		loggedUserId string,
-		loggedUserLayer float64,
 		extractError error,
 	)
 }

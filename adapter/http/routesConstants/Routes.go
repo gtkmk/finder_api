@@ -8,14 +8,20 @@ import (
 const (
 	GetBarRouteConst = "/"
 
-	PostSignInRouteConst           = "/signin"
-	PostSignOutRouteConst          = "/signout"
-	PostSignUpRouteConst           = "/signup"
+	PostSignInRouteConst  = "/signin"
+	PostSignOutRouteConst = "/signout"
+	PostSignUpRouteConst  = "/signup"
 
-	PatchEditUserRouteConst            = "/user"
-	GetLoggedUserRouteConst            = "/logged-user"
-	GetUserRouteConst                  = "/user"
-	GetUsersListRouteConst             = "/users"
+	PatchEditUserRouteConst       = "/user"
+	PatchFirstAccessRouteConst    = "/user/first-access"
+	PatchForgotPasswordRouteConst = "/user/forgot-password"
+	PatchResetPasswordRouteConst  = "/user/reset-password"
+	PostForgotPasswordRouteConst  = "/user/forgot-password"
+	GetLoggedUserRouteConst       = "/logged-user"
+	GetUserRouteConst             = "/user"
+	GetUsersListRouteConst        = "/users"
+
+	PostCreatePostRouteCOnst = "/post"
 )
 
 const (
@@ -29,7 +35,8 @@ const (
 )
 
 const (
-	DataKeyConst               = "data"
+	DataKeyConst    = "data"
+	MessageKeyConst = "message"
 )
 
 const (

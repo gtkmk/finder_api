@@ -5,7 +5,6 @@ import (
 	"net/http"
 
 	"github.com/gtkmk/finder_api/infra/EmptyBodyVerification"
-	"github.com/gtkmk/finder_api/infra/requestEntity/proposalRequestEntity"
 	"github.com/gtkmk/finder_api/infra/requestEntityFieldsValidation"
 )
 
@@ -30,6 +29,6 @@ func ForgotPasswordDecodeRequest(req *http.Request) (*ForgotPasswordRequest, err
 	return user, requestEntityFieldsValidation.ValidateField(
 		user.Email,
 		EmailFieldConst,
-		proposalRequestEntity.MaximumEmailLengthConst,
+		50,
 	)
 }

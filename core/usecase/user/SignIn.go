@@ -69,7 +69,6 @@ func (signIn *SignIn) Execute(userIP string, userDevice string) (string, error) 
 
 	token, err := jwtAuthentication.GenerateJWT(map[string]interface{}{
 		"i": user.Id,
-		"l": user.Group.Layer,
 	})
 
 	if err != nil {
