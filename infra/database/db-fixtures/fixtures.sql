@@ -1,0 +1,1 @@
+INSERT INTO user (id, name, email, password, cpf, status, is_active, password_reset, created_at, updated_at, deleted_at) VALUES ('f254e0ec-3f29-407a-a265-3fb5ddb5106a', 'Fabio HR Filho', 'fabiotempemcash@mailinator.com', '$2a$13$YtDglHgUYvqXzbdq/zstKe9VmcGOauYGMXIf7yMna1wLOrdCENztC', '19213232432', NULL, 'logged', 1, 0, '2023-06-13 17:17:11.360', '2023-06-13 23:08:47.384', NULL);

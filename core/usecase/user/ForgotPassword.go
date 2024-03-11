@@ -1,12 +1,12 @@
 package userUsecase
 
 import (
-	"github.com/gtkmk/finder_api/core/domain/customError"
-	"github.com/gtkmk/finder_api/core/domain/helper"
-	"github.com/gtkmk/finder_api/core/domain/userDomain"
+	"github.com/em-cash/simulador.em.cash/core/domain/customError"
+	"github.com/em-cash/simulador.em.cash/core/domain/helper/constants"
+	"github.com/em-cash/simulador.em.cash/core/domain/userDomain"
 
-	"github.com/gtkmk/finder_api/core/port"
-	"github.com/gtkmk/finder_api/core/port/repositories"
+	"github.com/em-cash/simulador.em.cash/core/port"
+	"github.com/em-cash/simulador.em.cash/core/port/repositories"
 )
 
 type ForgotPassword struct {
@@ -34,11 +34,11 @@ func (forgotPassword *ForgotPassword) Execute(userId string, password string) er
 	}
 
 	if dbUser == nil {
-		return forgotPassword.ThrowError(helper.UserNotFoundConst)
+		return forgotPassword.ThrowError(constants.UserNotFoundConst)
 	}
 
 	if !dbUser.ResetPassword {
-		return forgotPassword.ThrowError(helper.UserDoNotRequestPasswordChangingConst)
+		return forgotPassword.ThrowError(constants.UserDoNotRequestPasswordChangingConst)
 	}
 
 	encryptedPassword, err := forgotPassword.passwordEncryptor.GenerateHashPassword(password)

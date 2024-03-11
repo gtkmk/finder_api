@@ -168,3 +168,36 @@ func (userDatabase *UserDatabase) UpdateResetPasswordStatus(toggle bool, status 
 
 	return nil
 }
+
+func (userDatabase *UserDatabase) SetUserStatus(userId string, status string) error {
+	query := `UPDATE user SET status = ? WHERE id = ?`
+	var userDb models.User
+
+	if err := userDatabase.connection.Raw(query, &userDb, status, userId); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (userDatabase *UserDatabase) ResetUserPassword(
+	userId string,
+	password string,
+) error {
+	updatedAt, err := datetimeDomain.CreateNow()
+	if err != nil {
+		return err
+	}
+
+	query := `UPDATE user
+                    SET password = ?, updated_at = ?  
+                    WHERE id = ?`
+
+	var userDb models.User
+
+	if err := userDatabase.connection.Raw(query, &userDb, password, updatedAt, userId); err != nil {
+		return err
+	}
+
+	return nil
+}
