@@ -32,8 +32,7 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ~/.composer-docker/cache:/root/.composer/cache:delegated
-      - ./:/app:delegated
+      - .:/go/src
     environment:
       TZ: America/Sao_Paulo
     ports:

@@ -1,6 +1,7 @@
 package user
 
 import (
+	"fmt"
 	"github.com/gtkmk/finder_api/adapter/http/handlers/signHandler"
 	"github.com/gtkmk/finder_api/adapter/http/handlers/userHandler"
 	"github.com/gtkmk/finder_api/adapter/http/middleware"
@@ -73,49 +74,51 @@ func (userRoutes *UserRoutes) Register() {
 		userRoutes.userHandlers[GetLoggedUserKeyConst].Handle,
 	)
 
-	userRoutes.GET(
-		routesConstants.GetUserRouteConst,
-		userRoutes.jwt.IsAuthorizedMiddleware(),
-		userRoutes.userHandlers[GetUserKeyConst].Handle,
-	)
+	//Erro em algum lugar por aqui:
 
-	userRoutes.GET(
-		routesConstants.GetUsersListRouteConst,
-		userRoutes.jwt.IsAuthorizedMiddleware(),
-		userRoutes.userHandlers[GetUserListKeyConst].Handle,
-	)
-
-	userRoutes.PATCH(
-		routesConstants.PatchResetPasswordRouteConst,
-		userRoutes.jwt.IsAuthorizedMiddleware(),
-		userRoutes.userHandlers[PatchResetUserPasswordKeyConst].Handle,
-	)
-
-	userRoutes.PATCH(
-		routesConstants.PatchEditUserRouteConst,
-		userRoutes.jwt.IsAuthorizedMiddleware(),
-		userRoutes.userHandlers[PatchUserHandlerKeyConst].Handle,
-	)
-
-	userRoutes.POST(
-		routesConstants.PostSignInRouteConst,
-		userRoutes.userHandlers[SignInHandlerKeyConst].Handle,
-	)
-
-	userRoutes.PATCH(
-		routesConstants.PatchFirstAccessRouteConst,
-		userRoutes.userHandlers[PatchUserFirstAccessKeyConst].Handle,
-	)
-
-	userRoutes.PATCH(
-		routesConstants.PatchForgotPasswordRouteConst,
-		userRoutes.userHandlers[PatchUserForgotPasswordKeyConst].Handle,
-	)
-
-	userRoutes.POST(
-		routesConstants.PostForgotPasswordRouteConst,
-		userRoutes.userHandlers[PostForgotUserPasswordKeyConst].Handle,
-	)
+	//userRoutes.GET(
+	//	routesConstants.GetUserRouteConst,
+	//	userRoutes.jwt.IsAuthorizedMiddleware(),
+	//	userRoutes.userHandlers[GetUserKeyConst].Handle,
+	//)
+	//
+	//userRoutes.GET(
+	//	routesConstants.GetUsersListRouteConst,
+	//	userRoutes.jwt.IsAuthorizedMiddleware(),
+	//	userRoutes.userHandlers[GetUserListKeyConst].Handle,
+	//)
+	//
+	//userRoutes.PATCH(
+	//	routesConstants.PatchResetPasswordRouteConst,
+	//	userRoutes.jwt.IsAuthorizedMiddleware(),
+	//	userRoutes.userHandlers[PatchResetUserPasswordKeyConst].Handle,
+	//)
+	//
+	//userRoutes.PATCH(
+	//	routesConstants.PatchEditUserRouteConst,
+	//	userRoutes.jwt.IsAuthorizedMiddleware(),
+	//	userRoutes.userHandlers[PatchUserHandlerKeyConst].Handle,
+	//)
+	//
+	//userRoutes.POST(
+	//	routesConstants.PostSignInRouteConst,
+	//	userRoutes.userHandlers[SignInHandlerKeyConst].Handle,
+	//)
+	//
+	//userRoutes.PATCH(
+	//	routesConstants.PatchFirstAccessRouteConst,
+	//	userRoutes.userHandlers[PatchUserFirstAccessKeyConst].Handle,
+	//)
+	//
+	//userRoutes.PATCH(
+	//	routesConstants.PatchForgotPasswordRouteConst,
+	//	userRoutes.userHandlers[PatchUserForgotPasswordKeyConst].Handle,
+	//)
+	//
+	//userRoutes.POST(
+	//	routesConstants.PostForgotPasswordRouteConst,
+	//	userRoutes.userHandlers[PostForgotUserPasswordKeyConst].Handle,
+	//)
 
 }
 
@@ -126,6 +129,12 @@ func createMapOfUserHandlers(
 	passwordEncryption port.EncryptionInterface,
 ) map[string]port.HandlerInterface {
 	contextExtractor := httpContextValuesExtractor.NewHttpContextValuesExtractor()
+	fmt.Println("))))))))))))))))))))))))))))))))))))))))))))))))")
+	fmt.Println(connection)
+	fmt.Println(notificationService)
+	fmt.Println(uuid.GenerateUuid())
+	fmt.Println(passwordEncryption.GenerateRandomPassword())
+	fmt.Println(signHandler.NewSignInHandler(connection, passwordEncryption, uuid))
 
 	return map[string]port.HandlerInterface{
 		SignInHandlerKeyConst: signHandler.NewSignInHandler(
