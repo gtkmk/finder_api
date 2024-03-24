@@ -2,12 +2,13 @@ package repository
 
 import (
 	"database/sql"
+	"strings"
+
 	"github.com/gtkmk/finder_api/core/domain/datetimeDomain"
 	"github.com/gtkmk/finder_api/core/domain/userDomain"
 	"github.com/gtkmk/finder_api/core/port"
 	"github.com/gtkmk/finder_api/core/port/repositories"
 	"github.com/gtkmk/finder_api/infra/database/models"
-	"strings"
 )
 
 type UserDatabase struct {
@@ -31,20 +32,31 @@ func (userDatabase *UserDatabase) VerifyIfUserExistsByCpf(cpf string) bool {
 	return exists
 }
 
+func (userDatabase *UserDatabase) VerifyIfUserExistsByUserName(userName string) bool {
+	var exists bool
+	query := `SELECT CASE WHEN EXISTS (SELECT 1 FROM user WHERE user_name = ?) THEN 1 ELSE 0 END`
+
+	if err := userDatabase.connection.Raw(query, &exists, userName); err != nil {
+		return false
+	}
+
+	return exists
+}
+
 func (userDatabase *UserDatabase) FindUserByEmail(email string) (*userDomain.User, error) {
 	var dbUser *models.UserWithPermissionGroup
 
 	query := `SELECT
         id as user_id,
-        name as user_name,
+        name,
+		user_name,
         email as user_email,
 		password as user_password,
 		cpf as user_cpf,
-        role as user_role,
 		cellphone_number as user_cellphone_number,
+		status as user_status,
         is_active as user_is_active,
-        status as user_status,
-        created_at as user_created_at,
+        created_at as user_created_at
       FROM user
       WHERE email = ?`
 
@@ -58,6 +70,7 @@ func (userDatabase *UserDatabase) FindUserByEmail(email string) (*userDomain.Use
 
 	user := userDomain.NewUser(
 		dbUser.UserID,
+		dbUser.Name,
 		dbUser.UserName,
 		dbUser.UserEmail,
 		dbUser.UserPassword,
@@ -77,7 +90,8 @@ func (userDatabase *UserDatabase) FindUserById(id string) (*userDomain.User, err
 
 	query := `SELECT
         id as user_id,
-        name as user_name,
+        name,
+		user_name,
         email as user_email,
 		password as user_password,
 		cpf as user_cpf,
@@ -99,6 +113,7 @@ func (userDatabase *UserDatabase) FindUserById(id string) (*userDomain.User, err
 
 	user := userDomain.NewUser(
 		dbUser.UserID,
+		dbUser.Name,
 		dbUser.UserName,
 		dbUser.UserEmail,
 		dbUser.UserPassword,
@@ -124,6 +139,7 @@ func (userDatabase *UserDatabase) CreateUser(user *userDomain.User) error {
 	query := `INSERT INTO user (
 			   		id,
 					name,
+					user_name,
 			 		email,
 		 			password,
 					cpf,
@@ -133,7 +149,7 @@ func (userDatabase *UserDatabase) CreateUser(user *userDomain.User) error {
 			 		updated_at,
 			 		deleted_at
 				) 
-				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+				VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	var statement interface{}
 
@@ -142,6 +158,7 @@ func (userDatabase *UserDatabase) CreateUser(user *userDomain.User) error {
 		statement,
 		user.Id,
 		strings.ToLower(user.Name),
+		user.UserName,
 		strings.ToLower(user.Email),
 		user.Password,
 		user.Cpf,

@@ -8,6 +8,7 @@ import (
 type User struct {
 	ID              string `gorm:"primaryKey;type:varchar(191);"`
 	Name            string `gorm:"not null;type:varchar(100);" json:"name"`
+	UserName        string `gorm:"not null;type:varchar(100);" json:"user_name"`
 	Email           string `gorm:"unique;not null;type:varchar(100);" json:"email"`
 	Password        string `gorm:"not null;type:varchar(100);" json:"password"`
 	Cpf             string `gorm:"unique;not null;type:varchar(14);" json:"cpf"`
@@ -22,6 +23,7 @@ type User struct {
 
 type UserWithPermissionGroup struct {
 	UserID              string
+	Name                string
 	UserName            string
 	UserEmail           string
 	UserPassword        string
