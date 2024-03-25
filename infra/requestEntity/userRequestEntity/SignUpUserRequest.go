@@ -2,6 +2,7 @@ package userRequestEntity
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/gtkmk/finder_api/core/domain/cpf"
@@ -11,14 +12,14 @@ import (
 )
 
 type SignUpUserRequest struct {
-	Id                string `json:"id"`
-	Name              string `json:"name"`
-	Email             string `json:"email"`
-	Cpf               string `json:"cpf"`
-	CellphoneNumber   string `json:"cellphone_number"`
-	CreatorId         string `json:"creator_id"`
-	PermissionGroupId string `json:"permission_group_id"`
-	IsActive          bool   `json:"is_active"`
+	Id              string `json:"id"`
+	Name            string `json:"name"`
+	UserName        string `json:"user_name"`
+	Email           string `json:"email"`
+	Cpf             string `json:"cpf"`
+	Password        string `json:"password"`
+	CellphoneNumber string `json:"cellphone_number"`
+	IsActive        bool   `json:"is_active"`
 }
 
 const (
@@ -31,8 +32,11 @@ const (
 	MaximumBirthDateLengthConst = 10
 	MaximumCellPhoneLengthConst = 12
 	MaximumEmailLengthConst     = 50
+	MaximumPasswordLengthConst  = 50
 	UserFieldNameConst          = "O nome do usuário"
+	UserFieldUserNameConst      = "O nome de usuário"
 	UserFieldCpfConst           = "O cpf do usuário"
+	UserFieldPasswordConst      = "A senha do usuário"
 	UserFieldBirthDateConst     = "A data de nascimento do usuário"
 	UserFieldEmailConst         = "O email do usuário"
 	UserFieldCellphoneConst     = "O número do celular do usuário"
@@ -55,6 +59,8 @@ func SignUpDecodeUserRequest(req *http.Request) (*SignUpUserRequest, error) {
 }
 
 func (signUpUserRequest *SignUpUserRequest) Validate() error {
+	fmt.Print("******************************************************")
+	fmt.Print(signUpUserRequest)
 	cpfValidationError := ValidateCpf(signUpUserRequest.Cpf)
 
 	if cpfValidationError != nil {
@@ -65,6 +71,12 @@ func (signUpUserRequest *SignUpUserRequest) Validate() error {
 
 	if nameValidationError != nil {
 		return nameValidationError
+	}
+
+	userNameValidationError := ValidateUserName(signUpUserRequest.UserName)
+
+	if userNameValidationError != nil {
+		return userNameValidationError
 	}
 
 	emailValidationError := ValidateEmail(signUpUserRequest.Email)
@@ -79,6 +91,12 @@ func (signUpUserRequest *SignUpUserRequest) Validate() error {
 		if cellphoneNumberValidationError != nil {
 			return cellphoneNumberValidationError
 		}
+	}
+
+	passwordValidationError := ValidatePassword(signUpUserRequest.Password)
+
+	if passwordValidationError != nil {
+		return passwordValidationError
 	}
 
 	return nil
@@ -131,9 +149,37 @@ func ValidateName(name string) error {
 	return nil
 }
 
+func ValidateUserName(userName string) error {
+	nameValidationError := requestEntityFieldsValidation.ValidateField(
+		userName,
+		UserFieldUserNameConst,
+		MaximumNameLengthConst,
+	)
+
+	if nameValidationError != nil {
+		return nameValidationError
+	}
+
+	return nil
+}
+
 func ValidateEmail(email string) error {
 	nameValidationError := requestEntityFieldsValidation.
 		ValidateEmailField(email)
+
+	if nameValidationError != nil {
+		return nameValidationError
+	}
+
+	return nil
+}
+
+func ValidatePassword(password string) error {
+	nameValidationError := requestEntityFieldsValidation.ValidatePasswordField(
+		password,
+		UserFieldPasswordConst,
+		MaximumPasswordLengthConst,
+	)
 
 	if nameValidationError != nil {
 		return nameValidationError

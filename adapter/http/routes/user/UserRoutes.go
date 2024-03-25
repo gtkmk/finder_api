@@ -2,6 +2,8 @@ package user
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/gtkmk/finder_api/adapter/http/handlers/signHandler"
 	"github.com/gtkmk/finder_api/adapter/http/handlers/userHandler"
 	"github.com/gtkmk/finder_api/adapter/http/middleware"
@@ -10,7 +12,6 @@ import (
 	"github.com/gtkmk/finder_api/core/port"
 	"github.com/gtkmk/finder_api/infra/envMode"
 	"github.com/gtkmk/finder_api/infra/httpContextValuesExtractor"
-	"os"
 
 	"github.com/gin-gonic/gin"
 )
@@ -57,6 +58,11 @@ func NewUserRoutes(
 
 func (userRoutes *UserRoutes) Register() {
 	userRoutes.POST(
+		routesConstants.PostSignInRouteConst,
+		userRoutes.userHandlers[SignInHandlerKeyConst].Handle,
+	)
+
+	userRoutes.POST(
 		routesConstants.PostSignOutRouteConst,
 		userRoutes.jwt.IsAuthorizedMiddleware(),
 		userRoutes.userHandlers[SignOutHandlerKeyConst].Handle,
@@ -64,7 +70,6 @@ func (userRoutes *UserRoutes) Register() {
 
 	userRoutes.POST(
 		routesConstants.PostSignUpRouteConst,
-		userRoutes.jwt.IsAuthorizedMiddleware(),
 		userRoutes.userHandlers[SignUpHandlerKeyConst].Handle,
 	)
 

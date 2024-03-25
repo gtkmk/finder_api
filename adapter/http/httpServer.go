@@ -19,14 +19,7 @@ import (
 )
 
 const (
-	OriginLocalhostConst         = "http://localhost:3002"
-	OriginHomologConst           = "https://simulador-h.em.cash"
-	OriginSprintOneConst         = "https://simulador-1.em.cash"
-	OriginProdConst              = "https://simulador.em.cash"
-	OriginSprintTwoConst         = "https://simulador-2.em.cash"
-	OriginSprintThreeConst       = "https://simulador-3.em.cash"
-	OriginStagingConst           = "https://simulador-s.em.cash"
-	OriginEmcashBrTopLevelDomain = "https://simulador.emcash.com.br"
+	OriginLocalhostConst = "http://localhost:3000"
 )
 
 const DefaultPortConst = ":8089"
@@ -132,13 +125,6 @@ func (httpServer *HttpServer) corsConfig() {
 
 	origins := handlers.AllowedOrigins([]string{
 		OriginLocalhostConst,
-		OriginHomologConst,
-		OriginSprintOneConst,
-		OriginSprintTwoConst,
-		OriginSprintThreeConst,
-		OriginStagingConst,
-		OriginProdConst,
-		OriginEmcashBrTopLevelDomain,
 	})
 
 	methods := handlers.AllowedMethods([]string{helper.GET, helper.POST, helper.PUT, helper.PATCH, helper.DELETE, helper.OPTIONS})

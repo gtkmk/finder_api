@@ -89,6 +89,10 @@ const (
 	ErrorConvertingValueConst                            = "Erro ao converter valor para '%s'."
 	ErrorInvalidFileTypeConst                            = "Tipo do arquivo %s inválido. Tente enviar em outro formato. Por exemplo= jpg, jpeg ou png"
 	FirstAccessLinkAlreadyUsedConst                      = "Esse link de redefinição já foi utilizado! Gere outro link."
+	PasswordMissingUppercaseConst                        = "A senha deve conter pelo menos uma letra maiúscula"
+	PasswordMissingLowercaseConst                        = "A senha deve conter pelo menos uma letra minúscula"
+	PasswordMissingNumberConst                           = "A senha deve conter pelo menos um número"
+	PasswordMissingSpecialCharConst                      = "A senha deve conter pelo menos um caractere especial"
 )
 
 const (

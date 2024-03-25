@@ -2,6 +2,8 @@ package signHandler
 
 import (
 	"fmt"
+	"os"
+
 	"github.com/gin-gonic/gin"
 	"github.com/gtkmk/finder_api/adapter/http/routes"
 	"github.com/gtkmk/finder_api/adapter/http/routesConstants"
@@ -15,7 +17,6 @@ import (
 	"github.com/gtkmk/finder_api/infra/database/repository"
 	"github.com/gtkmk/finder_api/infra/envMode"
 	"github.com/gtkmk/finder_api/infra/requestEntity/userRequestEntity"
-	"os"
 )
 
 type SignUpHandler struct {
@@ -122,7 +123,7 @@ func (signUpHandler *SignUpHandler) defineUser(context *gin.Context) (*userDomai
 		return nil, signUpHandler.CustomError.ThrowError(err.Error())
 	}
 
-	randomPwd, err := signUpHandler.PasswordEncryptor.GenerateRandomPassword()
+	userEncryptedPwd, err := signUpHandler.PasswordEncryptor.GenerateHashPassword(userRequest.Password)
 
 	if err != nil {
 		return nil, signUpHandler.CustomError.ThrowError(err.Error())
@@ -136,11 +137,12 @@ func (signUpHandler *SignUpHandler) defineUser(context *gin.Context) (*userDomai
 	return userDomain.NewUser(
 		signUpHandler.Uuid.GenerateUuid(),
 		userRequest.Name,
+		userRequest.UserName,
 		userRequest.Email,
-		randomPwd,
+		userEncryptedPwd,
 		userRequest.Cpf,
 		userRequest.CellphoneNumber,
-		userDomain.UserStatusPendingConst,
+		userDomain.UserStatusLoggedConst,
 		true,
 		false,
 		createdAt,

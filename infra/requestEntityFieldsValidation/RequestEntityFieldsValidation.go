@@ -1,17 +1,24 @@
 package requestEntityFieldsValidation
 
 import (
-	"github.com/gtkmk/finder_api/core/domain/helper"
 	"regexp"
 	"strings"
 
+	"github.com/gtkmk/finder_api/core/domain/helper"
+
 	"github.com/google/uuid"
 	emailDomain "github.com/gtkmk/finder_api/core/domain/email"
-	
 )
 
 const (
 	notANumberConst = "NaN"
+)
+
+var (
+	uppercaseRegex   = regexp.MustCompile(`[A-Z]`)
+	lowercaseRegex   = regexp.MustCompile(`[a-z]`)
+	numberRegex      = regexp.MustCompile(`[0-9]`)
+	specialCharRegex = regexp.MustCompile(`[^a-zA-Z0-9]`)
 )
 
 func ValidateField(field, fieldName string, maxLength int) error {
@@ -74,6 +81,33 @@ func ValidateGroupLayerField(layer int64) error {
 
 	if layer > 999 {
 		return helper.ErrorBuilder(helper.TheGroupPermissionLayerCannotBeGreaterThanLimitConst)
+	}
+
+	return nil
+}
+
+func ValidatePasswordField(field, fieldName string, maxLength int) error {
+	if len(field) > maxLength || len(field) == 0 {
+		if len(field) > maxLength {
+			return helper.ErrorBuilder(helper.FieldCannotHaveMoreThanSetCharactersConst)
+		}
+		return helper.ErrorBuilder(helper.FieldCannotBeEmptyConst)
+	}
+
+	if !uppercaseRegex.MatchString(field) {
+		return helper.ErrorBuilder(helper.PasswordMissingUppercaseConst)
+	}
+
+	if !lowercaseRegex.MatchString(field) {
+		return helper.ErrorBuilder(helper.PasswordMissingLowercaseConst)
+	}
+
+	if !numberRegex.MatchString(field) {
+		return helper.ErrorBuilder(helper.PasswordMissingNumberConst)
+	}
+
+	if !specialCharRegex.MatchString(field) {
+		return helper.ErrorBuilder(helper.PasswordMissingSpecialCharConst)
 	}
 
 	return nil

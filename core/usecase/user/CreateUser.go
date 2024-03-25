@@ -2,6 +2,7 @@ package userUsecase
 
 import (
 	"encoding/json"
+
 	"github.com/gtkmk/finder_api/core/domain/helper"
 	"github.com/gtkmk/finder_api/core/port/sharedMethods"
 
@@ -53,6 +54,14 @@ func (signUp *SignUp) Execute(userIP string, userDevice string) error {
 		return err
 	}
 
+	if err := signUp.verifyIfUserExistsByUserName(); err != nil {
+		if transactionErr := signUp.transaction.Rollback(); transactionErr != nil {
+			return signUp.customError.ThrowError(transactionErr.Error())
+		}
+
+		return err
+	}
+
 	if err := signUp.verifyIfUserExists(); err != nil {
 		if transactionErr := signUp.transaction.Rollback(); transactionErr != nil {
 			return signUp.customError.ThrowError(transactionErr.Error())
@@ -80,6 +89,16 @@ func (signUp *SignUp) Execute(userIP string, userDevice string) error {
 
 func (signUp *SignUp) verifyIfUserExistsByCpf() error {
 	exists := signUp.userDatabase.VerifyIfUserExistsByCpf(signUp.user.Cpf)
+
+	if exists {
+		return signUp.customError.ThrowError(helper.UserAlreadyRegisteredConst)
+	}
+
+	return nil
+}
+
+func (signUp *SignUp) verifyIfUserExistsByUserName() error {
+	exists := signUp.userDatabase.VerifyIfUserExistsByUserName(signUp.user.UserName)
 
 	if exists {
 		return signUp.customError.ThrowError(helper.UserAlreadyRegisteredConst)

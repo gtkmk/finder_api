@@ -6,6 +6,7 @@ import (
 
 type UserRepository interface {
 	VerifyIfUserExistsByCpf(cpf string) bool
+	VerifyIfUserExistsByUserName(userName string) bool
 	FindUserByEmail(email string) (*userDomain.User, error)
 	FindUserById(id string) (*userDomain.User, error)
 	CreateUser(user *userDomain.User) error

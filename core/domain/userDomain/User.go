@@ -27,6 +27,7 @@ const (
 type User struct {
 	Id              string    `json:"id"`
 	Name            string    `json:"name"`
+	UserName        string    `json:"userName"`
 	Email           string    `json:"email"`
 	Password        string    `json:"password"`
 	Cpf             string    `json:"cpf"`
@@ -40,6 +41,7 @@ type User struct {
 func NewUser(
 	id string,
 	name string,
+	userName string,
 	email string,
 	password string,
 	cpf string,
@@ -54,6 +56,7 @@ func NewUser(
 	return &User{
 		Id:              id,
 		Name:            name,
+		UserName:        userName,
 		Email:           email,
 		Password:        password,
 		Cpf:             cpf,
