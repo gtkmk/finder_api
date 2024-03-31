@@ -54,6 +54,20 @@ func ValidateDateField(field, fieldName string, maxLength int, layoutDateRegex s
 	return nil
 }
 
+func ValidateFieldInArray(field, fieldName string, allowedValues []string) error {
+	if len(field) == 0 {
+		return helper.ErrorBuilder(helper.FieldCannotBeEmptyConst, fieldName)
+	}
+
+	for _, val := range allowedValues {
+		if field == val {
+			return nil
+		}
+	}
+
+	return helper.ErrorBuilder(helper.FieldNotInAllowedValuesConst, fieldName)
+}
+
 func IsValidUUID(fieldname string, hash string) error {
 	_, err := uuid.Parse(hash)
 

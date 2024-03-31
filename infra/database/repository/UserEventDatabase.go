@@ -12,12 +12,12 @@ type UserEventRepository struct {
 }
 
 func NewUserEventRepository(connection port.ConnectionInterface) repositories.UserEventRepositoryInterface {
-	return &UserEventRepository{
+	return &PostDatabase{
 		connection: connection,
 	}
 }
 
-func (userEventRepository *UserEventRepository) Save(userEvent *userEventDomain.UserEvent) error {
+func (userEventRepository *PostDatabase) Save(userEvent *userEventDomain.UserEvent) error {
 	createdAt, err := datetimeDomain.CreateNow()
 	if err != nil {
 		return err

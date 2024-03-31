@@ -1,7 +1,6 @@
 package user
 
 import (
-	"fmt"
 	"os"
 
 	"github.com/gtkmk/finder_api/adapter/http/handlers/signHandler"
@@ -24,7 +23,6 @@ const (
 	PatchUserForgotPasswordKeyConst string = "patchUserForgotPassword"
 	PatchResetUserPasswordKeyConst  string = "patchResetUserPassword"
 	PatchUserHandlerKeyConst        string = "patchUserHandler"
-	PostForgotUserPasswordKeyConst  string = "postForgotUserPassword"
 	SignInHandlerKeyConst           string = "signInHandler"
 	SignOutHandlerKeyConst          string = "signOutHandler"
 	SignUpHandlerKeyConst           string = "signUpHandler"
@@ -120,10 +118,6 @@ func (userRoutes *UserRoutes) Register() {
 	//	userRoutes.userHandlers[PatchUserForgotPasswordKeyConst].Handle,
 	//)
 	//
-	//userRoutes.POST(
-	//	routesConstants.PostForgotPasswordRouteConst,
-	//	userRoutes.userHandlers[PostForgotUserPasswordKeyConst].Handle,
-	//)
 
 }
 
@@ -134,12 +128,6 @@ func createMapOfUserHandlers(
 	passwordEncryption port.EncryptionInterface,
 ) map[string]port.HandlerInterface {
 	contextExtractor := httpContextValuesExtractor.NewHttpContextValuesExtractor()
-	fmt.Println("))))))))))))))))))))))))))))))))))))))))))))))))")
-	fmt.Println(connection)
-	fmt.Println(notificationService)
-	fmt.Println(uuid.GenerateUuid())
-	fmt.Println(passwordEncryption.GenerateRandomPassword())
-	fmt.Println(signHandler.NewSignInHandler(connection, passwordEncryption, uuid))
 
 	return map[string]port.HandlerInterface{
 		SignInHandlerKeyConst: signHandler.NewSignInHandler(
@@ -176,11 +164,6 @@ func createMapOfUserHandlers(
 		GetUserKeyConst: userHandler.NewFindUserHandler(
 			connection,
 			uuid,
-		),
-		PostForgotUserPasswordKeyConst: userHandler.NewPostForgotPasswordHandler(
-			connection,
-			uuid,
-			notificationService,
 		),
 	}
 }

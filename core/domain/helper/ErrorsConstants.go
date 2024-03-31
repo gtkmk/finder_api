@@ -93,6 +93,9 @@ const (
 	PasswordMissingLowercaseConst                        = "A senha deve conter pelo menos uma letra minúscula"
 	PasswordMissingNumberConst                           = "A senha deve conter pelo menos um número"
 	PasswordMissingSpecialCharConst                      = "A senha deve conter pelo menos um caractere especial"
+	ErrorGettingFormFileConst                            = "Erro ao obter arquivo do formulário: %s"
+	ErrorWhenGettingFormFileWithoutInterpolationConst    = "Erro ao obter arquivo do formulário."
+	FieldNotInAllowedValuesConst                         = "O valor para %s não é permitido."
 )
 
 const (

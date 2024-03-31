@@ -3,15 +3,17 @@ package http
 import (
 	"context"
 	"fmt"
-	"github.com/gtkmk/finder_api/adapter/http/routes/user"
-	"github.com/gtkmk/finder_api/core/port"
-	"github.com/gtkmk/finder_api/infra/client"
-	"github.com/gtkmk/finder_api/infra/notification"
 	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
+
+	"github.com/gtkmk/finder_api/adapter/http/routes/post"
+	"github.com/gtkmk/finder_api/adapter/http/routes/user"
+	"github.com/gtkmk/finder_api/core/port"
+	"github.com/gtkmk/finder_api/infra/client"
+	"github.com/gtkmk/finder_api/infra/notification"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gorilla/handlers"
@@ -84,13 +86,13 @@ func (httpServer *HttpServer) registerRutes() {
 		notificationService,
 	).Register()
 
-	//post.NewPostRoutes(
-	//	httpServer.app,
-	//	httpServer.connection,
-	//	httpServer.uuidGenerator,
-	//	httpServer.passwordEncryptor,
-	//	notificationService,
-	//).Register()
+	post.NewPostRoutes(
+		httpServer.app,
+		httpServer.connection,
+		httpServer.uuidGenerator,
+		httpServer.passwordEncryptor,
+		notificationService,
+	).Register()
 }
 
 func (httpServer *HttpServer) initialize() {

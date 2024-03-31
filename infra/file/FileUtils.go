@@ -3,13 +3,14 @@ package file
 import (
 	"bytes"
 	"fmt"
-	"github.com/gtkmk/finder_api/core/domain/helper"
 	"io"
 	"mime/multipart"
 	"net/http"
 	"os"
 	"path/filepath"
 	"strings"
+
+	"github.com/gtkmk/finder_api/core/domain/helper"
 
 	"github.com/gtkmk/finder_api/core/domain/documentDomain"
 	"github.com/gtkmk/finder_api/core/port"

@@ -3,19 +3,22 @@ package documentDomain
 import "mime/multipart"
 
 const (
-	CsvMimeTypeConst         = "text/csv"
-	CsvFileExtensionConst    = ".csv"
-	SpreadsheetTypeCsvConst  = "csv"
-	SpreadsheetTypeXlsxConst = "xlsx"
-	XslxMimeTypeConst        = "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-	XlsxFileExtensionConst   = ".xslx"
+	PostMediaConst          = "media"
+	UserProfilePictureConst = "profile_picture"
+	UserProfileBannerConst  = "profile_banner_picture"
 )
 
 const (
-	PostConst           = "identity_front"
-	ProfilePictureConst = "profile_picture"
-	ProfileBannerConst  = "profile_banner"
+	PostMediaPortugueseConst          = "Mídia da postagem"
+	UserProfilePicturePortugueseConst = "Foto de perfil"
+	UserProfileBannerPortugueseConst  = "Banner do perfil"
 )
+
+var DocumentTypesTranslations = map[string]string{
+	PostMediaConst:          PostMediaPortugueseConst,
+	UserProfilePictureConst: UserProfilePicturePortugueseConst,
+	UserProfileBannerConst:  UserProfileBannerPortugueseConst,
+}
 
 type Document struct {
 	ID            string

@@ -3,14 +3,14 @@ package {{camelCase model}}Handler
 import (
     "github.com/gin-gonic/gin"
 
-	"github.com/em-cash/simulador.em.cash/adapter/http/routes"
-	"github.com/em-cash/simulador.em.cash/adapter/http/routesConstants"
-    "github.com/em-cash/simulador.em.cash/core/domain/customError"
-    "github.com/em-cash/simulador.em.cash/core/domain/helper/constants"
-	"github.com/em-cash/simulador.em.cash/core/port"
-	"github.com/em-cash/simulador.em.cash/infra/database/repository"
-	"github.com/em-cash/simulador.em.cash/core/port/repositories"
-    {{camelCase model}}Usecase "github.com/em-cash/simulador.em.cash/core/usecase/{{camelCase model}}"
+	"github.com/gtkmk/finder_api/adapter/http/routes"
+	"github.com/gtkmk/finder_api/adapter/http/routesConstants"
+    "github.com/gtkmk/finder_api/core/domain/customError"
+    "github.com/gtkmk/finder_api/core/domain/helper/constants"
+	"github.com/gtkmk/finder_api/core/port"
+	"github.com/gtkmk/finder_api/infra/database/repository"
+	"github.com/gtkmk/finder_api/core/port/repositories"
+    {{camelCase model}}Usecase "github.com/gtkmk/finder_api/core/usecase/{{camelCase model}}"
 )
 
 type {{requestType}}{{pascalCase model}}{{pascalCase fileName}}Handler struct {
