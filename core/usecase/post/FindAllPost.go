@@ -29,17 +29,16 @@ func NewFindPostAll(
 ) *FindPostAll {
 	return &FindPostAll{
 		PostDatabase: postDatabase,
+		PostsFilters: postsFilters,
 		CustomError:  customError,
 	}
 }
 
-func (findPostAll *FindPostAll) Execute(postsFilters *filterDomain.PostFilter) ([]map[string]interface{}, error) {
-	findPostAll.PostsFilters = postsFilters
-
+func (findPostAll *FindPostAll) Execute() ([]map[string]interface{}, error) {
 	var err error
 	findPostAll.PostsFilters.OffSet, err = findPostAll.calculateQueryOffset(
-		helper.ConvertToString(postsFilters.Limit),
-		helper.ConvertToString(*postsFilters.Page),
+		helper.ConvertToString(findPostAll.PostsFilters.Limit),
+		helper.ConvertToString(*findPostAll.PostsFilters.Page),
 	)
 
 	if err != nil {

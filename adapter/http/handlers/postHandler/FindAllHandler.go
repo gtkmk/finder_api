@@ -60,7 +60,7 @@ func (findPostAllHandler *FindPostAllHandler) Handle(context *gin.Context) {
 		postsFilters,
 		calculateQueryOffsetSharedMethod,
 		findPostAllHandler.customError,
-	).Execute(postsFilters)
+	).Execute()
 
 	if err != nil {
 		jsonResponse.ThrowError(
