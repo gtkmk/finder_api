@@ -3,6 +3,7 @@ package repository
 import (
 	"github.com/gtkmk/finder_api/core/domain/datetimeDomain"
 	"github.com/gtkmk/finder_api/core/domain/documentDomain"
+	"github.com/gtkmk/finder_api/core/domain/filterDomain"
 	"github.com/gtkmk/finder_api/core/domain/postDomain"
 	"github.com/gtkmk/finder_api/core/port"
 	"github.com/gtkmk/finder_api/core/port/repositories"
@@ -79,7 +80,7 @@ func (postDatabase *PostDatabase) CreatePostMedia(
 			owner_id,
 			mime_type,
 			created_at
-		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
+		) VALUES (?, ?, ?, ?, ?, ?, ?)`
 
 	var statement interface{}
 
@@ -94,4 +95,26 @@ func (postDatabase *PostDatabase) CreatePostMedia(
 		document.MimeType,
 		createdAt,
 	)
+}
+
+func (postDatabase *PostDatabase) FindAllPosts(
+	filter *filterDomain.PostFilter,
+) ([]map[string]interface{}, error) {
+	query := `CALL find_paginated_posts (?, ?, ?, ?, ?, ?)`
+
+	dbProposals, err := postDatabase.connection.Rows(
+		query,
+		filter.LostFound,
+		filter.Neighborhood,
+		filter.Reward,
+		filter.UserId,
+		filter.Limit,
+		filter.OffSet,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return dbProposals, nil
 }

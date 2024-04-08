@@ -96,6 +96,10 @@ const (
 	ErrorGettingFormFileConst                            = "Erro ao obter arquivo do formulário: %s"
 	ErrorWhenGettingFormFileWithoutInterpolationConst    = "Erro ao obter arquivo do formulário."
 	FieldNotInAllowedValuesConst                         = "O valor para %s não é permitido."
+	InvalidPageNumberErrorConst                          = "Número de página inválido."
+	OptionNotRecognizedMessageConst                      = "Opção de '%s' não reconhecida."
+	PostLostFoundStatusNotRecognizedConst                = "Status de achado ou perdido não reconhecido."
+	PostRewardNotRecognizedMessageConst                  = "Opção de recompensa não reconhecida."
 )
 
 const (

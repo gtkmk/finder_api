@@ -2,7 +2,6 @@ package userRequestEntity
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 
 	"github.com/gtkmk/finder_api/core/domain/cpf"
@@ -59,8 +58,6 @@ func SignUpDecodeUserRequest(req *http.Request) (*SignUpUserRequest, error) {
 }
 
 func (signUpUserRequest *SignUpUserRequest) Validate() error {
-	fmt.Print("******************************************************")
-	fmt.Print(signUpUserRequest)
 	cpfValidationError := ValidateCpf(signUpUserRequest.Cpf)
 
 	if cpfValidationError != nil {

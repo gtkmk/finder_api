@@ -21,7 +21,8 @@ const (
 	GetUserRouteConst             = "/user"
 	GetUsersListRouteConst        = "/users"
 
-	PostCreatePostRouteConst = "/post"
+	PostCreatePostRouteConst   = "/post"
+	PostFindAllPostsRouteConst = "/posts"
 )
 
 const (

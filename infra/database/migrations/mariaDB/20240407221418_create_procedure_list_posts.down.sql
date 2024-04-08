@@ -1,0 +1,1 @@
+DROP PROCEDURE IF EXISTS find_paginated_posts;

@@ -1,9 +1,8 @@
 package postUsecase
 
 import (
-	"fmt"
-
 	"github.com/gtkmk/finder_api/core/domain/customError"
+	"github.com/gtkmk/finder_api/core/domain/documentDomain"
 	"github.com/gtkmk/finder_api/core/domain/postDomain"
 	"github.com/gtkmk/finder_api/core/port"
 	"github.com/gtkmk/finder_api/core/port/repositories"
@@ -38,8 +37,6 @@ func NewCreatePost(
 }
 
 func (createPost *CreatePost) Execute() error {
-	fmt.Print("***************************************************************")
-	fmt.Print(createPost.Post)
 	if err := createPost.transaction.SavePoint(CheckPointTransactionNameConst); err != nil {
 		return createPost.ThrowError(err.Error())
 	}
@@ -50,6 +47,13 @@ func (createPost *CreatePost) Execute() error {
 			return rollbackErr
 		}
 		return err
+	}
+
+	if err := createPost.transaction.Commit(); err != nil {
+		if rollbackErr := createPost.rollbackToSavePointAndCommit(); err != nil {
+			return rollbackErr
+		}
+		return createPost.ThrowError(err.Error())
 	}
 
 	return nil
@@ -65,9 +69,8 @@ func (createPost *CreatePost) persistPostAndMedia() error {
 		return createPost.ThrowError(err.Error())
 	}
 
-	if err := createPost.PostDatabase.CreatePostMedia(
-		createPost.Post.Media,
-		fileService.GetFullPath(),
+	if err := createPost.PostDatabase.CreatePost(
+		&createPost.Post,
 	); err != nil {
 		if removeFileErr := fileService.RemoveTempFile(); removeFileErr != nil {
 			return createPost.ThrowError(removeFileErr.Error())
@@ -76,8 +79,11 @@ func (createPost *CreatePost) persistPostAndMedia() error {
 		return createPost.ThrowError(err.Error())
 	}
 
-	if err := createPost.PostDatabase.CreatePost(
-		&createPost.Post,
+	createPost.Post.Media.Type = documentDomain.PostMediaConst
+
+	if err := createPost.PostDatabase.CreatePostMedia(
+		createPost.Post.Media,
+		fileService.GetFullPath(),
 	); err != nil {
 		if removeFileErr := fileService.RemoveTempFile(); removeFileErr != nil {
 			return createPost.ThrowError(removeFileErr.Error())

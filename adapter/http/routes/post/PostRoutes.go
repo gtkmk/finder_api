@@ -15,7 +15,8 @@ import (
 )
 
 const (
-	CreatePost string = "createPost"
+	CreatePost   string = "createPost"
+	FindAllPosts string = "findAllPosts"
 )
 
 type PostRoutes struct {
@@ -50,6 +51,12 @@ func (postRoutes *PostRoutes) Register() {
 		postRoutes.jwt.IsAuthorizedMiddleware(),
 		postRoutes.postHandlers[CreatePost].Handle,
 	)
+
+	postRoutes.GET(
+		routesConstants.PostFindAllPostsRouteConst,
+		postRoutes.jwt.IsAuthorizedMiddleware(),
+		postRoutes.postHandlers[FindAllPosts].Handle,
+	)
 }
 
 func createMapOfUserHandlers(
@@ -62,6 +69,11 @@ func createMapOfUserHandlers(
 
 	return map[string]port.HandlerInterface{
 		CreatePost: postHandler.NewCreatePostHandler(
+			connection,
+			uuid,
+			contextExtractor,
+		),
+		FindAllPosts: postHandler.NewFindPostAllHandler(
 			connection,
 			uuid,
 			contextExtractor,

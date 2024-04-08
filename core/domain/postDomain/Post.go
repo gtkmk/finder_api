@@ -23,6 +23,11 @@ const (
 	CategoryAddConst     = "add"
 )
 
+const (
+	RewardOptionTrueConst  = "1"
+	RewardOptionFalseConst = "0"
+)
+
 var LostAndFoundStatus = []string{
 	FoundConst,
 	LostConst,
