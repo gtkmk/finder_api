@@ -100,6 +100,7 @@ const (
 	OptionNotRecognizedMessageConst                      = "Opção de '%s' não reconhecida."
 	PostLostFoundStatusNotRecognizedConst                = "Status de achado ou perdido não reconhecido."
 	PostRewardNotRecognizedMessageConst                  = "Opção de recompensa não reconhecida."
+	PostNotFoundMessageConst                             = "Postagem não encontrada."
 )
 
 const (

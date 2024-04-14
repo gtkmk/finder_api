@@ -1,8 +1,6 @@
 package postHandler
 
 import (
-	"os"
-
 	"github.com/gin-gonic/gin"
 	"github.com/gtkmk/finder_api/adapter/http/routes"
 	"github.com/gtkmk/finder_api/adapter/http/routesConstants"
@@ -14,12 +12,11 @@ import (
 	"github.com/gtkmk/finder_api/core/port/repositories"
 	postUsecase "github.com/gtkmk/finder_api/core/usecase/post"
 	"github.com/gtkmk/finder_api/infra/database/repository"
-	"github.com/gtkmk/finder_api/infra/envMode"
 	"github.com/gtkmk/finder_api/infra/file"
 	"github.com/gtkmk/finder_api/infra/requestEntity/postRequestEntity"
 )
 
-type PostCreatePostHandler struct {
+type PostEditPostHandler struct {
 	connection       port.ConnectionInterface
 	uuid             port.UuidInterface
 	ContextExtractor port.HttpContextValuesExtractorInterface
@@ -27,12 +24,12 @@ type PostCreatePostHandler struct {
 	port.CustomErrorInterface
 }
 
-func NewCreatePostHandler(
+func NewEditPostHandler(
 	connection port.ConnectionInterface,
 	uuid port.UuidInterface,
 	contextExtractor port.HttpContextValuesExtractorInterface,
 ) port.HandlerInterface {
-	return &PostCreatePostHandler{
+	return &PostEditPostHandler{
 		connection:           connection,
 		uuid:                 uuid,
 		ContextExtractor:     contextExtractor,
@@ -40,7 +37,7 @@ func NewCreatePostHandler(
 	}
 }
 
-func (postCreatePostHandler *PostCreatePostHandler) Handle(context *gin.Context) {
+func (postCreatePostHandler *PostEditPostHandler) Handle(context *gin.Context) {
 	jsonResponse := routes.NewJsonResponse(context, postCreatePostHandler.connection, postCreatePostHandler.uuid)
 
 	if context.ContentType() != "multipart/form-data" {
@@ -60,10 +57,22 @@ func (postCreatePostHandler *PostCreatePostHandler) Handle(context *gin.Context)
 			postCreatePostHandler.ThrowError(extractErr.Error()),
 			routesConstants.InternarServerErrorConst,
 		)
+
 		return
 	}
 
-	post, err := postCreatePostHandler.definePost(context, loggedUserId)
+	postId := context.Query("post-id")
+	if postId == "" {
+		jsonResponse.ThrowError(
+			routesConstants.MessageKeyConst,
+			helper.ErrorBuilder(helper.FieldIsMandatoryConst, "post-id"),
+			routesConstants.InternarServerErrorConst,
+		)
+
+		return
+	}
+
+	post, err := postCreatePostHandler.definePost(context, loggedUserId, postId)
 	if err != nil {
 		jsonResponse.ThrowError(
 			routesConstants.MessageKeyConst,
@@ -85,12 +94,11 @@ func (postCreatePostHandler *PostCreatePostHandler) Handle(context *gin.Context)
 
 	postCreatePostHandler.openTableConnection(transaction)
 
-	if err := postUsecase.NewCreatePost(
+	if err := postUsecase.NewEditPost(
 		postCreatePostHandler.postDatabase,
 		file.NewFileFactory(),
 		*post,
 		transaction,
-		os.Getenv(envMode.TempDirConst),
 	).Execute(); err != nil {
 		jsonResponse.ThrowError(
 			routesConstants.MessageKeyConst,
@@ -100,10 +108,10 @@ func (postCreatePostHandler *PostCreatePostHandler) Handle(context *gin.Context)
 		return
 	}
 
-	jsonResponse.SendJson(routesConstants.MessageKeyConst, success.SuccessfullyCreatedPostConst, routesConstants.CreatedConst)
+	jsonResponse.SendJson(routesConstants.MessageKeyConst, success.SuccessfullyEditedPostConst, routesConstants.CreatedConst)
 }
 
-func (postCreatePostHandler *PostCreatePostHandler) definePost(context *gin.Context, userId string) (
+func (postCreatePostHandler *PostEditPostHandler) definePost(context *gin.Context, userId string, postId string) (
 	decodedPost *postDomain.Post,
 	err error,
 ) {
@@ -117,17 +125,13 @@ func (postCreatePostHandler *PostCreatePostHandler) definePost(context *gin.Cont
 		return nil, postCreatePostHandler.ThrowError(decodeErr.Error())
 	}
 
-	if validateErr := post.Validate(context, false); validateErr != nil {
+	if validateErr := post.Validate(context, true); validateErr != nil {
 		return nil, postCreatePostHandler.ThrowError(validateErr.Error())
 	}
 
-	if iterateErr := post.IterateIntoFiles(context); iterateErr != nil {
-		return nil, postCreatePostHandler.ThrowError(iterateErr.Error())
-	}
-
-	return post.BuildPostObject(nil)
+	return post.BuildPostObject(&postId)
 }
 
-func (postCreatePostHandler *PostCreatePostHandler) openTableConnection(transaction port.ConnectionInterface) {
+func (postCreatePostHandler *PostEditPostHandler) openTableConnection(transaction port.ConnectionInterface) {
 	postCreatePostHandler.postDatabase = repository.NewPostDatabase(transaction)
 }

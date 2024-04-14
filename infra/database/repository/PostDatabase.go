@@ -7,6 +7,7 @@ import (
 	"github.com/gtkmk/finder_api/core/domain/postDomain"
 	"github.com/gtkmk/finder_api/core/port"
 	"github.com/gtkmk/finder_api/core/port/repositories"
+	"github.com/gtkmk/finder_api/infra/database/models"
 )
 
 type PostDatabase struct {
@@ -117,4 +118,69 @@ func (postDatabase *PostDatabase) FindAllPosts(
 	}
 
 	return dbProposals, nil
+}
+
+func (postDatabase *PostDatabase) FindPostByID(id string) (*postDomain.Post, error) {
+	query := `SELECT * FROM post WHERE id = ? AND deleted_at IS NULL`
+
+	var databasePost *models.Post
+
+	if err := postDatabase.connection.Raw(query, &databasePost, id); err != nil {
+		return nil, err
+	}
+
+	if databasePost == nil {
+		return nil, nil
+	}
+
+	post := postDomain.NewPost(
+		databasePost.ID,
+		databasePost.Text,
+		nil,
+		databasePost.Location,
+		databasePost.Reward,
+		databasePost.Privacy,
+		databasePost.SharesCount,
+		databasePost.Category,
+		databasePost.LostFound,
+		databasePost.UserId,
+		&databasePost.CreatedAt.Time,
+		&databasePost.UpdatedAt.Time,
+	)
+
+	return post, nil
+}
+
+func (postDatabase *PostDatabase) EditPost(post *postDomain.Post) error {
+	updatedAt, err := datetimeDomain.CreateNow()
+	if err != nil {
+		return err
+	}
+
+	var dbPost *models.Post
+
+	query := `UPDATE post SET 
+		text = ?,
+		location = ?,
+		reward = ?,
+		lost_found = ?,
+		privacy = ?,
+		updated_at = ?
+	WHERE id = ?`
+
+	if err := postDatabase.connection.Raw(
+		query,
+		&dbPost,
+		post.Text,
+		post.Location,
+		post.Reward,
+		post.LostFound,
+		post.Privacy,
+		updatedAt,
+		post.Id,
+	); err != nil {
+		return err
+	}
+
+	return nil
 }

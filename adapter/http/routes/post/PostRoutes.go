@@ -17,6 +17,7 @@ import (
 const (
 	CreatePost   string = "createPost"
 	FindAllPosts string = "findAllPosts"
+	EditPost     string = "editPost"
 )
 
 type PostRoutes struct {
@@ -57,6 +58,12 @@ func (postRoutes *PostRoutes) Register() {
 		postRoutes.jwt.IsAuthorizedMiddleware(),
 		postRoutes.postHandlers[FindAllPosts].Handle,
 	)
+
+	postRoutes.PATCH(
+		routesConstants.PostEditPostRouteConst,
+		postRoutes.jwt.IsAuthorizedMiddleware(),
+		postRoutes.postHandlers[EditPost].Handle,
+	)
 }
 
 func createMapOfUserHandlers(
@@ -74,6 +81,11 @@ func createMapOfUserHandlers(
 			contextExtractor,
 		),
 		FindAllPosts: postHandler.NewFindPostAllHandler(
+			connection,
+			uuid,
+			contextExtractor,
+		),
+		EditPost: postHandler.NewEditPostHandler(
 			connection,
 			uuid,
 			contextExtractor,

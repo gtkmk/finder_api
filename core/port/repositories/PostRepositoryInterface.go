@@ -10,4 +10,6 @@ type PostRepositoryInterface interface {
 	CreatePost(post *postDomain.Post) error
 	CreatePostMedia(document *documentDomain.Document, documentPath string) error
 	FindAllPosts(filter *filterDomain.PostFilter) ([]map[string]interface{}, error)
+	FindPostByID(id string) (*postDomain.Post, error)
+	EditPost(post *postDomain.Post) error
 }

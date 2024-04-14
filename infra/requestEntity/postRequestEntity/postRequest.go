@@ -175,13 +175,15 @@ func (postRequest *PostRequest) assignNewPostId() {
 	}
 }
 
-func (postRequest *PostRequest) Validate(context *gin.Context) error {
+func (postRequest *PostRequest) Validate(context *gin.Context, edition bool) error {
 	if err := postRequest.validatePostFields(); err != nil {
 		return err
 	}
 
-	if err := postRequest.validateMediaField(context); err != nil {
-		return err
+	if !edition {
+		if err := postRequest.validateMediaField(context); err != nil {
+			return err
+		}
 	}
 
 	return nil
@@ -275,14 +277,18 @@ func translateMimeTypeToDomain(documentType string) string {
 	return documentTypeDomain
 }
 
-func (postRequest *PostRequest) BuildPostObject() (*postDomain.Post, error) {
+func (postRequest *PostRequest) BuildPostObject(postId *string) (*postDomain.Post, error) {
 	dateTime, err := datetimeDomain.CreateNow()
 	if err != nil {
 		return nil, err
 	}
 
+	if postId == nil {
+		postId = &postRequest.PostId
+	}
+
 	return postDomain.NewPost(
-		postRequest.PostId,
+		*postId,
 		postRequest.Text,
 		postRequest.Document,
 		postRequest.Location,

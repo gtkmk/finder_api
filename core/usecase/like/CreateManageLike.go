@@ -8,7 +8,7 @@ import (
 	sharedMethodsInterface "github.com/gtkmk/finder_api/core/port/sharedMethods"
 )
 
-const CheckPointTransactionNameConst = "manageLike"
+const checkPointManageLikeTransactionNameConst = "manageLike"
 
 type CreateManageLike struct {
 	likeDatabase      repositories.LikeRepository
@@ -35,7 +35,7 @@ func NewCreateManageLike(
 }
 
 func (createManageLike *CreateManageLike) Execute() (int, error) {
-	if err := createManageLike.transaction.SavePoint(CheckPointTransactionNameConst); err != nil {
+	if err := createManageLike.transaction.SavePoint(checkPointManageLikeTransactionNameConst); err != nil {
 		return 0, createManageLike.customError.ThrowError(err.Error())
 	}
 
@@ -76,7 +76,7 @@ func (createManageLike *CreateManageLike) manageLike() error {
 }
 
 func (createManageLike *CreateManageLike) rollbackToSavePointAndCommit() error {
-	if transactErr := createManageLike.transaction.RollbackTo(CheckPointTransactionNameConst); transactErr != nil {
+	if transactErr := createManageLike.transaction.RollbackTo(checkPointManageLikeTransactionNameConst); transactErr != nil {
 		return createManageLike.customError.ThrowError(transactErr.Error())
 	}
 

@@ -17,7 +17,7 @@ type CreatePost struct {
 	port.CustomErrorInterface
 }
 
-const CheckPointTransactionNameConst = "createPost"
+const checkPointCreatePostTransactionNameConst = "createPost"
 
 func NewCreatePost(
 	postDatabase repositories.PostRepositoryInterface,
@@ -37,7 +37,7 @@ func NewCreatePost(
 }
 
 func (createPost *CreatePost) Execute() error {
-	if err := createPost.transaction.SavePoint(CheckPointTransactionNameConst); err != nil {
+	if err := createPost.transaction.SavePoint(checkPointCreatePostTransactionNameConst); err != nil {
 		return createPost.ThrowError(err.Error())
 	}
 
@@ -96,7 +96,7 @@ func (createPost *CreatePost) persistPostAndMedia() error {
 }
 
 func (createPost *CreatePost) rollbackToSavePointAndCommit() error {
-	if transactErr := createPost.transaction.RollbackTo(CheckPointTransactionNameConst); transactErr != nil {
+	if transactErr := createPost.transaction.RollbackTo(checkPointCreatePostTransactionNameConst); transactErr != nil {
 		return createPost.ThrowError(transactErr.Error())
 	}
 
