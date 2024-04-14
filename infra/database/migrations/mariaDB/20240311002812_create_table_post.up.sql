@@ -12,5 +12,6 @@ CREATE TABLE IF NOT EXISTS post (
     created_at DATETIME(3) DEFAULT NULL,
     updated_at DATETIME(3) DEFAULT NULL,
     deleted_at DATETIME(3) DEFAULT NULL,
-    PRIMARY KEY (id)
+    PRIMARY KEY (id),
+    CONSTRAINT fk_post_user FOREIGN KEY (user_id) REFERENCES user(id)
 );
