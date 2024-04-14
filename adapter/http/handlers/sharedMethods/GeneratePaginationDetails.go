@@ -96,8 +96,6 @@ func (generatePaginationDetails *GeneratePaginationDetails) buildEmptyPagination
 }
 
 func (generatePaginationDetails *GeneratePaginationDetails) MapDBPostToPaginationDetails(dbPost map[string]interface{}) (map[string]interface{}, error) {
-	fmt.Print("********************************************")
-	fmt.Print(dbPost)
 	postDate, dateErr := datetimeDomain.FormatDateAsTimeReverted(dbPost["created_at"].(string))
 
 	if dateErr != nil {

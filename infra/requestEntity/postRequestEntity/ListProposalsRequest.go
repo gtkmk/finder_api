@@ -129,7 +129,6 @@ func (listPostsRequest *ListPostsRequest) verifyIfReanalysisIsValid(reanalysis *
 }
 
 func (listPostsRequest *ListPostsRequest) ConvertProposalFiltersIntoFilterDomain() *filterDomain.PostFilter {
-	fmt.Print(*listPostsRequest.Page)
 	filters := filterDomain.NewPostFilter(
 		listPostsRequest.Page,
 		listPostsRequest.Neighborhood,

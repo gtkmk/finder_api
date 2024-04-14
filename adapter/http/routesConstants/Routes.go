@@ -23,6 +23,11 @@ const (
 
 	PostCreatePostRouteConst   = "/post"
 	PostFindAllPostsRouteConst = "/posts"
+
+	PostLikeRouteConst = "/like"
+
+	// === Route marker ===
+
 )
 
 const (

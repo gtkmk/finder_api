@@ -9,6 +9,7 @@ import (
 	"os/signal"
 	"time"
 
+	"github.com/gtkmk/finder_api/adapter/http/routes/like"
 	"github.com/gtkmk/finder_api/adapter/http/routes/post"
 	"github.com/gtkmk/finder_api/adapter/http/routes/user"
 	"github.com/gtkmk/finder_api/core/port"
@@ -87,6 +88,14 @@ func (httpServer *HttpServer) registerRutes() {
 	).Register()
 
 	post.NewPostRoutes(
+		httpServer.app,
+		httpServer.connection,
+		httpServer.uuidGenerator,
+		httpServer.passwordEncryptor,
+		notificationService,
+	).Register()
+
+	like.NewLikeRoutes(
 		httpServer.app,
 		httpServer.connection,
 		httpServer.uuidGenerator,
