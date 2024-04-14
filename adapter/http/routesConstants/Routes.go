@@ -29,6 +29,7 @@ const (
 
 	PostCreateCommentRouteConst = "/comment"
 	PatchEditCommentRouteConst  = "/comment"
+	DeleteCommentRouteConst     = "/comment"
 
 	// === Route marker ===
 

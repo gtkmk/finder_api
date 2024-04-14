@@ -7,4 +7,5 @@ const (
 	SuccessfullyCreatedPostConst            = "Publicação criada com sucesso."
 	SuccessfullyEditedPostConst             = "Publicação editada com sucesso."
 	SuccessfullyCreatedCommentConst         = "Comentário criado com sucesso."
+	SuccessfullyDeletedCommentConst         = "Comentário removido com sucesso."
 )

@@ -17,6 +17,7 @@ import (
 const (
 	CreateCommentConst string = "CreateComment"
 	EditCommentConst   string = "EditComment"
+	DeleteCommentConst string = "DeleteComment"
 	// === Route constants marker ===
 )
 
@@ -57,6 +58,11 @@ func (commentRoutes *CommentRoutes) Register() {
 		commentRoutes.jwt.IsAuthorizedMiddleware(),
 		commentRoutes.commentHandlers[EditCommentConst].Handle,
 	)
+	commentRoutes.DELETE(
+		routesConstants.DeleteCommentRouteConst,
+		commentRoutes.jwt.IsAuthorizedMiddleware(),
+		commentRoutes.commentHandlers[DeleteCommentConst].Handle,
+	)
 	// === Register route marker ===
 }
 
@@ -75,6 +81,11 @@ func createMapOfCommentHandlers(
 			contextExtractor,
 		),
 		EditCommentConst: commentHandler.NewUpdateCommentHandler(
+			connection,
+			uuid,
+			contextExtractor,
+		),
+		DeleteCommentConst: commentHandler.NewDeleteCommentHandler(
 			connection,
 			uuid,
 			contextExtractor,

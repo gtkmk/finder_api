@@ -84,10 +84,11 @@ func (commentDatabase *CommentDatabase) EditComment(comment *commentDomain.Comme
 
 	var dbComment *models.Comment
 
-	query := `UPDATE comment SET 
-		text = ?,
-		updated_at = ?
-	WHERE id = ?`
+	query := `
+		UPDATE comment SET 
+			text = ?,
+			updated_at = ?
+		WHERE id = ?`
 
 	if err := commentDatabase.connection.Raw(
 		query,
@@ -100,4 +101,26 @@ func (commentDatabase *CommentDatabase) EditComment(comment *commentDomain.Comme
 	}
 
 	return nil
+}
+
+func (commentDatabase *CommentDatabase) DeleteComment(
+	id string,
+) error {
+	deletedAt, err := datetimeDomain.CreateNow()
+	if err != nil {
+		return err
+	}
+
+	query := `
+		UPDATE comment SET 
+			deleted_at = ?
+		WHERE id = ?`
+
+	var statement interface{}
+	return commentDatabase.connection.Raw(
+		query,
+		statement,
+		deletedAt,
+		id,
+	)
 }
