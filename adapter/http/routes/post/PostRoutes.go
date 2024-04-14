@@ -18,6 +18,7 @@ const (
 	CreatePost   string = "createPost"
 	FindAllPosts string = "findAllPosts"
 	EditPost     string = "editPost"
+	DeletePost   string = "deletePost"
 )
 
 type PostRoutes struct {
@@ -64,6 +65,12 @@ func (postRoutes *PostRoutes) Register() {
 		postRoutes.jwt.IsAuthorizedMiddleware(),
 		postRoutes.postHandlers[EditPost].Handle,
 	)
+
+	postRoutes.DELETE(
+		routesConstants.DeletePostRouteConst,
+		postRoutes.jwt.IsAuthorizedMiddleware(),
+		postRoutes.postHandlers[DeletePost].Handle,
+	)
 }
 
 func createMapOfPostHandlers(
@@ -86,6 +93,11 @@ func createMapOfPostHandlers(
 			contextExtractor,
 		),
 		EditPost: postHandler.NewEditPostHandler(
+			connection,
+			uuid,
+			contextExtractor,
+		),
+		DeletePost: postHandler.NewDeletePostHandler(
 			connection,
 			uuid,
 			contextExtractor,

@@ -20,7 +20,6 @@ type PatchCommentHandler struct {
 	uuid             port.UuidInterface
 	ContextExtractor port.HttpContextValuesExtractorInterface
 	commentDatabase  repositories.CommentRepository
-	postDatabase     repositories.PostRepositoryInterface
 	port.CustomErrorInterface
 }
 
@@ -96,7 +95,6 @@ func (postCreateCommentHandler *PatchCommentHandler) Handle(context *gin.Context
 
 	if err := commentUsecase.NewEditComment(
 		postCreateCommentHandler.commentDatabase,
-		postCreateCommentHandler.postDatabase,
 		*comment,
 		transaction,
 	).Execute(); err != nil {
@@ -134,5 +132,4 @@ func (postCreateCommentHandler *PatchCommentHandler) defineComment(context *gin.
 
 func (postCreateCommentHandler *PatchCommentHandler) openTableConnection(transaction port.ConnectionInterface) {
 	postCreateCommentHandler.commentDatabase = repository.NewCommentDatabase(transaction)
-	postCreateCommentHandler.postDatabase = repository.NewPostDatabase(postCreateCommentHandler.connection)
 }

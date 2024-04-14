@@ -24,6 +24,7 @@ const (
 	PostCreatePostRouteConst   = "/post"
 	PostFindAllPostsRouteConst = "/posts"
 	PostEditPostRouteConst     = "/post"
+	DeletePostRouteConst       = "/post"
 
 	PostLikeRouteConst = "/like"
 

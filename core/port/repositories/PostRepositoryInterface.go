@@ -12,4 +12,5 @@ type PostRepositoryInterface interface {
 	FindAllPosts(filter *filterDomain.PostFilter) ([]map[string]interface{}, error)
 	FindPostByID(id string) (*postDomain.Post, error)
 	EditPost(post *postDomain.Post) error
+	DeletePost(id string) error
 }

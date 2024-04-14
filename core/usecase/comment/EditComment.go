@@ -1,4 +1,4 @@
-package postUsecase
+package commentUsecase
 
 import (
 	"github.com/gtkmk/finder_api/core/domain/commentDomain"
@@ -10,7 +10,6 @@ import (
 
 type EditComment struct {
 	CommentDatabase repositories.CommentRepository
-	PostDatabase    repositories.PostRepositoryInterface
 	Comment         commentDomain.Comment
 	Transaction     port.ConnectionInterface
 	port.CustomErrorInterface
@@ -20,13 +19,11 @@ const checkPointEditCommentTransactionNameConst = "editComment"
 
 func NewEditComment(
 	commentDatabase repositories.CommentRepository,
-	postDatabase repositories.PostRepositoryInterface,
 	comment commentDomain.Comment,
 	transaction port.ConnectionInterface,
 ) *EditComment {
 	return &EditComment{
 		CommentDatabase:      commentDatabase,
-		PostDatabase:         postDatabase,
 		Comment:              comment,
 		Transaction:          transaction,
 		CustomErrorInterface: customError.NewCustomError(),

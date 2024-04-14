@@ -1,4 +1,4 @@
-package commentUsecase
+package postUsecase
 
 import (
 	"github.com/gtkmk/finder_api/core/domain/customError"
@@ -7,33 +7,33 @@ import (
 	"github.com/gtkmk/finder_api/core/port/repositories"
 )
 
-type DeleteComment struct {
-	CommentDatabase repositories.CommentRepository
-	Transaction     port.ConnectionInterface
-	CommentId       string
-	LoggedUserId    string
+type DeletePost struct {
+	PostDatabase repositories.PostRepositoryInterface
+	Transaction  port.ConnectionInterface
+	PostId       string
+	LoggedUserId string
 	port.CustomErrorInterface
 }
 
 const checkPointDeleteCommentTransactionNameConst = "editComment"
 
-func NewDeleteComment(
-	commentDatabase repositories.CommentRepository,
+func NewDeletePost(
+	postDatabase repositories.PostRepositoryInterface,
 	transaction port.ConnectionInterface,
-	commentId string,
+	postId string,
 	loggedUserId string,
-) *DeleteComment {
-	return &DeleteComment{
-		CommentDatabase:      commentDatabase,
+) *DeletePost {
+	return &DeletePost{
+		PostDatabase:         postDatabase,
 		Transaction:          transaction,
-		CommentId:            commentId,
+		PostId:               postId,
 		LoggedUserId:         loggedUserId,
 		CustomErrorInterface: customError.NewCustomError(),
 	}
 }
 
-func (deleteComment *DeleteComment) Execute() error {
-	if err := deleteComment.verifyIfCommentExistsAndCanBeDeleted(); err != nil {
+func (deleteComment *DeletePost) Execute() error {
+	if err := deleteComment.verifyIfPostExistsAndCanBeDeleted(); err != nil {
 		return err
 	}
 
@@ -41,7 +41,7 @@ func (deleteComment *DeleteComment) Execute() error {
 		return deleteComment.ThrowError(err.Error())
 	}
 
-	err := deleteComment.deleteComment()
+	err := deleteComment.deletePost()
 	if err != nil {
 		if rollbackErr := deleteComment.rollbackToSavePointAndCommit(); err != nil {
 			return rollbackErr
@@ -59,27 +59,27 @@ func (deleteComment *DeleteComment) Execute() error {
 	return nil
 }
 
-func (deleteComment *DeleteComment) verifyIfCommentExistsAndCanBeDeleted() error {
-	comment, err := deleteComment.CommentDatabase.FindCommentByID(deleteComment.CommentId)
+func (deleteComment *DeletePost) verifyIfPostExistsAndCanBeDeleted() error {
+	post, err := deleteComment.PostDatabase.FindPostByID(deleteComment.PostId)
 
 	if err != nil {
 		return deleteComment.ThrowError(err.Error())
 	}
 
-	if comment == nil {
-		return deleteComment.ThrowError(helper.CommentNotFoundMessageConst)
+	if post == nil {
+		return deleteComment.ThrowError(helper.PostNotFoundMessageConst)
 	}
 
-	if comment.UserId != deleteComment.LoggedUserId {
+	if post.UserId != deleteComment.LoggedUserId {
 		return deleteComment.ThrowError(helper.UnauthorizedConst)
 	}
 
 	return nil
 }
 
-func (deleteComment *DeleteComment) deleteComment() error {
-	if err := deleteComment.CommentDatabase.DeleteComment(
-		deleteComment.CommentId,
+func (deleteComment *DeletePost) deletePost() error {
+	if err := deleteComment.PostDatabase.DeletePost(
+		deleteComment.PostId,
 	); err != nil {
 		return deleteComment.ThrowError(err.Error())
 	}
@@ -87,7 +87,7 @@ func (deleteComment *DeleteComment) deleteComment() error {
 	return nil
 }
 
-func (deleteComment *DeleteComment) rollbackToSavePointAndCommit() error {
+func (deleteComment *DeletePost) rollbackToSavePointAndCommit() error {
 	if transactErr := deleteComment.Transaction.RollbackTo(checkPointDeleteCommentTransactionNameConst); transactErr != nil {
 		return deleteComment.ThrowError(transactErr.Error())
 	}

@@ -184,3 +184,23 @@ func (postDatabase *PostDatabase) EditPost(post *postDomain.Post) error {
 
 	return nil
 }
+
+func (postDatabase *PostDatabase) DeletePost(id string) error {
+	deletedAt, err := datetimeDomain.CreateNow()
+	if err != nil {
+		return err
+	}
+
+	query := `
+		UPDATE post SET 
+			deleted_at = ?
+		WHERE id = ?`
+
+	var statement interface{}
+	return postDatabase.connection.Raw(
+		query,
+		statement,
+		deletedAt,
+		id,
+	)
+}
