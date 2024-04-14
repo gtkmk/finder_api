@@ -4,7 +4,7 @@ import (
 	"database/sql"
 )
 
-type Post struct {
+type Comment struct {
 	ID        string
 	Text      string
 	PostId    string

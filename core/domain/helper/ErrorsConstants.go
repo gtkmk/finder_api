@@ -101,6 +101,7 @@ const (
 	PostLostFoundStatusNotRecognizedConst                = "Status de achado ou perdido não reconhecido."
 	PostRewardNotRecognizedMessageConst                  = "Opção de recompensa não reconhecida."
 	PostNotFoundMessageConst                             = "Postagem não encontrada."
+	CommentNotFoundMessageConst                          = "Comentário não encontrado."
 )
 
 const (

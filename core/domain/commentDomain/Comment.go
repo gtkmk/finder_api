@@ -1,4 +1,4 @@
-package commentdomain
+package commentDomain
 
 import (
 	"time"

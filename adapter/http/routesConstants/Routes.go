@@ -27,6 +27,9 @@ const (
 
 	PostLikeRouteConst = "/like"
 
+	PostCreateCommentRouteConst = "/comment"
+	PatchEditCommentRouteConst  = "/comment"
+
 	// === Route marker ===
 
 )

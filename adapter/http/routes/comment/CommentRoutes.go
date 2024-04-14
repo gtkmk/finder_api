@@ -1,9 +1,9 @@
-package post
+package comment
 
 import (
 	"os"
 
-	"github.com/gtkmk/finder_api/adapter/http/handlers/postHandler"
+	"github.com/gtkmk/finder_api/adapter/http/handlers/commentHandler"
 	"github.com/gtkmk/finder_api/adapter/http/middleware"
 	"github.com/gtkmk/finder_api/adapter/http/routesConstants"
 	"github.com/gtkmk/finder_api/core/domain/jwtAuth"
@@ -15,18 +15,18 @@ import (
 )
 
 const (
-	CreatePost   string = "createPost"
-	FindAllPosts string = "findAllPosts"
-	EditPost     string = "editPost"
+	CreateCommentConst string = "CreateComment"
+	EditCommentConst   string = "EditComment"
+	// === Route constants marker ===
 )
 
-type PostRoutes struct {
+type CommentRoutes struct {
 	*gin.Engine
-	postHandlers map[string]port.HandlerInterface
-	jwt          *middleware.IsAuthorized
+	commentHandlers map[string]port.HandlerInterface
+	jwt             *middleware.IsAuthorized
 }
 
-func NewPostRoutes(
+func NewCommentRoutes(
 	app *gin.Engine,
 	connection port.ConnectionInterface,
 	uuid port.UuidInterface,
@@ -35,9 +35,9 @@ func NewPostRoutes(
 ) port.RoutesInterface {
 	jwt := jwtAuth.NewjwtAuth(os.Getenv(envMode.JwtSecretConst))
 
-	return &PostRoutes{
+	return &CommentRoutes{
 		app,
-		createMapOfPostHandlers(connection, notificationService, uuid, passwordEncryption),
+		createMapOfCommentHandlers(connection, notificationService, uuid, passwordEncryption),
 		middleware.NewIsAuthorized(
 			jwt,
 			connection,
@@ -46,27 +46,21 @@ func NewPostRoutes(
 	}
 }
 
-func (postRoutes *PostRoutes) Register() {
-	postRoutes.POST(
-		routesConstants.PostCreatePostRouteConst,
-		postRoutes.jwt.IsAuthorizedMiddleware(),
-		postRoutes.postHandlers[CreatePost].Handle,
+func (commentRoutes *CommentRoutes) Register() {
+	commentRoutes.POST(
+		routesConstants.PostCreateCommentRouteConst,
+		commentRoutes.jwt.IsAuthorizedMiddleware(),
+		commentRoutes.commentHandlers[CreateCommentConst].Handle,
 	)
-
-	postRoutes.GET(
-		routesConstants.PostFindAllPostsRouteConst,
-		postRoutes.jwt.IsAuthorizedMiddleware(),
-		postRoutes.postHandlers[FindAllPosts].Handle,
+	commentRoutes.PATCH(
+		routesConstants.PatchEditCommentRouteConst,
+		commentRoutes.jwt.IsAuthorizedMiddleware(),
+		commentRoutes.commentHandlers[EditCommentConst].Handle,
 	)
-
-	postRoutes.PATCH(
-		routesConstants.PostEditPostRouteConst,
-		postRoutes.jwt.IsAuthorizedMiddleware(),
-		postRoutes.postHandlers[EditPost].Handle,
-	)
+	// === Register route marker ===
 }
 
-func createMapOfPostHandlers(
+func createMapOfCommentHandlers(
 	connection port.ConnectionInterface,
 	notificationService port.NotificationInterface,
 	uuid port.UuidInterface,
@@ -75,20 +69,16 @@ func createMapOfPostHandlers(
 	contextExtractor := httpContextValuesExtractor.NewHttpContextValuesExtractor()
 
 	return map[string]port.HandlerInterface{
-		CreatePost: postHandler.NewCreatePostHandler(
+		CreateCommentConst: commentHandler.NewCreateCommentHandler(
 			connection,
 			uuid,
 			contextExtractor,
 		),
-		FindAllPosts: postHandler.NewFindPostAllHandler(
+		EditCommentConst: commentHandler.NewUpdateCommentHandler(
 			connection,
 			uuid,
 			contextExtractor,
 		),
-		EditPost: postHandler.NewEditPostHandler(
-			connection,
-			uuid,
-			contextExtractor,
-		),
+		// === Register handler marker ===
 	}
 }

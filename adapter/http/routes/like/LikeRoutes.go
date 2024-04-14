@@ -36,7 +36,7 @@ func NewLikeRoutes(
 
 	return &LikeRoutes{
 		app,
-		createMapOfUserHandlers(connection, notificationService, uuid, passwordEncryption),
+		createMapOfLikeHandlers(connection, notificationService, uuid, passwordEncryption),
 		middleware.NewIsAuthorized(
 			jwt,
 			connection,
@@ -54,7 +54,7 @@ func (likeRoutes *LikeRoutes) Register() {
 	// === Register route marker ===
 }
 
-func createMapOfUserHandlers(
+func createMapOfLikeHandlers(
 	connection port.ConnectionInterface,
 	notificationService port.NotificationInterface,
 	uuid port.UuidInterface,
