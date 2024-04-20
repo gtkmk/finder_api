@@ -1,13 +1,12 @@
 package envMode
 
 const (
-	ApplicationDomainConst     = "APPLICATION_DOMAIN"
+	ApplicationDomainConst     = "FRONT_DOMAIN"
 	ProdApplicationDomainConst = "PROD_APPLICATION_DOMAIN"
 
 	TempDirConst   = "TEMP_DIR"
-	FrontUrlConst  = "PORTAL_URL"
+	FrontUrlConst  = "FRONT_URL"
 	JwtSecretConst = "JWT_SECRET"
-	PortalUrlConst = "PORTAL_URL"
 
 	DataBaseUsernameConst = "DB_USERNAME"
 	DataBasePasswordConst = "DB_PASSWORD"
