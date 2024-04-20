@@ -25,6 +25,8 @@ BEGIN
         usr_doc.path AS post_author_avatar,
         usr_doc.type AS post_author_avatar_type,
         usr_doc.mime_type AS post_author_avatar_mime_type,
+        (SELECT COUNT(*) FROM comment WHERE comment.post_id = post.id) AS comments, 
+        (SELECT COUNT(*) FROM interaction_likes WHERE interaction_likes.like_type = "post" AND interaction_likes.post_id = post.id) AS likes,
         COUNT(*) OVER() AS total_records
     FROM post
         INNER JOIN user usr ON post.user_id = usr.id
