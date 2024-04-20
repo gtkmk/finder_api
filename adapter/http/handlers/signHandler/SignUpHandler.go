@@ -99,11 +99,6 @@ func (signUpHandler *SignUpHandler) Handle(context *gin.Context) {
 		return
 	}
 
-	if err != nil {
-		jsonResponse.ThrowError(routesConstants.MessageKeyConst, signUpHandler.CustomError.ThrowError(err.Error()), routesConstants.BadRequestConst)
-		return
-	}
-
 	jsonResponse.SendJson(routesConstants.MessageKeyConst, "Usuário criado com sucesso", routesConstants.StatusOk)
 }
 

@@ -2,7 +2,6 @@ package signHandler
 
 import (
 	"os"
-	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/gtkmk/finder_api/adapter/http/routes"
@@ -85,19 +84,7 @@ func (signInHandler *SignInHandler) openTableConnection() {
 
 func (signInHandler *SignInHandler) writeCookie(context *gin.Context, token string) {
 	context.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
-
-	signInHandler.setDynamicCookie(context, token)
-}
-
-func (signInHandler *SignInHandler) setDynamicCookie(context *gin.Context, token string) {
-	const BrTopLevelDomainConst = "production-domain.com.br"
 	domain := os.Getenv(envMode.ApplicationDomainConst)
-	host := context.Request.Header.Get("Referer")
-
-	if strings.Contains(host, BrTopLevelDomainConst) {
-		domain = os.Getenv(envMode.ProdApplicationDomainConst)
-	}
-
 	context.SetCookie(
 		"token",
 		token,
