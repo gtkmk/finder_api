@@ -10,6 +10,7 @@ BEGIN
     SET @query = CONCAT('
     SELECT DISTINCT
         post.id AS post_id,
+        post.text AS text,
         post.location AS post_location,
         post.category AS post_category,
         post.reward AS post_reward,

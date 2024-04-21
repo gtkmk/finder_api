@@ -10,4 +10,5 @@ type FileInterface interface {
 	GetFullPath() string
 	RemoveTempFile() error
 	DownloadFile() ([]byte, error)
+	FileToBase64(filePath string) (string, error)
 }

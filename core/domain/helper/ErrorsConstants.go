@@ -102,6 +102,7 @@ const (
 	PostRewardNotRecognizedMessageConst                  = "Opção de recompensa não reconhecida."
 	PostNotFoundMessageConst                             = "Postagem não encontrada."
 	CommentNotFoundMessageConst                          = "Comentário não encontrado."
+	ErrorReadingFileConst                                = "Erro ao obter arquivo: %s"
 )
 
 const (

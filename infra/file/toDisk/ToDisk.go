@@ -3,11 +3,13 @@ package toDisk
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/gtkmk/finder_api/core/port"
-	"github.com/gtkmk/finder_api/infra/envMode"
 	"io"
 	"mime/multipart"
 	"path/filepath"
+
+	"github.com/gtkmk/finder_api/core/domain/helper"
+	"github.com/gtkmk/finder_api/core/port"
+	"github.com/gtkmk/finder_api/infra/envMode"
 
 	"os"
 )
@@ -116,4 +118,17 @@ func (toDisk *ToDisk) RemoveTempFile() error {
 
 func (toDisk *ToDisk) DownloadFile() ([]byte, error) {
 	return os.ReadFile(toDisk.name)
+}
+
+func (toDisk *ToDisk) FileToBase64(filePath string) (string, error) {
+	fileData, err := os.ReadFile(filePath)
+	if err != nil {
+		return "", helper.ErrorBuilder(
+			helper.ErrorReadingFileConst,
+			err,
+		)
+	}
+
+	base64Data := base64.StdEncoding.EncodeToString(fileData)
+	return base64Data, nil
 }

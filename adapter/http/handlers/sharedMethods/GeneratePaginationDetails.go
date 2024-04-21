@@ -106,6 +106,7 @@ func (generatePaginationDetails *GeneratePaginationDetails) MapDBPostToPaginatio
 		"post_id":            dbPost["post_id"].(string),
 		"post_author":        dbPost["post_author"].(string),
 		"post_author_avatar": dbPost["post_author_avatar"].(string),
+		"text":               dbPost["text"].(string),
 		"created_at":         postDate,
 		"post_location":      dbPost["post_location"],
 		"post_media":         dbPost["post_media"].(string),

@@ -33,7 +33,7 @@ const (
 	DeleteCommentRouteConst     = "/comment"
 
 	// === Route marker ===
-
+	FindDocumentBase64RouteConst = "/document/imageBase64"
 )
 
 const (
