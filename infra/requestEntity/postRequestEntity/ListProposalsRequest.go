@@ -43,14 +43,14 @@ func NewListPostsRequest(
 	uuid port.UuidInterface,
 	checkForSqlInjection sharedMethods.CheckForSqlInjectionInterface,
 ) (*ListPostsRequest, error) {
-	editProposalVehicleRequest := &ListPostsRequest{
+	listPostsRequest := &ListPostsRequest{
 		checkForSqlInjection: checkForSqlInjection,
 	}
-	if err := context.ShouldBind(editProposalVehicleRequest); err != nil {
+	if err := context.ShouldBind(listPostsRequest); err != nil {
 		return nil, err
 	}
 
-	return editProposalVehicleRequest, nil
+	return listPostsRequest, nil
 }
 
 func (listPostsRequest *ListPostsRequest) ValidatePostsFilterFields(context *gin.Context) error {

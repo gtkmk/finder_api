@@ -28,12 +28,14 @@ const (
 
 	PostLikeRouteConst = "/like"
 
-	PostCreateCommentRouteConst = "/comment"
-	PatchEditCommentRouteConst  = "/comment"
-	DeleteCommentRouteConst     = "/comment"
+	PostCreateCommentRouteConst   = "/comment"
+	PatchEditCommentRouteConst    = "/comment"
+	DeleteCommentRouteConst       = "/comment"
+	FindFindAllCommentsRouteConst = "/comments"
+
+	FindDocumentBase64RouteConst = "/document/imageBase64"
 
 	// === Route marker ===
-	FindDocumentBase64RouteConst = "/document/imageBase64"
 )
 
 const (

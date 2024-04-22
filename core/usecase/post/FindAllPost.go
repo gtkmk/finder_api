@@ -1,8 +1,6 @@
 package postUsecase
 
 import (
-	"strconv"
-
 	"github.com/gtkmk/finder_api/core/domain/filterDomain"
 	"github.com/gtkmk/finder_api/core/domain/helper"
 	"github.com/gtkmk/finder_api/core/port"
@@ -28,15 +26,16 @@ func NewFindPostAll(
 	customError port.CustomErrorInterface,
 ) *FindPostAll {
 	return &FindPostAll{
-		PostDatabase: postDatabase,
-		PostsFilters: postsFilters,
-		CustomError:  customError,
+		PostDatabase:         postDatabase,
+		PostsFilters:         postsFilters,
+		CalculateQueryOffset: calculateQueryOffset,
+		CustomError:          customError,
 	}
 }
 
 func (findPostAll *FindPostAll) Execute() ([]map[string]interface{}, error) {
 	var err error
-	findPostAll.PostsFilters.OffSet, err = findPostAll.calculateQueryOffset(
+	findPostAll.PostsFilters.OffSet, err = findPostAll.CalculateQueryOffset.CalculateQueryOffset(
 		helper.ConvertToString(findPostAll.PostsFilters.Limit),
 		helper.ConvertToString(*findPostAll.PostsFilters.Page),
 	)
@@ -48,25 +47,4 @@ func (findPostAll *FindPostAll) Execute() ([]map[string]interface{}, error) {
 	return findPostAll.PostDatabase.FindAllPosts(
 		findPostAll.PostsFilters,
 	)
-}
-
-func (findPostAll *FindPostAll) calculateQueryOffset(limit string, page string) (*int64, error) {
-	if page == "" {
-		return nil, nil
-	}
-
-	intLimit, err := strconv.Atoi(limit)
-
-	if err != nil {
-		return nil, err
-	}
-
-	intPage, _ := strconv.Atoi(page)
-
-	if err != nil {
-		return nil, err
-	}
-
-	offset := int64(intLimit * (intPage - 1))
-	return &offset, nil
 }

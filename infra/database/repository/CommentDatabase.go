@@ -124,3 +124,68 @@ func (commentDatabase *CommentDatabase) DeleteComment(
 		id,
 	)
 }
+
+func (commentDatabase *CommentDatabase) FindAllComments(postId string, offset int64, limit int64) ([]map[string]interface{}, error) {
+	query := `
+		SELECT 
+			comment.id AS comment_id,
+			comment.text AS text,
+			comment.created_at AS created_at,
+			comment.updated_at AS updated_at,
+			user.name AS author_name,
+			user.user_name AS author_username,
+			document.type AS comment_author_avatar_type,
+			document.path AS comment_author_avatar,
+			document.mime_type AS comment_author_avatar_mime_type,
+			COALESCE(likes.likes_count, 0) AS likes,
+			total_records.total_count AS total_records
+		FROM
+			comment
+		INNER JOIN 
+			user ON comment.user_id = user.id
+		LEFT JOIN 
+			document ON document.owner_id = user.id AND document.type = 'profile_picture'
+		LEFT JOIN (
+			SELECT 
+				comment_id,
+				COUNT(*) AS likes_count
+			FROM 
+				interaction_likes
+			WHERE 
+				like_type = 'comment'
+			GROUP BY 
+				comment_id
+		) AS likes ON likes.comment_id = comment.id
+		CROSS JOIN (
+			SELECT 
+				COUNT(*) AS total_count
+			FROM 
+				comment
+			WHERE 
+				post_id = ?
+		) AS total_records
+		WHERE 
+			comment.post_id = ?
+		ORDER BY 
+			comment.created_at DESC
+		LIMIT 
+			?
+		OFFSET 
+			?
+		;
+	`
+
+	dbComments, err := commentDatabase.connection.Rows(
+		query,
+		postId,
+		postId,
+		limit,
+		offset,
+	)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return dbComments, nil
+}

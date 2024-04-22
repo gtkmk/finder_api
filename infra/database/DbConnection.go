@@ -3,14 +3,15 @@ package database
 import (
 	"database/sql"
 	"fmt"
+	"log"
+	"os"
+	"time"
+
 	"github.com/gtkmk/finder_api/core/domain/datetimeDomain"
 	"github.com/gtkmk/finder_api/core/domain/helper"
 	"github.com/gtkmk/finder_api/core/port"
 	"github.com/gtkmk/finder_api/infra/envMode"
 	"gorm.io/gorm"
-	"log"
-	"os"
-	"time"
 )
 
 type DBConnection struct {

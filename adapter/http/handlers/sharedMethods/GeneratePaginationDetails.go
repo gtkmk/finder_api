@@ -2,6 +2,7 @@ package sharedMethods
 
 import (
 	"fmt"
+	"time"
 
 	"github.com/gtkmk/finder_api/core/domain/datetimeDomain"
 	"github.com/gtkmk/finder_api/core/domain/helper"
@@ -117,4 +118,44 @@ func (generatePaginationDetails *GeneratePaginationDetails) MapDBPostToPaginatio
 		"post_reward":        dbPost["post_reward"].(int64) > 0,
 		"post_lostFound":     dbPost["post_lost_found"].(string),
 	}, nil
+}
+
+func (generatePaginationDetails *GeneratePaginationDetails) MapDBCommentsToPaginationDetails(dbComments map[string]interface{}) (map[string]interface{}, error) {
+	creationDate, updateDate, dateErr := generatePaginationDetails.formatDates(
+		dbComments["created_at"].(string),
+		dbComments["updated_at"],
+	)
+
+	if dateErr != nil {
+		return nil, generatePaginationDetails.customError.ThrowError(dateErr.Error())
+	}
+
+	return map[string]interface{}{
+		"comment_id":            dbComments["comment_id"].(string),
+		"author_name":           dbComments["author_name"].(string),
+		"author_username":       dbComments["author_username"].(string),
+		"comment_author_avatar": dbComments["comment_author_avatar"].(string),
+		"text":                  dbComments["text"].(string),
+		"created_at":            creationDate,
+		"updated_at":            updateDate,
+		"likes":                 dbComments["likes"].(int64),
+	}, nil
+}
+
+func (generatePaginationDetails *GeneratePaginationDetails) formatDates(createdDateStr string, updatedDateInterface interface{}) (time.Time, time.Time, error) {
+	creationDate, creationErr := datetimeDomain.FormatDateAsTimeReverted(createdDateStr)
+	if creationErr != nil {
+		return time.Time{}, time.Time{}, creationErr
+	}
+
+	if updatedDateInterface != nil {
+		updateDate, updateErr := datetimeDomain.FormatDateAsTimeReverted(updatedDateInterface.(string))
+		if updateErr != nil {
+			return time.Time{}, time.Time{}, updateErr
+		}
+
+		return creationDate, updateDate, nil
+	}
+
+	return creationDate, time.Time{}, nil
 }

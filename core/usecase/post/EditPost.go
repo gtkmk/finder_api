@@ -62,17 +62,17 @@ func (editPost *EditPost) Execute() error {
 }
 
 func (editPost *EditPost) verifyIfPostExists() error {
-	proposal, err := editPost.PostDatabase.FindPostByID(editPost.Post.Id)
+	post, err := editPost.PostDatabase.FindPostByID(editPost.Post.Id)
 
 	if err != nil {
 		return editPost.ThrowError(err.Error())
 	}
 
-	if proposal == nil {
+	if post == nil {
 		return editPost.ThrowError(helper.PostNotFoundMessageConst)
 	}
 
-	editPost.FoundPost = proposal
+	editPost.FoundPost = post
 
 	return nil
 }

@@ -19,6 +19,7 @@ const (
 	EditCommentConst   string = "EditComment"
 	DeleteCommentConst string = "DeleteComment"
 	// === Route constants marker ===
+	FindCommentFindAllConst string = "FindComment"
 )
 
 type CommentRoutes struct {
@@ -63,6 +64,12 @@ func (commentRoutes *CommentRoutes) Register() {
 		commentRoutes.jwt.IsAuthorizedMiddleware(),
 		commentRoutes.commentHandlers[DeleteCommentConst].Handle,
 	)
+	commentRoutes.GET(
+		routesConstants.FindFindAllCommentsRouteConst,
+		commentRoutes.jwt.IsAuthorizedMiddleware(),
+		commentRoutes.commentHandlers[FindCommentFindAllConst].Handle,
+	)
+
 	// === Register route marker ===
 }
 
@@ -89,6 +96,10 @@ func createMapOfCommentHandlers(
 			connection,
 			uuid,
 			contextExtractor,
+		),
+		FindCommentFindAllConst: commentHandler.NewFindAllCommentsHandler(
+			connection,
+			uuid,
 		),
 		// === Register handler marker ===
 	}
