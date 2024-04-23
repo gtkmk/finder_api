@@ -30,18 +30,25 @@ const (
 )
 
 type LikeRequest struct {
-	uuid      port.UuidInterface
-	LikeType  string  `form:"like_type" json:"like_type"`
-	PostId    *string `form:"post_id" json:"post_id"`
-	CommentId *string `form:"comment_id" json:"comment_id"`
-	UserId    string
-	Like      *likeDomain.Like
+	uuid        port.UuidInterface
+	LikeType    string  `form:"like_type" json:"like_type"`
+	PostId      *string `form:"post_id" json:"post_id"`
+	CommentId   *string `form:"comment_id" json:"comment_id"`
+	UserId      string
+	Like        *likeDomain.Like
+	customError port.CustomErrorInterface
 }
 
-func NewLikeRequest(context *gin.Context, uuid port.UuidInterface, userId string) (*LikeRequest, error) {
+func NewLikeRequest(
+	context *gin.Context,
+	uuid port.UuidInterface,
+	userId string,
+	customError port.CustomErrorInterface,
+) (*LikeRequest, error) {
 	likeRequest := &LikeRequest{
-		uuid:   uuid,
-		UserId: userId,
+		uuid:        uuid,
+		UserId:      userId,
+		customError: customError,
 	}
 
 	if err := context.ShouldBind(likeRequest); err != nil {
@@ -61,10 +68,14 @@ func (likeRequest *LikeRequest) Validate(context *gin.Context) error {
 	}
 
 	if likeRequest.PostId == nil && likeRequest.CommentId == nil {
-		return helper.ErrorBuilder(helper.InformFieldConst, PostOrCommentFieldConst)
+		return likeRequest.customError.ThrowError(helper.InformFieldConst, PostOrCommentFieldConst)
 	}
 
 	if likeRequest.PostId == nil {
+		if likeRequest.LikeType != likeDomain.CommentTypeConst {
+			return likeRequest.customError.ThrowError(helper.InvalidLikeTypeConst)
+		}
+
 		if err := requestEntityFieldsValidation.IsValidUUID(
 			CommentFieldConst,
 			*likeRequest.CommentId,
@@ -74,12 +85,20 @@ func (likeRequest *LikeRequest) Validate(context *gin.Context) error {
 	}
 
 	if likeRequest.CommentId == nil {
+		if likeRequest.LikeType != likeDomain.PostTypeConst {
+			return likeRequest.customError.ThrowError(helper.InvalidLikeTypeConst)
+		}
+
 		if err := requestEntityFieldsValidation.IsValidUUID(
 			PostFieldConst,
 			*likeRequest.PostId,
 		); err != nil {
 			return err
 		}
+	}
+
+	if likeRequest.CommentId != nil && likeRequest.PostId != nil {
+		return likeRequest.customError.ThrowError(helper.InvalidLikeRequestConst)
 	}
 
 	return nil
@@ -91,8 +110,6 @@ func (likeRequest *LikeRequest) BuildLikeObject() (*likeDomain.Like, error) {
 		return nil, err
 	}
 
-	likeRequest.normalizeLikeRequestData()
-
 	return likeDomain.NewLike(
 		likeRequest.uuid.GenerateUuid(),
 		likeRequest.LikeType,
@@ -101,14 +118,4 @@ func (likeRequest *LikeRequest) BuildLikeObject() (*likeDomain.Like, error) {
 		likeRequest.UserId,
 		&dateTime,
 	), nil
-}
-
-func (likeRequest *LikeRequest) normalizeLikeRequestData() {
-	if *likeRequest.PostId == "" {
-		likeRequest.PostId = nil
-	}
-
-	if *likeRequest.CommentId == "" {
-		likeRequest.CommentId = nil
-	}
 }

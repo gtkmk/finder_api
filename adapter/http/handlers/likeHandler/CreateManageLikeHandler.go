@@ -105,6 +105,7 @@ func (createManageLikeHandler *CreateManageLikeHandler) defineLike(context *gin.
 		context,
 		createManageLikeHandler.uuid,
 		userId,
+		createManageLikeHandler.customError,
 	)
 
 	if decodeErr != nil {

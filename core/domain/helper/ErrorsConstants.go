@@ -54,7 +54,6 @@ const (
 	UserAlreadyRegisteredWithEmailConst                  = "Já existe um usuário cadastrado com esse e-mail."
 	ContentTypeErrorConst                                = "Content-Type da requisição precisa ser multipart/form-data"
 	NoRecordsFoundConst                                  = "Nenhum registro encontrado."
-	InsufficientDateToCreateSpreadsheetConst             = "Dados insuficientes para criação do arquivo."
 	InvalidEmailFormatConst                              = "O e-mail possui um formato inválido."
 	EmailCannotBeEmptyConst                              = "E-mail não pode ser vazio."
 	EmailTooLongConst                                    = "E-mail não pode ter mais de 50 caracteres."
@@ -103,6 +102,8 @@ const (
 	PostNotFoundMessageConst                             = "Postagem não encontrada."
 	CommentNotFoundMessageConst                          = "Comentário não encontrado."
 	ErrorReadingFileConst                                = "Erro ao obter arquivo: %s"
+	InvalidLikeTypeConst                                 = "Tipo de like inválido para o post ou o comentário."
+	InvalidLikeRequestConst                              = "Requisição de like inválida. Definir destino do like, post ou comentário."
 )
 
 const (

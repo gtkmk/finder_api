@@ -32,7 +32,13 @@ func (likeDatabase *LikeDatabase) ConfirmExistingLike(likeInfo *likeDomain.Like)
 
 	var databaseLike *models.Like
 
-	if err := likeDatabase.connection.Raw(query, &databaseLike, likeInfo.LikeType, likeInfo.PostId, likeInfo.CommentId); err != nil {
+	if err := likeDatabase.connection.Raw(
+		query,
+		&databaseLike,
+		likeInfo.LikeType,
+		likeInfo.PostId,
+		likeInfo.CommentId,
+	); err != nil {
 		return false, nil, err
 	}
 
