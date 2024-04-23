@@ -32,7 +32,7 @@ BEGIN
     FROM post
         INNER JOIN user usr ON post.user_id = usr.id
         INNER JOIN document doc ON post.id = doc.post_id
-        INNER JOIN document usr_doc ON usr.id = doc.owner_id
+        LEFT JOIN document usr_doc ON usr.id = usr_doc.owner_id AND usr_doc.type = "profile_picture"
     WHERE post.deleted_at IS NULL');
 
     IF lost_found IS NOT NULL THEN
