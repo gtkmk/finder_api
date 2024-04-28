@@ -5,6 +5,7 @@ const (
 	ProdApplicationDomainConst = "PROD_APPLICATION_DOMAIN"
 
 	TempDirConst   = "TEMP_DIR"
+	StaticDirConst = "STATIC_DIR"
 	FrontUrlConst  = "FRONT_URL"
 	JwtSecretConst = "JWT_SECRET"
 

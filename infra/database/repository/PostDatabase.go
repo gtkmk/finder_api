@@ -2,7 +2,6 @@ package repository
 
 import (
 	"github.com/gtkmk/finder_api/core/domain/datetimeDomain"
-	"github.com/gtkmk/finder_api/core/domain/documentDomain"
 	"github.com/gtkmk/finder_api/core/domain/filterDomain"
 	"github.com/gtkmk/finder_api/core/domain/postDomain"
 	"github.com/gtkmk/finder_api/core/port"
@@ -61,41 +60,6 @@ func (postDatabase *PostDatabase) CreatePost(post *postDomain.Post) error {
 	}
 
 	return nil
-}
-
-func (postDatabase *PostDatabase) CreatePostMedia(
-	document *documentDomain.Document,
-	documentPath string,
-) error {
-	createdAt, err := datetimeDomain.CreateNow()
-	if err != nil {
-		return err
-	}
-
-	query := `
-		INSERT INTO document (
-			id,
-			type,
-			path,
-			post_id,
-			owner_id,
-			mime_type,
-			created_at
-		) VALUES (?, ?, ?, ?, ?, ?, ?)`
-
-	var statement interface{}
-
-	return postDatabase.connection.Raw(
-		query,
-		&statement,
-		document.ID,
-		document.Type,
-		documentPath,
-		document.PostId,
-		document.OwnerId,
-		document.MimeType,
-		createdAt,
-	)
 }
 
 func (postDatabase *PostDatabase) FindAllPosts(

@@ -24,6 +24,7 @@ type PostCreatePostHandler struct {
 	uuid             port.UuidInterface
 	ContextExtractor port.HttpContextValuesExtractorInterface
 	postDatabase     repositories.PostRepositoryInterface
+	documentDatabase repositories.DocumentRepository
 	port.CustomErrorInterface
 }
 
@@ -87,6 +88,7 @@ func (postCreatePostHandler *PostCreatePostHandler) Handle(context *gin.Context)
 
 	if err := postUsecase.NewCreatePost(
 		postCreatePostHandler.postDatabase,
+		postCreatePostHandler.documentDatabase,
 		file.NewFileFactory(),
 		*post,
 		transaction,
@@ -130,4 +132,5 @@ func (postCreatePostHandler *PostCreatePostHandler) definePost(context *gin.Cont
 
 func (postCreatePostHandler *PostCreatePostHandler) openTableConnection(transaction port.ConnectionInterface) {
 	postCreatePostHandler.postDatabase = repository.NewPostDatabase(transaction)
+	postCreatePostHandler.documentDatabase = repository.NewDocumentDatabase(transaction)
 }

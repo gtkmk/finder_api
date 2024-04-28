@@ -9,11 +9,12 @@ import (
 )
 
 type CreatePost struct {
-	PostDatabase repositories.PostRepositoryInterface
-	FileService  port.FileFactoryInterface
-	Post         postDomain.Post
-	transaction  port.ConnectionInterface
-	dist         string
+	PostDatabase     repositories.PostRepositoryInterface
+	DocumentDatabase repositories.DocumentRepository
+	FileService      port.FileFactoryInterface
+	Post             postDomain.Post
+	transaction      port.ConnectionInterface
+	dist             string
 	port.CustomErrorInterface
 }
 
@@ -21,6 +22,7 @@ const checkPointCreatePostTransactionNameConst = "createPost"
 
 func NewCreatePost(
 	postDatabase repositories.PostRepositoryInterface,
+	documentDatabase repositories.DocumentRepository,
 	fileService port.FileFactoryInterface,
 	post postDomain.Post,
 	transaction port.ConnectionInterface,
@@ -28,6 +30,7 @@ func NewCreatePost(
 ) *CreatePost {
 	return &CreatePost{
 		PostDatabase:         postDatabase,
+		DocumentDatabase:     documentDatabase,
 		FileService:          fileService,
 		Post:                 post,
 		transaction:          transaction,
@@ -81,7 +84,7 @@ func (createPost *CreatePost) persistPostAndMedia() error {
 
 	createPost.Post.Media.Type = documentDomain.PostMediaConst
 
-	if err := createPost.PostDatabase.CreatePostMedia(
+	if err := createPost.DocumentDatabase.CreateMedia(
 		createPost.Post.Media,
 		fileService.GetFullPath(),
 	); err != nil {
