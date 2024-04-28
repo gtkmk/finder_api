@@ -35,6 +35,8 @@ const (
 
 	FindDocumentBase64RouteConst = "/document/imageBase64"
 
+	PostFollowRouteConst = "/follow"
+
 	// === Route marker ===
 )
 

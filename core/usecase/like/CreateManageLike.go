@@ -5,38 +5,34 @@ import (
 
 	"github.com/gtkmk/finder_api/core/domain/likeDomain"
 	"github.com/gtkmk/finder_api/core/port/repositories"
-	sharedMethodsInterface "github.com/gtkmk/finder_api/core/port/sharedMethods"
 )
 
 const checkPointManageLikeTransactionNameConst = "manageLike"
 
 type CreateManageLike struct {
-	likeDatabase      repositories.LikeRepository
-	like              *likeDomain.Like
-	transaction       port.ConnectionInterface
-	rollBackAndReturn sharedMethodsInterface.RollBackAndReturnErrorInterface
-	customError       port.CustomErrorInterface
+	LikeDatabase repositories.LikeRepository
+	Like         *likeDomain.Like
+	Transaction  port.ConnectionInterface
+	CustomError  port.CustomErrorInterface
 }
 
 func NewCreateManageLike(
 	likeDatabase repositories.LikeRepository,
 	like *likeDomain.Like,
 	transaction port.ConnectionInterface,
-	rollBackAndReturn sharedMethodsInterface.RollBackAndReturnErrorInterface,
 	customError port.CustomErrorInterface,
 ) *CreateManageLike {
 	return &CreateManageLike{
-		likeDatabase:      likeDatabase,
-		like:              like,
-		transaction:       transaction,
-		rollBackAndReturn: rollBackAndReturn,
-		customError:       customError,
+		LikeDatabase: likeDatabase,
+		Like:         like,
+		Transaction:  transaction,
+		CustomError:  customError,
 	}
 }
 
 func (createManageLike *CreateManageLike) Execute() (int, error) {
-	if err := createManageLike.transaction.SavePoint(checkPointManageLikeTransactionNameConst); err != nil {
-		return 0, createManageLike.customError.ThrowError(err.Error())
+	if err := createManageLike.Transaction.SavePoint(checkPointManageLikeTransactionNameConst); err != nil {
+		return 0, createManageLike.CustomError.ThrowError(err.Error())
 	}
 
 	err := createManageLike.manageLike()
@@ -47,41 +43,41 @@ func (createManageLike *CreateManageLike) Execute() (int, error) {
 		return 0, err
 	}
 
-	updatedLikeCount, err := createManageLike.likeDatabase.FindCurrentLikesCount(createManageLike.like)
+	updatedLikeCount, err := createManageLike.LikeDatabase.FindCurrentLikesCount(createManageLike.Like)
 	if err != nil {
-		return 0, createManageLike.customError.ThrowError(err.Error())
+		return 0, createManageLike.CustomError.ThrowError(err.Error())
 	}
 
-	if err := createManageLike.transaction.Commit(); err != nil {
+	if err := createManageLike.Transaction.Commit(); err != nil {
 		if rollbackErr := createManageLike.rollbackToSavePointAndCommit(); err != nil {
 			return 0, rollbackErr
 		}
-		return 0, createManageLike.customError.ThrowError(err.Error())
+		return 0, createManageLike.CustomError.ThrowError(err.Error())
 	}
 
 	return updatedLikeCount, nil
 }
 
 func (createManageLike *CreateManageLike) manageLike() error {
-	alreadyLiked, existingLikeInfo, err := createManageLike.likeDatabase.ConfirmExistingLike(createManageLike.like)
+	alreadyLiked, existingLikeInfo, err := createManageLike.LikeDatabase.ConfirmExistingLike(createManageLike.Like)
 	if err != nil {
 		return err
 	}
 
 	if alreadyLiked {
-		return createManageLike.likeDatabase.RemoveLike(existingLikeInfo.Id)
+		return createManageLike.LikeDatabase.RemoveLike(existingLikeInfo.Id)
 	}
 
-	return createManageLike.likeDatabase.CreateLike(createManageLike.like)
+	return createManageLike.LikeDatabase.CreateLike(createManageLike.Like)
 }
 
 func (createManageLike *CreateManageLike) rollbackToSavePointAndCommit() error {
-	if transactErr := createManageLike.transaction.RollbackTo(checkPointManageLikeTransactionNameConst); transactErr != nil {
-		return createManageLike.customError.ThrowError(transactErr.Error())
+	if transactErr := createManageLike.Transaction.RollbackTo(checkPointManageLikeTransactionNameConst); transactErr != nil {
+		return createManageLike.CustomError.ThrowError(transactErr.Error())
 	}
 
-	if commitErr := createManageLike.transaction.Commit(); commitErr != nil {
-		return createManageLike.customError.ThrowError(commitErr.Error())
+	if commitErr := createManageLike.Transaction.Commit(); commitErr != nil {
+		return createManageLike.CustomError.ThrowError(commitErr.Error())
 	}
 
 	return nil

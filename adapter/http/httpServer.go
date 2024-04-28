@@ -11,6 +11,7 @@ import (
 
 	"github.com/gtkmk/finder_api/adapter/http/routes/comment"
 	"github.com/gtkmk/finder_api/adapter/http/routes/document"
+	"github.com/gtkmk/finder_api/adapter/http/routes/follow"
 	"github.com/gtkmk/finder_api/adapter/http/routes/like"
 	"github.com/gtkmk/finder_api/adapter/http/routes/post"
 	"github.com/gtkmk/finder_api/adapter/http/routes/user"
@@ -113,6 +114,14 @@ func (httpServer *HttpServer) registerRutes() {
 		notificationService,
 	).Register()
 	document.NewDocumentRoutes(
+		httpServer.app,
+		httpServer.connection,
+		httpServer.uuidGenerator,
+		httpServer.passwordEncryptor,
+		notificationService,
+	).Register()
+
+	follow.NewFollowRoutes(
 		httpServer.app,
 		httpServer.connection,
 		httpServer.uuidGenerator,

@@ -104,6 +104,7 @@ const (
 	ErrorReadingFileConst                                = "Erro ao obter arquivo: %s"
 	InvalidLikeTypeConst                                 = "Tipo de like inválido para o post ou o comentário."
 	InvalidLikeRequestConst                              = "Requisição de like inválida. Definir destino do like, post ou comentário."
+	YouCannotFollowYourselfConst                         = "Você não pode seguir a si mesmo"
 )
 
 const (

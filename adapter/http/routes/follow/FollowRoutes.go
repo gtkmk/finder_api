@@ -1,31 +1,30 @@
-package like
+package follow
 
 import (
 	"os"
 
-	"github.com/gtkmk/finder_api/adapter/http/handlers/likeHandler"
+	"github.com/gin-gonic/gin"
+	"github.com/gtkmk/finder_api/adapter/http/handlers/followHandler"
 	"github.com/gtkmk/finder_api/adapter/http/middleware"
 	"github.com/gtkmk/finder_api/adapter/http/routesConstants"
 	"github.com/gtkmk/finder_api/core/domain/jwtAuth"
 	"github.com/gtkmk/finder_api/core/port"
 	"github.com/gtkmk/finder_api/infra/envMode"
 	"github.com/gtkmk/finder_api/infra/httpContextValuesExtractor"
-
-	"github.com/gin-gonic/gin"
 )
 
 const (
-	CreateLikeCreateLikeConst string = "CreateLike"
+	CreateFollowUserConst string = "CreateFollowUser"
 	// === Route constants marker ===
 )
 
-type LikeRoutes struct {
+type FollowRoutes struct {
 	*gin.Engine
 	likeHandlers map[string]port.HandlerInterface
 	jwt          *middleware.IsAuthorized
 }
 
-func NewLikeRoutes(
+func NewFollowRoutes(
 	app *gin.Engine,
 	connection port.ConnectionInterface,
 	uuid port.UuidInterface,
@@ -34,9 +33,9 @@ func NewLikeRoutes(
 ) port.RoutesInterface {
 	jwt := jwtAuth.NewjwtAuth(os.Getenv(envMode.JwtSecretConst))
 
-	return &LikeRoutes{
+	return &FollowRoutes{
 		app,
-		createMapOfLikeHandlers(connection, notificationService, uuid, passwordEncryption),
+		createMapOfFollowHandlers(connection, notificationService, uuid, passwordEncryption),
 		middleware.NewIsAuthorized(
 			jwt,
 			connection,
@@ -45,16 +44,16 @@ func NewLikeRoutes(
 	}
 }
 
-func (likeRoutes *LikeRoutes) Register() {
-	likeRoutes.POST(
-		routesConstants.PostLikeRouteConst,
-		likeRoutes.jwt.IsAuthorizedMiddleware(),
-		likeRoutes.likeHandlers[CreateLikeCreateLikeConst].Handle,
+func (followRoutes *FollowRoutes) Register() {
+	followRoutes.POST(
+		routesConstants.PostFollowRouteConst,
+		followRoutes.jwt.IsAuthorizedMiddleware(),
+		followRoutes.likeHandlers[CreateFollowUserConst].Handle,
 	)
 	// === Register route marker ===
 }
 
-func createMapOfLikeHandlers(
+func createMapOfFollowHandlers(
 	connection port.ConnectionInterface,
 	notificationService port.NotificationInterface,
 	uuid port.UuidInterface,
@@ -63,7 +62,7 @@ func createMapOfLikeHandlers(
 	contextExtractor := httpContextValuesExtractor.NewHttpContextValuesExtractor()
 
 	return map[string]port.HandlerInterface{
-		CreateLikeCreateLikeConst: likeHandler.NewCreateManageLikeHandler(
+		CreateFollowUserConst: followHandler.NewCreateManageFollowUserHandler(
 			connection,
 			uuid,
 			contextExtractor,

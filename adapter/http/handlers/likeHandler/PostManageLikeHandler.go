@@ -9,7 +9,6 @@ import (
 	"github.com/gtkmk/finder_api/core/port"
 	"github.com/gtkmk/finder_api/core/port/repositories"
 	likeUsecase "github.com/gtkmk/finder_api/core/usecase/like"
-	"github.com/gtkmk/finder_api/core/usecase/sharedMethods"
 	"github.com/gtkmk/finder_api/infra/database/repository"
 	likerequestentity "github.com/gtkmk/finder_api/infra/requestEntity/likeRequestEntity"
 )
@@ -22,7 +21,7 @@ type CreateManageLikeHandler struct {
 	customError      port.CustomErrorInterface
 }
 
-func NewCreateLikeCreateLikeHandler(
+func NewCreateManageLikeHandler(
 	connection port.ConnectionInterface,
 	uuid port.UuidInterface,
 	contextExtractor port.HttpContextValuesExtractorInterface,
@@ -74,13 +73,10 @@ func (createManageLikeHandler *CreateManageLikeHandler) Handle(context *gin.Cont
 
 	createManageLikeHandler.openTableConnection(transaction)
 
-	rollBackAndReturn := sharedMethods.NewRollBackAndReturnError(transaction)
-
 	likesCount, err := likeUsecase.NewCreateManageLike(
 		createManageLikeHandler.likeDatabase,
 		decodedLike,
 		transaction,
-		rollBackAndReturn,
 		createManageLikeHandler.customError,
 	).Execute()
 

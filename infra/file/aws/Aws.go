@@ -3,7 +3,6 @@ package aws
 import (
 	"encoding/base64"
 	"fmt"
-	"github.com/gtkmk/finder_api/infra/envMode"
 	"io"
 	"log"
 	"mime/multipart"
@@ -11,6 +10,8 @@ import (
 	"path"
 	"path/filepath"
 	"strings"
+
+	"github.com/gtkmk/finder_api/infra/envMode"
 
 	awspackage "github.com/aws/aws-sdk-go/aws"
 	"github.com/aws/aws-sdk-go/aws/credentials"
@@ -231,4 +232,10 @@ func downloadS3File(svc *s3.S3, bucket, fileName, filePath string) error {
 	}
 
 	return nil
+}
+
+func (aws *Aws) FileToBase64(filePath string) (string, error) {
+	// TODO: Implement this
+
+	return "", nil
 }
