@@ -13,117 +13,123 @@ import (
 )
 
 type SignUp struct {
-	userDatabase        repositories.UserRepository
-	transaction         port.ConnectionInterface
-	user                *userDomain.User
-	uuid                port.UuidInterface
-	notificationService port.NotificationInterface
-	path                string
-	customError         port.CustomErrorInterface
-	userEvent           sharedMethods.CreateUserEventInterface
+	UserDatabase        repositories.UserRepository
+	DocumentDatabase    repositories.DocumentRepository
+	FileService         port.FileFactoryInterface
+	Dist                string
+	Transaction         port.ConnectionInterface
+	User                *userDomain.User
+	NotificationService port.NotificationInterface
+	Path                string
+	CustomError         port.CustomErrorInterface
+	UserEvent           sharedMethods.CreateUserEventInterface
 }
 
 func NewCreateUser(
 	transaction port.ConnectionInterface,
 	userDatabase repositories.UserRepository,
+	documentDatabase repositories.DocumentRepository,
+	fileService port.FileFactoryInterface,
+	dist string,
 	definedUser *userDomain.User,
-	uuid port.UuidInterface,
 	notificationService port.NotificationInterface,
 	path string,
 	customErrorInterface port.CustomErrorInterface,
 	userEvent sharedMethods.CreateUserEventInterface,
 ) *SignUp {
 	return &SignUp{
-		transaction:         transaction,
-		userDatabase:        userDatabase,
-		user:                definedUser,
-		uuid:                uuid,
-		notificationService: notificationService,
-		path:                path,
-		customError:         customErrorInterface,
-		userEvent:           userEvent,
+		Transaction:         transaction,
+		UserDatabase:        userDatabase,
+		DocumentDatabase:    documentDatabase,
+		FileService:         fileService,
+		Dist:                dist,
+		User:                definedUser,
+		NotificationService: notificationService,
+		Path:                path,
+		CustomError:         customErrorInterface,
+		UserEvent:           userEvent,
 	}
 }
 
 func (signUp *SignUp) Execute(userIP string, userDevice string) error {
 	if err := signUp.verifyIfUserExistsByCpf(); err != nil {
-		if transactionErr := signUp.transaction.Rollback(); transactionErr != nil {
-			return signUp.customError.ThrowError(transactionErr.Error())
+		if transactionErr := signUp.Transaction.Rollback(); transactionErr != nil {
+			return signUp.CustomError.ThrowError(transactionErr.Error())
 		}
 
 		return err
 	}
 
 	if err := signUp.verifyIfUserExistsByUserName(); err != nil {
-		if transactionErr := signUp.transaction.Rollback(); transactionErr != nil {
-			return signUp.customError.ThrowError(transactionErr.Error())
+		if transactionErr := signUp.Transaction.Rollback(); transactionErr != nil {
+			return signUp.CustomError.ThrowError(transactionErr.Error())
 		}
 
 		return err
 	}
 
 	if err := signUp.verifyIfUserExists(); err != nil {
-		if transactionErr := signUp.transaction.Rollback(); transactionErr != nil {
-			return signUp.customError.ThrowError(transactionErr.Error())
+		if transactionErr := signUp.Transaction.Rollback(); transactionErr != nil {
+			return signUp.CustomError.ThrowError(transactionErr.Error())
 		}
 
 		return err
 	}
 
 	if err := signUp.createUser(userIP, userDevice); err != nil {
-		if transactionErr := signUp.transaction.Rollback(); transactionErr != nil {
-			return signUp.customError.ThrowError(transactionErr.Error())
+		if transactionErr := signUp.Transaction.Rollback(); transactionErr != nil {
+			return signUp.CustomError.ThrowError(transactionErr.Error())
 		}
 
 		return err
 	}
 
-	if err := signUp.transaction.Commit(); err != nil {
-		return signUp.customError.ThrowError(err.Error())
+	if err := signUp.Transaction.Commit(); err != nil {
+		return signUp.CustomError.ThrowError(err.Error())
 	}
 
-	_ = signUp.sendSingUpEmail(signUp.user)
+	_ = signUp.sendSingUpEmail(signUp.User)
 
 	return nil
 }
 
 func (signUp *SignUp) verifyIfUserExistsByCpf() error {
-	exists := signUp.userDatabase.VerifyIfUserExistsByCpf(signUp.user.Cpf)
+	exists := signUp.UserDatabase.VerifyIfUserExistsByCpf(signUp.User.Cpf)
 
 	if exists {
-		return signUp.customError.ThrowError(helper.UserAlreadyRegisteredConst)
+		return signUp.CustomError.ThrowError(helper.UserAlreadyRegisteredConst)
 	}
 
 	return nil
 }
 
 func (signUp *SignUp) verifyIfUserExistsByUserName() error {
-	exists := signUp.userDatabase.VerifyIfUserExistsByUserName(signUp.user.UserName)
+	exists := signUp.UserDatabase.VerifyIfUserExistsByUserName(signUp.User.UserName)
 
 	if exists {
-		return signUp.customError.ThrowError(helper.UserAlreadyRegisteredConst)
+		return signUp.CustomError.ThrowError(helper.UserAlreadyRegisteredConst)
 	}
 
 	return nil
 }
 
 func (signUp *SignUp) verifyIfUserExists() error {
-	dbUser, err := signUp.userDatabase.FindUserByEmail(signUp.user.Email)
+	dbUser, err := signUp.UserDatabase.FindUserByEmail(signUp.User.Email)
 
 	if err != nil {
-		return signUp.customError.ThrowError(err.Error())
+		return signUp.CustomError.ThrowError(err.Error())
 	}
 
 	if dbUser != nil {
-		return signUp.customError.ThrowError(helper.UserAlreadyRegisteredWithEmailConst)
+		return signUp.CustomError.ThrowError(helper.UserAlreadyRegisteredWithEmailConst)
 	}
 
 	return nil
 }
 
 func (signUp *SignUp) createUser(userIP string, userDevice string) error {
-	if err := signUp.userDatabase.CreateUser(signUp.user); err != nil {
-		return signUp.customError.ThrowError(err.Error())
+	if err := signUp.UserDatabase.CreateUser(signUp.User); err != nil {
+		return signUp.CustomError.ThrowError(err.Error())
 	}
 
 	if err := signUp.saveNewUserEvent(userIP, userDevice); err != nil {
@@ -134,32 +140,32 @@ func (signUp *SignUp) createUser(userIP string, userDevice string) error {
 }
 
 func (signUp *SignUp) sendSingUpEmail(
-	user *userDomain.User,
+	User *userDomain.User,
 ) error {
 	notification := notificationDomain.NewNotification(
 		userDomain.FirstAccessConst,
-		user.Name,
-		user.Email,
+		User.Name,
+		User.Email,
 		"",
 		"",
-		signUp.path,
+		signUp.Path,
 		nil,
 	)
 
-	_ = signUp.notificationService.SendNotifications(notification)
+	_ = signUp.NotificationService.SendNotifications(notification)
 
 	return nil
 }
 
 func (signUp *SignUp) saveNewUserEvent(userIP string, userDevice string) error {
-	signUp.user.Password = ""
-	interfaceToJson, err := json.MarshalIndent(signUp.user, "", "\t")
+	signUp.User.Password = ""
+	interfaceToJson, err := json.MarshalIndent(signUp.User, "", "\t")
 
 	if err != nil {
 		return err
 	}
 
-	if err := signUp.userEvent.SaveNewUserEvent(signUp.user.Id, userIP, userDevice, string(interfaceToJson)); err != nil {
+	if err := signUp.UserEvent.SaveNewUserEvent(signUp.User.Id, userIP, userDevice, string(interfaceToJson)); err != nil {
 		return err
 	}
 	return nil

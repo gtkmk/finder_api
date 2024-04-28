@@ -16,6 +16,7 @@ import (
 	userUsecase "github.com/gtkmk/finder_api/core/usecase/user"
 	"github.com/gtkmk/finder_api/infra/database/repository"
 	"github.com/gtkmk/finder_api/infra/envMode"
+	"github.com/gtkmk/finder_api/infra/file"
 	"github.com/gtkmk/finder_api/infra/requestEntity/userRequestEntity"
 )
 
@@ -26,6 +27,7 @@ type SignUpHandler struct {
 	Uuid                port.UuidInterface
 	ContextExtractor    port.HttpContextValuesExtractorInterface
 	UserDatabase        repositories.UserRepository
+	DocumentDatabase    repositories.DocumentRepository
 	CustomError         port.CustomErrorInterface
 	userEventDatabase   repositories.UserEventRepositoryInterface
 }
@@ -83,8 +85,10 @@ func (signUpHandler *SignUpHandler) Handle(context *gin.Context) {
 	if err := userUsecase.NewCreateUser(
 		transaction,
 		signUpHandler.UserDatabase,
+		signUpHandler.DocumentDatabase,
+		file.NewFileFactory(),
+		os.Getenv(envMode.StaticDirConst),
 		user,
-		signUpHandler.Uuid,
 		signUpHandler.NotificationService,
 		signUpHandler.generateUrlResetPassword(user.Id),
 		customError.NewCustomError(),
@@ -105,6 +109,7 @@ func (signUpHandler *SignUpHandler) Handle(context *gin.Context) {
 func (signUpHandler *SignUpHandler) openTableConnection(transaction port.ConnectionInterface) {
 	signUpHandler.UserDatabase = repository.NewUserDatabase(transaction)
 	signUpHandler.userEventDatabase = repository.NewUserEventRepository(transaction)
+	signUpHandler.DocumentDatabase = repository.NewDocumentDatabase(transaction)
 }
 
 func (signUpHandler *SignUpHandler) defineUser(context *gin.Context) (*userDomain.User, error) {

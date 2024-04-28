@@ -13,8 +13,8 @@ type CreatePost struct {
 	DocumentDatabase repositories.DocumentRepository
 	FileService      port.FileFactoryInterface
 	Post             postDomain.Post
-	transaction      port.ConnectionInterface
-	dist             string
+	Transaction      port.ConnectionInterface
+	Dist             string
 	port.CustomErrorInterface
 }
 
@@ -33,14 +33,14 @@ func NewCreatePost(
 		DocumentDatabase:     documentDatabase,
 		FileService:          fileService,
 		Post:                 post,
-		transaction:          transaction,
-		dist:                 dist,
+		Transaction:          transaction,
+		Dist:                 dist,
 		CustomErrorInterface: customError.NewCustomError(),
 	}
 }
 
 func (createPost *CreatePost) Execute() error {
-	if err := createPost.transaction.SavePoint(checkPointCreatePostTransactionNameConst); err != nil {
+	if err := createPost.Transaction.SavePoint(checkPointCreatePostTransactionNameConst); err != nil {
 		return createPost.ThrowError(err.Error())
 	}
 
@@ -52,7 +52,7 @@ func (createPost *CreatePost) Execute() error {
 		return err
 	}
 
-	if err := createPost.transaction.Commit(); err != nil {
+	if err := createPost.Transaction.Commit(); err != nil {
 		if rollbackErr := createPost.rollbackToSavePointAndCommit(); rollbackErr != nil {
 			return rollbackErr
 		}
@@ -67,7 +67,7 @@ func (createPost *CreatePost) persistPostAndMedia() error {
 
 	if err := fileService.SaveFileFromMultipart(
 		createPost.Post.Media.File,
-		createPost.dist,
+		createPost.Dist,
 	); err != nil {
 		return createPost.ThrowError(err.Error())
 	}
@@ -99,11 +99,11 @@ func (createPost *CreatePost) persistPostAndMedia() error {
 }
 
 func (createPost *CreatePost) rollbackToSavePointAndCommit() error {
-	if transactErr := createPost.transaction.RollbackTo(checkPointCreatePostTransactionNameConst); transactErr != nil {
+	if transactErr := createPost.Transaction.RollbackTo(checkPointCreatePostTransactionNameConst); transactErr != nil {
 		return createPost.ThrowError(transactErr.Error())
 	}
 
-	if commitErr := createPost.transaction.Commit(); commitErr != nil {
+	if commitErr := createPost.Transaction.Commit(); commitErr != nil {
 		return createPost.ThrowError(commitErr.Error())
 	}
 
