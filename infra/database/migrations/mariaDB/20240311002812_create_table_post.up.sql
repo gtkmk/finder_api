@@ -7,6 +7,8 @@ CREATE TABLE IF NOT EXISTS post (
     privacy ENUM('public', 'private', 'friends_only') DEFAULT 'public',
     shares_count INT(11) DEFAULT 0,
     category ENUM('default', 'paid', 'add') DEFAULT 'default',
+    animal_type ENUM('cachorro', 'gato', 'ave', 'outro') DEFAULT NULL,
+    animal_size ENUM('pequeno', 'médio', 'grande') DEFAULT NULL,
     user_id VARCHAR(191) DEFAULT NULL,
     deleted_reason VARCHAR(100) DEFAULT NULL,
     created_at DATETIME(3) DEFAULT NULL,

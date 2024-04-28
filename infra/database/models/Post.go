@@ -13,6 +13,8 @@ type Post struct {
 	Privacy     string
 	SharesCount int
 	Category    string
+	AnimalType  string
+	AnimalSize  string
 	UserId      string
 	CreatedAt   sql.NullTime
 	UpdatedAt   sql.NullTime

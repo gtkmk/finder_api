@@ -43,7 +43,7 @@ func (editPost *EditPost) Execute() error {
 		return editPost.ThrowError(err.Error())
 	}
 
-	err := editPost.persistPostEdition()
+	err := editPost.persistPostEditing()
 	if err != nil {
 		if rollbackErr := editPost.rollbackToSavePointAndCommit(); rollbackErr != nil {
 			return rollbackErr
@@ -77,7 +77,7 @@ func (editPost *EditPost) verifyIfPostExists() error {
 	return nil
 }
 
-func (editPost *EditPost) persistPostEdition() error {
+func (editPost *EditPost) persistPostEditing() error {
 	if err := editPost.PostDatabase.EditPost(
 		&editPost.Post,
 	); err != nil {

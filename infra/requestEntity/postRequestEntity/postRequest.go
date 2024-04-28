@@ -17,23 +17,16 @@ import (
 )
 
 const (
-	PostMediaConst      = "media"
-	TextFieldConst      = "o texto da publicação"
-	LocationFieldConst  = "a localização da publicação"
-	RewardFieldConst    = "a recompensa da publicação"
-	PrivacyFieldConst   = "a deinição de privacidade da publicação"
-	LostFoundFieldConst = "o tipo de achado/perdido da publicação"
-	CategoryFieldConst  = "a categoria da publicação"
-	MediaFileFieldConst = "a imagem da publicação"
-)
-
-const (
-	TextFieldNameConst       = "text"
-	LocationFieldNameConst   = "location"
-	RewardFieldNameConst     = "reward"
-	LostFoundFieldNameConst  = "lost_found"
-	VisibilityFieldNameConst = "visibility"
-	CategoryFieldNameConst   = "category"
+	PostMediaConst       = "media"
+	TextFieldConst       = "o texto da publicação"
+	LocationFieldConst   = "a localização da publicação"
+	RewardFieldConst     = "a recompensa da publicação"
+	PrivacyFieldConst    = "a deinição de privacidade da publicação"
+	LostFoundFieldConst  = "o tipo de achado/perdido da publicação"
+	AnimalTypeFieldConst = "o tipo de animal da publicação"
+	AnimalSizeFieldConst = "o porte do animal da publicação"
+	CategoryFieldConst   = "a categoria da publicação"
+	MediaFileFieldConst  = "a imagem da publicação"
 )
 
 const (
@@ -50,18 +43,20 @@ var FileTypesToDomain = map[string]string{
 }
 
 type PostRequest struct {
-	uuid      port.UuidInterface
-	fileUtils port.FileUtilsInterface
-	Document  *documentDomain.Document
-	PostId    string `form:"post_id" json:"post_id"`
-	Text      string `form:"text" json:"text"`
-	Location  string `form:"location" json:"location"`
-	Reward    bool   `form:"reward" json:"reward"`
-	LostFound string `form:"lost_found" json:"lost_found"`
-	Privacy   string `form:"privacy" json:"privacy"`
-	Category  string `form:"category" json:"category"`
-	UserId    string
-	Post      *postDomain.Post
+	uuid       port.UuidInterface
+	fileUtils  port.FileUtilsInterface
+	Document   *documentDomain.Document
+	PostId     string  `form:"post_id" json:"post_id"`
+	Text       string  `form:"text" json:"text"`
+	Location   string  `form:"location" json:"location"`
+	Reward     bool    `form:"reward" json:"reward"`
+	LostFound  *string `form:"lost_found" json:"lost_found"`
+	Privacy    string  `form:"privacy" json:"privacy"`
+	Category   string  `form:"category" json:"category"`
+	AnimalType *string `form:"animal_type" json:"animal_type"`
+	AnimalSize *string `form:"animal_size" json:"animal_size"`
+	UserId     string
+	Post       *postDomain.Post
 }
 
 func NewPostRequest(context *gin.Context, uuid port.UuidInterface, userId string) (*PostRequest, error) {
@@ -190,47 +185,114 @@ func (postRequest *PostRequest) Validate(context *gin.Context, edition bool) err
 }
 
 func (postRequest *PostRequest) validatePostFields() error {
-	if err := requestEntityFieldsValidation.ValidateField(
-		postRequest.Text,
-		TextFieldConst,
-		MaxTextLengthConst,
-	); err != nil {
+	if err := postRequest.validateText(); err != nil {
 		return err
 	}
 
-	if err := requestEntityFieldsValidation.ValidateField(
-		postRequest.Location,
-		LocationFieldConst,
-		MaxLocationLength,
-	); err != nil {
+	if err := postRequest.validateLocation(); err != nil {
 		return err
 	}
 
-	if err := requestEntityFieldsValidation.ValidateFieldInArray(
-		postRequest.Privacy,
-		PrivacyFieldConst,
-		postDomain.AcceptedPrivacySettings,
-	); err != nil {
+	if err := postRequest.validatePrivacy(); err != nil {
 		return err
 	}
 
-	if err := requestEntityFieldsValidation.ValidateFieldInArray(
-		postRequest.LostFound,
-		LostFoundFieldConst,
-		postDomain.LostAndFoundStatus,
-	); err != nil {
+	if err := postRequest.validateLostFound(); err != nil {
 		return err
 	}
 
-	if err := requestEntityFieldsValidation.ValidateFieldInArray(
-		postRequest.Category,
-		CategoryFieldConst,
-		postDomain.AcceptedCategories,
-	); err != nil {
+	if err := postRequest.validateAnimalFields(); err != nil {
+		return err
+	}
+
+	if err := postRequest.validateCategory(); err != nil {
 		return err
 	}
 
 	return nil
+}
+
+func (postRequest *PostRequest) validateText() error {
+	return requestEntityFieldsValidation.ValidateField(
+		postRequest.Text,
+		TextFieldConst,
+		MaxTextLengthConst,
+	)
+}
+
+func (postRequest *PostRequest) validateLocation() error {
+	return requestEntityFieldsValidation.ValidateField(
+		postRequest.Location,
+		LocationFieldConst,
+		MaxLocationLength,
+	)
+}
+
+func (postRequest *PostRequest) validatePrivacy() error {
+	return requestEntityFieldsValidation.ValidateFieldInArray(
+		postRequest.Privacy,
+		PrivacyFieldConst,
+		postDomain.AcceptedPrivacySettings,
+	)
+}
+
+func (postRequest *PostRequest) validateLostFound() error {
+	if postRequest.LostFound != nil {
+		return requestEntityFieldsValidation.ValidateFieldInArray(
+			*postRequest.LostFound,
+			LostFoundFieldConst,
+			postDomain.LostAndFoundStatus,
+		)
+	}
+	return nil
+}
+
+func (postRequest *PostRequest) validateAnimalFields() error {
+	if postRequest.LostFound != nil {
+		if postRequest.AnimalType == nil {
+			return helper.ErrorBuilder(
+				helper.FieldCannotBeEmptyConst,
+				AnimalTypeFieldConst,
+			)
+		}
+
+		if postRequest.AnimalSize == nil {
+			return helper.ErrorBuilder(
+				helper.FieldCannotBeEmptyConst,
+				AnimalSizeFieldConst,
+			)
+		}
+	}
+
+	if postRequest.AnimalType != nil {
+		if err := requestEntityFieldsValidation.ValidateFieldInArray(
+			*postRequest.AnimalType,
+			AnimalTypeFieldConst,
+			postDomain.AcceptedAnimalTypes,
+		); err != nil {
+			return err
+		}
+	}
+
+	if postRequest.AnimalSize != nil {
+		if err := requestEntityFieldsValidation.ValidateFieldInArray(
+			*postRequest.AnimalSize,
+			AnimalSizeFieldConst,
+			postDomain.AcceptedAnimalSizes,
+		); err != nil {
+			return err
+		}
+	}
+
+	return nil
+}
+
+func (postRequest *PostRequest) validateCategory() error {
+	return requestEntityFieldsValidation.ValidateFieldInArray(
+		postRequest.Category,
+		CategoryFieldConst,
+		postDomain.AcceptedCategories,
+	)
 }
 
 func (postRequest *PostRequest) validateMediaField(context *gin.Context) error {
@@ -297,6 +359,8 @@ func (postRequest *PostRequest) BuildPostObject(postId *string) (*postDomain.Pos
 		0,
 		postRequest.Category,
 		postRequest.LostFound,
+		postRequest.AnimalType,
+		postRequest.AnimalSize,
 		postRequest.UserId,
 		&dateTime,
 		nil,

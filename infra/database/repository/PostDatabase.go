@@ -35,9 +35,11 @@ func (postDatabase *PostDatabase) CreatePost(post *postDomain.Post) error {
 			privacy,
 			shares_count,
 			category,
+			animal_type,
+			animal_size,
 			user_id,
 			created_at
-		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+		) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 	`
 
 	var statement interface{}
@@ -53,6 +55,8 @@ func (postDatabase *PostDatabase) CreatePost(post *postDomain.Post) error {
 		post.Privacy,
 		post.SharesCount,
 		post.Category,
+		post.AnimalType,
+		post.AnimalSize,
 		post.UserId,
 		createdAt,
 	); err != nil {
@@ -106,7 +110,9 @@ func (postDatabase *PostDatabase) FindPostByID(id string) (*postDomain.Post, err
 		databasePost.Privacy,
 		databasePost.SharesCount,
 		databasePost.Category,
-		databasePost.LostFound,
+		&databasePost.LostFound,
+		&databasePost.AnimalType,
+		&databasePost.AnimalSize,
 		databasePost.UserId,
 		&databasePost.CreatedAt.Time,
 		&databasePost.UpdatedAt.Time,
@@ -129,6 +135,8 @@ func (postDatabase *PostDatabase) EditPost(post *postDomain.Post) error {
 		reward = ?,
 		lost_found = ?,
 		privacy = ?,
+		animal_type = ?,
+		animal_size = ?,
 		updated_at = ?
 	WHERE id = ?`
 
@@ -140,6 +148,8 @@ func (postDatabase *PostDatabase) EditPost(post *postDomain.Post) error {
 		post.Reward,
 		post.LostFound,
 		post.Privacy,
+		post.AnimalType,
+		post.AnimalSize,
 		updatedAt,
 		post.Id,
 	); err != nil {

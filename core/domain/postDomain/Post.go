@@ -28,6 +28,19 @@ const (
 	RewardOptionFalseConst = "0"
 )
 
+const (
+	AnimalTypeDogConst   = "cachorro"
+	AnimalTypeCatConst   = "gato"
+	AnimalTypeBirdConst  = "ave"
+	AnimalTypeOtherConst = "outro"
+)
+
+const (
+	AnimalSizeSmallConst  = "pequeno"
+	AnimalSizeMediumConst = "médio"
+	AnimalSizeBigConst    = "grande"
+)
+
 var LostAndFoundStatus = []string{
 	FoundConst,
 	LostConst,
@@ -45,6 +58,19 @@ var AcceptedCategories = []string{
 	CategoryAddConst,
 }
 
+var AcceptedAnimalTypes = []string{
+	AnimalTypeDogConst,
+	AnimalTypeCatConst,
+	AnimalTypeBirdConst,
+	AnimalTypeOtherConst,
+}
+
+var AcceptedAnimalSizes = []string{
+	AnimalSizeSmallConst,
+	AnimalSizeMediumConst,
+	AnimalSizeBigConst,
+}
+
 type Post struct {
 	Id          string                   `json:"id"`
 	Text        string                   `json:"text"`
@@ -54,7 +80,9 @@ type Post struct {
 	Privacy     string                   `json:"privacy"`
 	SharesCount int                      `json:"shares_count"`
 	Category    string                   `json:"category"`
-	LostFound   string                   `json:"lost_found"`
+	LostFound   *string                  `json:"lost_found"`
+	AnimalType  *string                  `json:"animal_type"`
+	AnimalSize  *string                  `json:"animal_size"`
 	UserId      string                   `json:"user_id"`
 	CreatedAt   *time.Time               `json:"created_at"`
 	UpdatedAt   *time.Time               `json:"updated_at"`
@@ -69,7 +97,9 @@ func NewPost(
 	privacy string,
 	sharesCount int,
 	category string,
-	lostFound string,
+	lostFound *string,
+	animalType *string,
+	animalSize *string,
 	userID string,
 	createdAt *time.Time,
 	updatedAt *time.Time,
@@ -84,6 +114,8 @@ func NewPost(
 		SharesCount: sharesCount,
 		Category:    category,
 		LostFound:   lostFound,
+		AnimalType:  animalType,
+		AnimalSize:  animalSize,
 		UserId:      userID,
 		CreatedAt:   createdAt,
 		UpdatedAt:   updatedAt,

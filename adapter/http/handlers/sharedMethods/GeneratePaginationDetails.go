@@ -103,20 +103,27 @@ func (generatePaginationDetails *GeneratePaginationDetails) MapDBPostToPaginatio
 		return nil, generatePaginationDetails.customError.ThrowError(dateErr.Error())
 	}
 
+	postLostFound := helper.RetrieveSafeInterfaceValue(dbPost["post_lost_found"], "").(string)
+	postAnimalType := helper.RetrieveSafeInterfaceValue(dbPost["post_animal_type"], "").(string)
+	postAnimalSize := helper.RetrieveSafeInterfaceValue(dbPost["post_animal_size"], "").(string)
+
 	return map[string]interface{}{
-		"post_id":            dbPost["post_id"].(string),
-		"post_author":        dbPost["post_author"].(string),
-		"post_author_avatar": dbPost["post_author_avatar"].(string),
-		"text":               dbPost["text"].(string),
-		"created_at":         postDate,
-		"post_location":      dbPost["post_location"],
-		"post_media":         dbPost["post_media"].(string),
-		"likes":              dbPost["likes"].(int64),
-		"shares":             dbPost["shares"].(int64),
-		"comments":           dbPost["comments"].(int64),
-		"post_category":      dbPost["post_category"].(string),
-		"post_reward":        dbPost["post_reward"].(int64) > 0,
-		"post_lostFound":     dbPost["post_lost_found"].(string),
+		"post_id":              dbPost["post_id"].(string),
+		"post_author":          dbPost["post_author"].(string),
+		"post_author_username": dbPost["post_author_username"].(string),
+		"post_author_avatar":   dbPost["post_author_avatar"].(string),
+		"text":                 dbPost["text"].(string),
+		"created_at":           postDate,
+		"post_location":        dbPost["post_location"],
+		"post_media":           dbPost["post_media"].(string),
+		"likes":                dbPost["likes"].(int64),
+		"shares":               dbPost["shares"].(int64),
+		"comments":             dbPost["comments"].(int64),
+		"post_category":        dbPost["post_category"].(string),
+		"post_reward":          dbPost["post_reward"].(int64) > 0,
+		"post_lostFound":       postLostFound,
+		"post_animal_type":     postAnimalType,
+		"post_animal_size":     postAnimalSize,
 	}, nil
 }
 
