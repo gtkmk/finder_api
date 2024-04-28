@@ -65,7 +65,7 @@ func (followDatabase *FollowDatabase) CreateFollow(followInfo *followDomain.Foll
 			id,
 			follower_id,
 			followed_id,
-			created_at,
+			created_at
 		) 
 		VALUES (?, ?, ?, ?)`
 

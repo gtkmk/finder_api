@@ -37,7 +37,7 @@ func (createManageLike *CreateManageLike) Execute() (int, error) {
 
 	err := createManageLike.manageLike()
 	if err != nil {
-		if rollbackErr := createManageLike.rollbackToSavePointAndCommit(); err != nil {
+		if rollbackErr := createManageLike.rollbackToSavePointAndCommit(); rollbackErr != nil {
 			return 0, rollbackErr
 		}
 		return 0, err
@@ -49,7 +49,7 @@ func (createManageLike *CreateManageLike) Execute() (int, error) {
 	}
 
 	if err := createManageLike.Transaction.Commit(); err != nil {
-		if rollbackErr := createManageLike.rollbackToSavePointAndCommit(); err != nil {
+		if rollbackErr := createManageLike.rollbackToSavePointAndCommit(); rollbackErr != nil {
 			return 0, rollbackErr
 		}
 		return 0, createManageLike.CustomError.ThrowError(err.Error())

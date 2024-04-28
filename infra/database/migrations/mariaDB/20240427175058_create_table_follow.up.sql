@@ -1,10 +1,10 @@
 CREATE TABLE IF NOT EXISTS follow (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    follower_id INT NOT NULL,
-    followed_id INT NOT NULL,
+    id VARCHAR(191) PRIMARY KEY,
+    follower_id VARCHAR(191) NOT NULL,
+    followed_id VARCHAR(191) NOT NULL,
     created_at DATETIME(3) NULL,
-    FOREIGN KEY (follower_id) REFERENCES user(id),
-    FOREIGN KEY (followed_id) REFERENCES user(id)
+    FOREIGN KEY (follower_id) REFERENCES user(id) ON DELETE CASCADE,
+    FOREIGN KEY (followed_id) REFERENCES user(id) ON DELETE CASCADE
 );
 
 CREATE INDEX idx_follower_id ON follow(follower_id);

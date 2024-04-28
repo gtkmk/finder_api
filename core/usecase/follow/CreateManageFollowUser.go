@@ -37,14 +37,14 @@ func (createManageFollowUser *CreateManageFollowUser) Execute() (bool, error) {
 
 	err := createManageFollowUser.manageFollow()
 	if err != nil {
-		if rollbackErr := createManageFollowUser.rollbackToSavePointAndCommit(); err != nil {
+		if rollbackErr := createManageFollowUser.rollbackToSavePointAndCommit(); rollbackErr != nil {
 			return false, rollbackErr
 		}
 		return false, err
 	}
 
 	if err := createManageFollowUser.Transaction.Commit(); err != nil {
-		if rollbackErr := createManageFollowUser.rollbackToSavePointAndCommit(); err != nil {
+		if rollbackErr := createManageFollowUser.rollbackToSavePointAndCommit(); rollbackErr != nil {
 			return false, rollbackErr
 		}
 		return false, createManageFollowUser.CustomError.ThrowError(err.Error())

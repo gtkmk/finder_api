@@ -41,14 +41,14 @@ func (createComment *EditComment) Execute() error {
 
 	err := createComment.persistComment()
 	if err != nil {
-		if rollbackErr := createComment.rollbackToSavePointAndCommit(); err != nil {
+		if rollbackErr := createComment.rollbackToSavePointAndCommit(); rollbackErr != nil {
 			return rollbackErr
 		}
 		return err
 	}
 
 	if err := createComment.Transaction.Commit(); err != nil {
-		if rollbackErr := createComment.rollbackToSavePointAndCommit(); err != nil {
+		if rollbackErr := createComment.rollbackToSavePointAndCommit(); rollbackErr != nil {
 			return rollbackErr
 		}
 		return createComment.ThrowError(err.Error())

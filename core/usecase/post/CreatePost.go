@@ -43,14 +43,14 @@ func (createPost *CreatePost) Execute() error {
 
 	err := createPost.persistPostAndMedia()
 	if err != nil {
-		if rollbackErr := createPost.rollbackToSavePointAndCommit(); err != nil {
+		if rollbackErr := createPost.rollbackToSavePointAndCommit(); rollbackErr != nil {
 			return rollbackErr
 		}
 		return err
 	}
 
 	if err := createPost.transaction.Commit(); err != nil {
-		if rollbackErr := createPost.rollbackToSavePointAndCommit(); err != nil {
+		if rollbackErr := createPost.rollbackToSavePointAndCommit(); rollbackErr != nil {
 			return rollbackErr
 		}
 		return createPost.ThrowError(err.Error())

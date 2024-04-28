@@ -43,14 +43,14 @@ func (deleteComment *DeletePost) Execute() error {
 
 	err := deleteComment.deletePost()
 	if err != nil {
-		if rollbackErr := deleteComment.rollbackToSavePointAndCommit(); err != nil {
+		if rollbackErr := deleteComment.rollbackToSavePointAndCommit(); rollbackErr != nil {
 			return rollbackErr
 		}
 		return err
 	}
 
 	if err := deleteComment.Transaction.Commit(); err != nil {
-		if rollbackErr := deleteComment.rollbackToSavePointAndCommit(); err != nil {
+		if rollbackErr := deleteComment.rollbackToSavePointAndCommit(); rollbackErr != nil {
 			return rollbackErr
 		}
 		return deleteComment.ThrowError(err.Error())

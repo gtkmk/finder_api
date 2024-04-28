@@ -45,14 +45,14 @@ func (editPost *EditPost) Execute() error {
 
 	err := editPost.persistPostEdition()
 	if err != nil {
-		if rollbackErr := editPost.rollbackToSavePointAndCommit(); err != nil {
+		if rollbackErr := editPost.rollbackToSavePointAndCommit(); rollbackErr != nil {
 			return rollbackErr
 		}
 		return err
 	}
 
 	if err := editPost.Transaction.Commit(); err != nil {
-		if rollbackErr := editPost.rollbackToSavePointAndCommit(); err != nil {
+		if rollbackErr := editPost.rollbackToSavePointAndCommit(); rollbackErr != nil {
 			return rollbackErr
 		}
 		return editPost.ThrowError(err.Error())
