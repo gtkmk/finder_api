@@ -132,3 +132,8 @@ func (toDisk *ToDisk) FileToBase64(filePath string) (string, error) {
 	base64Data := base64.StdEncoding.EncodeToString(fileData)
 	return base64Data, nil
 }
+
+func (toDisk *ToDisk) GetStaticImageFullPath(imageName string, dst string) string {
+	fullPath := filepath.Join(dst, imageName)
+	return "./" + fullPath
+}

@@ -239,3 +239,8 @@ func (aws *Aws) FileToBase64(filePath string) (string, error) {
 
 	return "", nil
 }
+
+func (aws *Aws) GetStaticImageFullPath(imageName string, dst string) string {
+	// TODO: Implement this
+	return ""
+}

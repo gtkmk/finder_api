@@ -14,6 +14,10 @@ const (
 	UserProfileBannerPortugueseConst  = "Banner do perfil"
 )
 
+const (
+	DefaultImageMimeTypeConst = "image/jpeg"
+)
+
 var DocumentTypesTranslations = map[string]string{
 	PostMediaConst:          PostMediaPortugueseConst,
 	UserProfilePictureConst: UserProfilePicturePortugueseConst,
@@ -25,7 +29,7 @@ type Document struct {
 	Type          string
 	File          *multipart.FileHeader
 	NewName       string
-	PostId        string
+	PostId        *string
 	OwnerId       string
 	MimeType      string
 	FileExtension string
@@ -37,7 +41,7 @@ func NewDocument(
 	documentType string,
 	documentFile *multipart.FileHeader,
 	newName string,
-	postId string,
+	postId *string,
 	ownerId string,
 	mimeType string,
 	fileExtension string,

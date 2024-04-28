@@ -24,6 +24,11 @@ const (
 	TranslatedIsInactive        = "Inativo"
 )
 
+const (
+	DefaultUserProfileImageConst = "default_user_image.jpg"
+	DefaultUserBannerImageConst  = "default_banner_image.jpg"
+)
+
 type User struct {
 	Id              string    `json:"id"`
 	Name            string    `json:"name"`

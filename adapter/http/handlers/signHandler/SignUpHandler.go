@@ -84,6 +84,7 @@ func (signUpHandler *SignUpHandler) Handle(context *gin.Context) {
 
 	if err := userUsecase.NewCreateUser(
 		transaction,
+		signUpHandler.Uuid,
 		signUpHandler.UserDatabase,
 		signUpHandler.DocumentDatabase,
 		file.NewFileFactory(),

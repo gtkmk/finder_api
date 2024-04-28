@@ -3,6 +3,7 @@ package userUsecase
 import (
 	"encoding/json"
 
+	"github.com/gtkmk/finder_api/core/domain/documentDomain"
 	"github.com/gtkmk/finder_api/core/domain/helper"
 	"github.com/gtkmk/finder_api/core/port/sharedMethods"
 
@@ -13,6 +14,7 @@ import (
 )
 
 type SignUp struct {
+	Uuid                port.UuidInterface
 	UserDatabase        repositories.UserRepository
 	DocumentDatabase    repositories.DocumentRepository
 	FileService         port.FileFactoryInterface
@@ -27,6 +29,7 @@ type SignUp struct {
 
 func NewCreateUser(
 	transaction port.ConnectionInterface,
+	uuid port.UuidInterface,
 	userDatabase repositories.UserRepository,
 	documentDatabase repositories.DocumentRepository,
 	fileService port.FileFactoryInterface,
@@ -38,6 +41,7 @@ func NewCreateUser(
 	userEvent sharedMethods.CreateUserEventInterface,
 ) *SignUp {
 	return &SignUp{
+		Uuid:                uuid,
 		Transaction:         transaction,
 		UserDatabase:        userDatabase,
 		DocumentDatabase:    documentDatabase,
@@ -77,6 +81,14 @@ func (signUp *SignUp) Execute(userIP string, userDevice string) error {
 	}
 
 	if err := signUp.createUser(userIP, userDevice); err != nil {
+		if transactionErr := signUp.Transaction.Rollback(); transactionErr != nil {
+			return signUp.CustomError.ThrowError(transactionErr.Error())
+		}
+
+		return err
+	}
+
+	if err := signUp.saveDefaultProfileImage(); err != nil {
 		if transactionErr := signUp.Transaction.Rollback(); transactionErr != nil {
 			return signUp.CustomError.ThrowError(transactionErr.Error())
 		}
@@ -134,6 +146,60 @@ func (signUp *SignUp) createUser(userIP string, userDevice string) error {
 
 	if err := signUp.saveNewUserEvent(userIP, userDevice); err != nil {
 		return err
+	}
+
+	return nil
+}
+
+func (signUp *SignUp) saveDefaultProfileImage() error {
+	fileService := signUp.FileService.Make("default_user_image")
+
+	defaultProfilePicture := signUp.buildDefaultProfileImageDocumentObj(
+		documentDomain.UserProfilePictureConst,
+		userDomain.DefaultUserProfileImageConst,
+	)
+
+	defaultBannerPicture := signUp.buildDefaultProfileImageDocumentObj(
+		documentDomain.UserProfileBannerConst,
+		userDomain.DefaultUserBannerImageConst,
+	)
+
+	if err := signUp.persistUserDocuments(
+		defaultProfilePicture,
+		fileService.GetStaticImageFullPath(userDomain.DefaultUserProfileImageConst, signUp.Dist),
+	); err != nil {
+		return err
+	}
+
+	if err := signUp.persistUserDocuments(
+		defaultBannerPicture,
+		fileService.GetStaticImageFullPath(userDomain.DefaultUserBannerImageConst, signUp.Dist),
+	); err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (signUp *SignUp) buildDefaultProfileImageDocumentObj(documentType string, imageName string) *documentDomain.Document {
+	return documentDomain.NewDocument(
+		signUp.Uuid.GenerateUuid(),
+		documentType,
+		nil,
+		imageName,
+		nil,
+		signUp.User.Id,
+		documentDomain.DefaultImageMimeTypeConst,
+		"",
+	)
+}
+
+func (signUp *SignUp) persistUserDocuments(document *documentDomain.Document, documentPath string) error {
+	if err := signUp.DocumentDatabase.CreateMedia(
+		document,
+		documentPath,
+	); err != nil {
+		return signUp.CustomError.ThrowError(err.Error())
 	}
 
 	return nil

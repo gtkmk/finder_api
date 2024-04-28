@@ -11,4 +11,5 @@ type FileInterface interface {
 	RemoveTempFile() error
 	DownloadFile() ([]byte, error)
 	FileToBase64(filePath string) (string, error)
+	GetStaticImageFullPath(imageName string, dst string) string
 }

@@ -160,7 +160,7 @@ func (postRequest *PostRequest) convertPostMediaIntoDocumentDomain(
 		fileType,
 		contextFile,
 		fileName,
-		postRequest.PostId,
+		&postRequest.PostId,
 		documentOwnerId,
 		mimeType,
 		"",
