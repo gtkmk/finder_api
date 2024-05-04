@@ -12,9 +12,20 @@ const (
 )
 
 const (
+	TranslatedFoundConst = "achado"
+	TranslatedLostConst  = "perdido"
+)
+
+const (
 	PrivacyPublicConst      = "public"
 	PrivacyPrivateConst     = "private"
 	PrivacyFriendsOnlyConst = "friends_only"
+)
+
+const (
+	TranslatedPrivacyPublicConst      = "público"
+	TranslatedPrivacyPrivateConst     = "privado"
+	TranslatedPrivacyFriendsOnlyConst = "apenas amigos"
 )
 
 const (
@@ -24,21 +35,45 @@ const (
 )
 
 const (
+	TranslatedCategoryDefaultConst = "padrão"
+	TranslatedCategoryPaidConst    = "impulsionado"
+	TranslatedCategoryAddConst     = "anúncio"
+)
+
+const (
 	RewardOptionTrueConst  = "1"
 	RewardOptionFalseConst = "0"
 )
 
 const (
-	AnimalTypeDogConst   = "cachorro"
-	AnimalTypeCatConst   = "gato"
-	AnimalTypeBirdConst  = "ave"
-	AnimalTypeOtherConst = "outro"
+	TranslatedRewardOptionTrueConst  = "possui recompensa"
+	TranslatedRewardOptionFalseConst = "sem recompensa"
 )
 
 const (
-	AnimalSizeSmallConst  = "pequeno"
-	AnimalSizeMediumConst = "médio"
-	AnimalSizeBigConst    = "grande"
+	AnimalTypeDogConst   = "dog"
+	AnimalTypeCatConst   = "cat"
+	AnimalTypeBirdConst  = "bird"
+	AnimalTypeOtherConst = "other"
+)
+
+const (
+	TranslatedAnimalTypeDogConst   = "cachorro"
+	TranslatedAnimalTypeCatConst   = "gato"
+	TranslatedAnimalTypeBirdConst  = "ave"
+	TranslatedAnimalTypeOtherConst = "outro"
+)
+
+const (
+	AnimalSizeSmallConst  = "small"
+	AnimalSizeMediumConst = "medium"
+	AnimalSizeBigConst    = "large"
+)
+
+const (
+	TranslatedAnimalSizeSmallConst  = "pequeno"
+	TranslatedAnimalSizeMediumConst = "médio"
+	TranslatedAnimalSizeBigConst    = "grande"
 )
 
 var LostAndFoundStatus = []string{

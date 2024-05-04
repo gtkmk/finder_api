@@ -15,10 +15,12 @@ import (
 )
 
 const (
-	CreatePost   string = "createPost"
-	FindAllPosts string = "findAllPosts"
-	EditPost     string = "editPost"
-	DeletePost   string = "deletePost"
+	CreatePost     string = "createPost"
+	FindAllPosts   string = "findAllPosts"
+	EditPost       string = "editPost"
+	DeletePost     string = "deletePost"
+	FindPostParams string = "findPostParams"
+	// === Route constants marker ===
 )
 
 type PostRoutes struct {
@@ -71,6 +73,13 @@ func (postRoutes *PostRoutes) Register() {
 		postRoutes.jwt.IsAuthorizedMiddleware(),
 		postRoutes.postHandlers[DeletePost].Handle,
 	)
+
+	postRoutes.GET(
+		routesConstants.FindPostParamsRouteConst,
+		postRoutes.jwt.IsAuthorizedMiddleware(),
+		postRoutes.postHandlers[FindPostParams].Handle,
+	)
+	// === Register route marker ===
 }
 
 func createMapOfPostHandlers(
@@ -102,5 +111,10 @@ func createMapOfPostHandlers(
 			uuid,
 			contextExtractor,
 		),
+		FindPostParams: postHandler.NewFindPostPostParamsHandler(
+			connection,
+			uuid,
+		),
+		// === Register handler marker ===
 	}
 }
