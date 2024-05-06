@@ -58,13 +58,13 @@ func (createComment *EditComment) Execute() error {
 }
 
 func (createComment *EditComment) verifyIfCommentExists() error {
-	proposal, err := createComment.CommentDatabase.FindCommentByID(createComment.Comment.Id)
+	comment, err := createComment.CommentDatabase.FindCommentByID(createComment.Comment.Id)
 
 	if err != nil {
 		return createComment.ThrowError(err.Error())
 	}
 
-	if proposal == nil {
+	if comment == nil {
 		return createComment.ThrowError(helper.CommentNotFoundMessageConst)
 	}
 

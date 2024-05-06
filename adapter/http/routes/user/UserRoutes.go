@@ -26,6 +26,8 @@ const (
 	SignInHandlerKeyConst           string = "signInHandler"
 	SignOutHandlerKeyConst          string = "signOutHandler"
 	SignUpHandlerKeyConst           string = "signUpHandler"
+	FindUserDetailsConst            string = "findUserDetails"
+	// === Route constants marker ===
 )
 
 type UserRoutes struct {
@@ -77,6 +79,12 @@ func (userRoutes *UserRoutes) Register() {
 		userRoutes.userHandlers[GetLoggedUserKeyConst].Handle,
 	)
 
+	userRoutes.GET(
+		routesConstants.GetUserDetailsRouteConst,
+		userRoutes.jwt.IsAuthorizedMiddleware(),
+		userRoutes.userHandlers[FindUserDetailsConst].Handle,
+	)
+
 	//Erro em algum lugar por aqui:
 
 	//userRoutes.GET(
@@ -117,8 +125,8 @@ func (userRoutes *UserRoutes) Register() {
 	//	routesConstants.PatchForgotPasswordRouteConst,
 	//	userRoutes.userHandlers[PatchUserForgotPasswordKeyConst].Handle,
 	//)
-	//
 
+	// === Register route marker ===
 }
 
 func createMapOfUserHandlers(
@@ -165,5 +173,10 @@ func createMapOfUserHandlers(
 			connection,
 			uuid,
 		),
+		FindUserDetailsConst: userHandler.NewFindUserUserDetailsHandler(
+			connection,
+			uuid,
+		),
+		// === Register handler marker ===
 	}
 }
