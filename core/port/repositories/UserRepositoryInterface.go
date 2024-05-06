@@ -13,4 +13,5 @@ type UserRepository interface {
 	UpdateResetPasswordStatus(toggle bool, status string, userId string) error
 	SetUserStatus(userId string, status string) error
 	ResetUserPassword(userId string, password string) error
+	FindCompleteUserInfoByID(userId string) ([]map[string]interface{}, error)
 }

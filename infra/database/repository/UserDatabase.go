@@ -95,13 +95,15 @@ func (userDatabase *UserDatabase) FindUserById(id string) (*userDomain.User, err
         email as user_email,
 		password as user_password,
 		cpf as user_cpf,
-        role as user_role,
 		cellphone_number as user_cellphone_number,
         is_active as user_is_active,
         status as user_status,
-        created_at as user_created_at,
-      FROM user
-      WHERE id = ?`
+        created_at as user_created_at
+      FROM 
+	  	user
+      WHERE
+	  	id = ? AND deleted_at IS NULL
+	`
 
 	if err := userDatabase.connection.Raw(query, &dbUser, id); err != nil {
 		return nil, err
@@ -217,4 +219,41 @@ func (userDatabase *UserDatabase) ResetUserPassword(
 	}
 
 	return nil
+}
+
+func (userDatabase *UserDatabase) FindCompleteUserInfoByID(userId string) ([]map[string]interface{}, error) {
+	query := `
+		SELECT 
+			user.id,
+			user.name,
+			user.user_name,
+			user.email,
+			user.cellphone_number,
+			user.status,
+			user.is_active,
+			user.created_at,
+			(SELECT COUNT(*) FROM follow WHERE follower_id = user.id) AS following_count,
+			(SELECT COUNT(*) FROM follow WHERE followed_id = user.id) AS followers_count,
+			(SELECT COUNT(*) FROM post WHERE user_id = user.id AND lost_found = 'lost' AND deleted_at IS NULL) AS lost_posts_count,
+			(SELECT COUNT(*) FROM post WHERE user_id = user.id AND lost_found = 'found' AND deleted_at IS NULL) AS found_posts_count,
+			(SELECT COUNT(*) FROM post WHERE user_id = user.id AND deleted_at IS NULL) AS total_posts_count,
+			docPic.path AS profile_picture_path,
+			docBan.path AS profile_banner_picture_path
+		FROM
+				user
+		INNER JOIN 
+				document docPic ON user.id = docPic.owner_id AND docPic.type = 'profile_picture' AND docPic.deleted_at IS NULL
+		INNER JOIN
+				document docBan ON user.id = docBan.owner_id AND docBan.type = 'profile_banner_picture' AND docBan.deleted_at IS NULL
+		WHERE 
+    		user.id = ? AND user.deleted_at IS NULL
+	`
+
+	dbProposal, err := userDatabase.connection.Rows(query, userId)
+
+	if err != nil {
+		return nil, err
+	}
+
+	return dbProposal, nil
 }

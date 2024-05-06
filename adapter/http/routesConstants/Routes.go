@@ -18,7 +18,7 @@ const (
 	PatchResetPasswordRouteConst  = "/user/reset-password"
 	PostForgotPasswordRouteConst  = "/user/forgot-password"
 	GetLoggedUserRouteConst       = "/logged-user"
-	GetUserRouteConst             = "/user"
+	GetUserDetailsRouteConst      = "/user"
 	GetUsersListRouteConst        = "/users"
 
 	PostCreatePostRouteConst   = "/post"
