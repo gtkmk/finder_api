@@ -16,6 +16,11 @@ func (findPostPostParams *FindPostPostParams) Execute() map[string]interface{} {
 		postDomain.TranslatedLostConst:  postDomain.LostConst,
 	}
 
+	translatedRewardOptions := map[string]interface{}{
+		postDomain.TranslatedRewardOptionTrueConst:  postDomain.RewardOptionTrueConst,
+		postDomain.TranslatedRewardOptionFalseConst: postDomain.RewardOptionFalseConst,
+	}
+
 	// TODO: Return with this when this functionality is to be implemented
 	// translatedAcceptedPrivacySettings := map[string]interface{}{
 	// 	postDomain.TranslatedPrivacyPublicConst:      postDomain.PrivacyPublicConst,
@@ -43,9 +48,10 @@ func (findPostPostParams *FindPostPostParams) Execute() map[string]interface{} {
 	}
 
 	return map[string]interface{}{
-		"LostAndFoundStatus":  translatedLostAndFoundStatus,
-		"AcceptedCategories":  translatedAcceptedCategories,
-		"AcceptedAnimalTypes": translatedAcceptedAnimalTypes,
-		"AcceptedAnimalSizes": translatedAcceptedAnimalSizes,
+		"LostAndFoundStatus":     translatedLostAndFoundStatus,
+		"AcceptedCategories":     translatedAcceptedCategories,
+		"AcceptedAnimalTypes":    translatedAcceptedAnimalTypes,
+		"AcceptedAnimalSizes":    translatedAcceptedAnimalSizes,
+		"AcceptedRewardsOptions": translatedRewardOptions,
 	}
 }
