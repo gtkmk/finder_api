@@ -1,4 +1,4 @@
-FROM golang:1.21.3
+FROM golang:1.22.2
 
 RUN go install github.com/cosmtrek/air@v1.49
 RUN go install -tags 'mysql sqlite3' github.com/golang-migrate/migrate/v4/cmd/migrate@latest
