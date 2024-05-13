@@ -6,13 +6,14 @@ import (
 	"github.com/gtkmk/finder_api/adapter/http/routes"
 	"github.com/gtkmk/finder_api/adapter/http/routesConstants"
 	"github.com/gtkmk/finder_api/core/domain/customError"
+	"github.com/gtkmk/finder_api/core/domain/helper"
 	"github.com/gtkmk/finder_api/core/port"
 	"github.com/gtkmk/finder_api/core/port/repositories"
 	userUsecase "github.com/gtkmk/finder_api/core/usecase/user"
 	"github.com/gtkmk/finder_api/infra/database/repository"
 )
 
-type FindUserUserDetailsHandler struct {
+type FindUsersListByNameHandler struct {
 	connection       port.ConnectionInterface
 	uuid             port.UuidInterface
 	contextExtractor port.HttpContextValuesExtractorInterface
@@ -20,12 +21,12 @@ type FindUserUserDetailsHandler struct {
 	customError      port.CustomErrorInterface
 }
 
-func NewFindUserUserDetailsHandler(
+func NewFindUsersListByNameHandler(
 	connection port.ConnectionInterface,
 	uuid port.UuidInterface,
 	contextExtractor port.HttpContextValuesExtractorInterface,
 ) port.HandlerInterface {
-	return &FindUserUserDetailsHandler{
+	return &FindUsersListByNameHandler{
 		connection:       connection,
 		uuid:             uuid,
 		contextExtractor: contextExtractor,
@@ -33,15 +34,20 @@ func NewFindUserUserDetailsHandler(
 	}
 }
 
-type UserDetailsResponse struct {
-	UserInfo     interface{} `json:"data"`
-	IsOwnProfile bool        `json:"is_own_profile"`
-}
-
-func (findUserUserDetailsHandler *FindUserUserDetailsHandler) Handle(context *gin.Context) {
+func (findUserUserDetailsHandler *FindUsersListByNameHandler) Handle(context *gin.Context) {
 	jsonResponse := routes.NewJsonResponse(context, findUserUserDetailsHandler.connection, findUserUserDetailsHandler.uuid)
 
-	userId := context.Query("user-id")
+	nameToSearch := context.Query("name")
+
+	if nameToSearch == "" {
+		jsonResponse.ThrowError(
+			routesConstants.MessageKeyConst,
+			findUserUserDetailsHandler.customError.ThrowError(helper.FieldIsMandatoryConst, "nome"),
+			routesConstants.BadRequestConst,
+		)
+
+		return
+	}
 
 	loggedUserId, extractErr := findUserUserDetailsHandler.contextExtractor.Extract(context)
 	if extractErr != nil {
@@ -54,16 +60,12 @@ func (findUserUserDetailsHandler *FindUserUserDetailsHandler) Handle(context *gi
 		return
 	}
 
-	if userId == "" {
-		userId = loggedUserId
-	}
-
 	findUserUserDetailsHandler.openTableConnection()
 
-	userInfo, err := userUsecase.NewFindUserUserDetails(
+	usersInfo, err := userUsecase.NewFindUsersListByName(
 		findUserUserDetailsHandler.userDatabase,
 		findUserUserDetailsHandler.customError,
-	).Execute(userId)
+	).Execute(nameToSearch, loggedUserId)
 
 	if err != nil {
 		jsonResponse.ThrowError(
@@ -74,16 +76,9 @@ func (findUserUserDetailsHandler *FindUserUserDetailsHandler) Handle(context *gi
 		return
 	}
 
-	isOwnProfile := userId == loggedUserId
-
-	response := UserDetailsResponse{
-		UserInfo:     userInfo,
-		IsOwnProfile: isOwnProfile,
-	}
-
-	jsonResponse.SendJson("data", response, routesConstants.StatusOk)
+	jsonResponse.SendJson("data", usersInfo, routesConstants.StatusOk)
 }
 
-func (findUserUserDetailsHandler *FindUserUserDetailsHandler) openTableConnection() {
+func (findUserUserDetailsHandler *FindUsersListByNameHandler) openTableConnection() {
 	findUserUserDetailsHandler.userDatabase = repository.NewUserDatabase(findUserUserDetailsHandler.connection)
 }

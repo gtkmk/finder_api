@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 	"strings"
 
 	"github.com/gtkmk/finder_api/core/domain/datetimeDomain"
@@ -249,11 +250,41 @@ func (userDatabase *UserDatabase) FindCompleteUserInfoByID(userId string) ([]map
     		user.id = ? AND user.deleted_at IS NULL
 	`
 
-	dbProposal, err := userDatabase.connection.Rows(query, userId)
+	dbUser, err := userDatabase.connection.Rows(query, userId)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return dbProposal, nil
+	return dbUser, nil
+}
+
+func (userDatabase *UserDatabase) FindUsersListByName(userName string, loggedUserId string) ([]map[string]interface{}, error) {
+	query := `
+		SELECT 
+			user.id,
+			user.name,
+			user.user_name,
+			CASE
+				WHEN EXISTS (SELECT 1 FROM follow WHERE follower_id = ? AND followed_id = user.id) THEN true
+				ELSE false
+			END AS is_following,
+			CASE
+				WHEN EXISTS (SELECT 1 FROM follow WHERE follower_id = user.id AND followed_id = ?) THEN true
+				ELSE false
+			END AS is_followed
+		FROM
+			user
+		WHERE 
+			(user.name LIKE ? OR user.user_name LIKE ?) AND user.id != ? AND user.deleted_at IS NULL
+	`
+
+	return userDatabase.connection.Rows(
+		query,
+		loggedUserId,
+		loggedUserId,
+		fmt.Sprintf("%%%s%%", userName),
+		fmt.Sprintf("%%%s%%", userName),
+		loggedUserId,
+	)
 }
