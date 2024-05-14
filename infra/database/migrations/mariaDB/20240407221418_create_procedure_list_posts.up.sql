@@ -54,7 +54,7 @@ BEGIN
         SET @query = concat(@query, ' AND post.user_id = ''', user_id,''' ');
     END IF;
 
-    SET @query = CONCAT(@query, ' LIMIT ', result_limit, ' OFFSET ', result_offset);
+    SET @query = CONCAT(@query, ' ORDER BY post.created_at DESC LIMIT ', result_limit, ' OFFSET ', result_offset);
 
     PREPARE finalQuery FROM @query;
     EXECUTE finalQuery;
