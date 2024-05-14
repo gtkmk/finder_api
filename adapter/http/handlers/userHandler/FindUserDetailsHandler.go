@@ -33,11 +33,6 @@ func NewFindUserUserDetailsHandler(
 	}
 }
 
-type UserDetailsResponse struct {
-	UserInfo     interface{} `json:"data"`
-	IsOwnProfile bool        `json:"is_own_profile"`
-}
-
 func (findUserUserDetailsHandler *FindUserUserDetailsHandler) Handle(context *gin.Context) {
 	jsonResponse := routes.NewJsonResponse(context, findUserUserDetailsHandler.connection, findUserUserDetailsHandler.uuid)
 
@@ -63,7 +58,7 @@ func (findUserUserDetailsHandler *FindUserUserDetailsHandler) Handle(context *gi
 	userInfo, err := userUsecase.NewFindUserUserDetails(
 		findUserUserDetailsHandler.userDatabase,
 		findUserUserDetailsHandler.customError,
-	).Execute(userId)
+	).Execute(userId, loggedUserId)
 
 	if err != nil {
 		jsonResponse.ThrowError(
@@ -74,14 +69,7 @@ func (findUserUserDetailsHandler *FindUserUserDetailsHandler) Handle(context *gi
 		return
 	}
 
-	isOwnProfile := userId == loggedUserId
-
-	response := UserDetailsResponse{
-		UserInfo:     userInfo,
-		IsOwnProfile: isOwnProfile,
-	}
-
-	jsonResponse.SendJson("data", response, routesConstants.StatusOk)
+	jsonResponse.SendJson("data", userInfo, routesConstants.StatusOk)
 }
 
 func (findUserUserDetailsHandler *FindUserUserDetailsHandler) openTableConnection() {

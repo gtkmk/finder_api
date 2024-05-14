@@ -222,7 +222,7 @@ func (userDatabase *UserDatabase) ResetUserPassword(
 	return nil
 }
 
-func (userDatabase *UserDatabase) FindCompleteUserInfoByID(userId string) ([]map[string]interface{}, error) {
+func (userDatabase *UserDatabase) FindCompleteUserInfoByID(userId, loggedUserId string) ([]map[string]interface{}, error) {
 	query := `
 		SELECT 
 			user.id,
@@ -239,7 +239,19 @@ func (userDatabase *UserDatabase) FindCompleteUserInfoByID(userId string) ([]map
 			(SELECT COUNT(*) FROM post WHERE user_id = user.id AND lost_found = 'found' AND deleted_at IS NULL) AS found_posts_count,
 			(SELECT COUNT(*) FROM post WHERE user_id = user.id AND deleted_at IS NULL) AS total_posts_count,
 			docPic.path AS profile_picture_path,
-			docBan.path AS profile_banner_picture_path
+			docBan.path AS profile_banner_picture_path,
+			CASE
+				WHEN user.id = ? THEN true
+				ELSE false
+			END AS is_own_profile,
+			CASE
+				WHEN EXISTS (SELECT 1 FROM follow WHERE follower_id = ? AND followed_id = user.id) THEN true
+				ELSE false
+			END AS is_following,
+			CASE
+				WHEN EXISTS (SELECT 1 FROM follow WHERE follower_id = user.id AND followed_id = ?) THEN true
+				ELSE false
+			END AS is_followed
 		FROM
 				user
 		INNER JOIN 
@@ -250,7 +262,13 @@ func (userDatabase *UserDatabase) FindCompleteUserInfoByID(userId string) ([]map
     		user.id = ? AND user.deleted_at IS NULL
 	`
 
-	dbUser, err := userDatabase.connection.Rows(query, userId)
+	dbUser, err := userDatabase.connection.Rows(
+		query,
+		loggedUserId,
+		loggedUserId,
+		loggedUserId,
+		userId,
+	)
 
 	if err != nil {
 		return nil, err
