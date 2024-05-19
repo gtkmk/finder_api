@@ -4,6 +4,7 @@ CREATE PROCEDURE `find_paginated_posts`(
     IN `neighborhood` TEXT,
     IN `reward` CHAR(1),
     IN `user_id` VARCHAR(191),
+    IN `only_following_posts` CHAR(1),
     IN `result_limit` INT,
     IN `result_offset` INT
 )
@@ -57,6 +58,10 @@ BEGIN
 
     IF user_id IS NOT NULL THEN
         SET @query = concat(@query, ' AND post.user_id = ''', user_id,''' ');
+    END IF;
+    
+    IF only_following_posts THEN
+        SET @query = CONCAT(@query, ' AND post.user_id IN (SELECT followed_id FROM follow WHERE follower_id = ''', logged_user_id, ''')');
     END IF;
 
     SET @query = CONCAT(@query, ' ORDER BY post.created_at DESC LIMIT ', result_limit, ' OFFSET ', result_offset);

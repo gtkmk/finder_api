@@ -20,19 +20,21 @@ type ListPostsRequest struct {
 	LostFound            *string `form:"lostFound"`
 	Reward               *string `form:"reward"`
 	UserId               *string `form:"user_id"`
+	OnlyFollowingPosts   *string `form:"only_following_posts"`
 	checkForSqlInjection sharedMethods.CheckForSqlInjectionInterface
 }
 
 const (
-	TrueRewardValueConst  = "1"
-	FalseRewardValueConst = "0"
+	TrueValueConst  = "1"
+	FalseValueConst = "0"
 )
 
 const (
-	RequestRewardFieldNameConst         = "recompensa"
-	RequestLostFoundFieldNameConst      = "em análise"
-	RequestOrdenationFieldNameConst     = "ordenação por campo"
-	RequestOrdenationTypeFieldNameConst = "ordenação por tipo"
+	RequestRewardFieldNameConst             = "recompensa"
+	RequestOnlyFollowingPostsFieldNameConst = "apenas posts de conhecidos"
+	RequestLostFoundFieldNameConst          = "em análise"
+	RequestOrdenationFieldNameConst         = "ordenação por campo"
+	RequestOrdenationTypeFieldNameConst     = "ordenação por tipo"
 )
 
 const (
@@ -79,6 +81,12 @@ func (listPostsRequest *ListPostsRequest) ValidatePostsFilterFields(context *gin
 		}
 	}
 
+	if listPostsRequest.OnlyFollowingPosts != nil {
+		if err := listPostsRequest.verifyIfOnlyFollowingPostsIsValid(listPostsRequest.OnlyFollowingPosts); err != nil {
+			return err
+		}
+	}
+
 	if listPostsRequest.UserId != nil {
 		if err := requestEntityFieldsValidation.IsValidUUID(UserIdFieldConst, *listPostsRequest.UserId); err != nil {
 			return err
@@ -121,13 +129,13 @@ func (listPostsRequest *ListPostsRequest) verifyIfRewardIsValid(reward *string) 
 	}
 }
 
-func (listPostsRequest *ListPostsRequest) verifyIfReanalysisIsValid(reanalysis *string) error {
-	switch *reanalysis {
-	case TrueRewardValueConst,
-		FalseRewardValueConst:
+func (listPostsRequest *ListPostsRequest) verifyIfOnlyFollowingPostsIsValid(onlyFollowingPosts *string) error {
+	switch *onlyFollowingPosts {
+	case TrueValueConst,
+		FalseValueConst:
 		return nil
 	default:
-		return fmt.Errorf(helper.OptionNotRecognizedMessageConst, RequestRewardFieldNameConst)
+		return fmt.Errorf(helper.OptionNotRecognizedMessageConst, RequestOnlyFollowingPostsFieldNameConst)
 	}
 }
 
@@ -139,6 +147,7 @@ func (listPostsRequest *ListPostsRequest) ConvertProposalFiltersIntoFilterDomain
 		listPostsRequest.LostFound,
 		listPostsRequest.Reward,
 		listPostsRequest.UserId,
+		listPostsRequest.OnlyFollowingPosts,
 		filterDomain.MaxItensPerPageConst,
 		nil,
 	)

@@ -1,18 +1,19 @@
 package filterDomain
 
 const (
-	MaxItensPerPageConst = 15
+	MaxItensPerPageConst = 150
 )
 
 type PostFilter struct {
-	Page         *int64 `json:"page"`
-	LoggedUserId string
-	Neighborhood *string `json:"neighborhood"`
-	LostFound    *string `json:"lostFound"`
-	Reward       *string `json:"reward"`
-	UserId       *string `json:"user_id"`
-	Limit        int64   `json:"limit"`
-	OffSet       *int64  `json:"offset"`
+	Page               *int64 `json:"page"`
+	LoggedUserId       string
+	Neighborhood       *string `json:"neighborhood"`
+	LostFound          *string `json:"lostFound"`
+	Reward             *string `json:"reward"`
+	UserId             *string `json:"user_id"`
+	OnlyFollowingPosts *string `json:"only_following_posts"`
+	Limit              int64   `json:"limit"`
+	OffSet             *int64  `json:"offset"`
 }
 
 func NewPostFilter(
@@ -22,6 +23,7 @@ func NewPostFilter(
 	LostFound *string,
 	Reward *string,
 	UserId *string,
+	OnlyFollowingPosts *string,
 	Limit int64,
 	OffSet *int64,
 ) *PostFilter {
@@ -32,6 +34,7 @@ func NewPostFilter(
 		LostFound,
 		Reward,
 		UserId,
+		OnlyFollowingPosts,
 		Limit,
 		OffSet,
 	}
