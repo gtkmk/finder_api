@@ -142,6 +142,7 @@ func (generatePaginationDetails *GeneratePaginationDetails) MapDBCommentsToPagin
 		"author_name":           dbComments["author_name"].(string),
 		"author_username":       dbComments["author_username"].(string),
 		"comment_author_avatar": dbComments["comment_author_avatar"].(string),
+		"is_own_comment":        dbComments["is_own_comment"].(int64),
 		"text":                  dbComments["text"].(string),
 		"created_at":            creationDate,
 		"updated_at":            updateDate,

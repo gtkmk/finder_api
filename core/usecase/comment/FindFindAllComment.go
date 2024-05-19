@@ -35,7 +35,7 @@ func NewFindCommentFindAll(
 	}
 }
 
-func (findCommentFindAll *FindCommentFindAll) Execute(actualPage int) ([]map[string]interface{}, error) {
+func (findCommentFindAll *FindCommentFindAll) Execute(actualPage int, loggedUserId string) ([]map[string]interface{}, error) {
 	if err := findCommentFindAll.verifyIfPostExists(); err != nil {
 		return nil, err
 	}
@@ -51,6 +51,7 @@ func (findCommentFindAll *FindCommentFindAll) Execute(actualPage int) ([]map[str
 
 	return findCommentFindAll.CommentDatabase.FindAllComments(
 		findCommentFindAll.PostId,
+		loggedUserId,
 		*offSet,
 		maxPageItensConst,
 	)
