@@ -8,7 +8,7 @@ import (
 )
 
 const (
-	maxPageItensConst = 5
+	maxPageItensConst = 50
 )
 
 type FindCommentFindAll struct {
