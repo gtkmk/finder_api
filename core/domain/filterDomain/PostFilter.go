@@ -12,6 +12,7 @@ type PostFilter struct {
 	Reward             *string `json:"reward"`
 	UserId             *string `json:"user_id"`
 	OnlyFollowingPosts *string `json:"only_following_posts"`
+	SpecificPost       *string `json:"specific_post"`
 	Limit              int64   `json:"limit"`
 	OffSet             *int64  `json:"offset"`
 }
@@ -24,6 +25,7 @@ func NewPostFilter(
 	Reward *string,
 	UserId *string,
 	OnlyFollowingPosts *string,
+	SpecificPost *string,
 	Limit int64,
 	OffSet *int64,
 ) *PostFilter {
@@ -35,6 +37,7 @@ func NewPostFilter(
 		Reward,
 		UserId,
 		OnlyFollowingPosts,
+		SpecificPost,
 		Limit,
 		OffSet,
 	}

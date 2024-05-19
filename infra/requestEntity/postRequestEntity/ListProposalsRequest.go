@@ -21,6 +21,7 @@ type ListPostsRequest struct {
 	Reward               *string `form:"reward"`
 	UserId               *string `form:"user_id"`
 	OnlyFollowingPosts   *string `form:"only_following_posts"`
+	SpecificPost         *string `form:"specific_post"`
 	checkForSqlInjection sharedMethods.CheckForSqlInjectionInterface
 }
 
@@ -38,7 +39,8 @@ const (
 )
 
 const (
-	UserIdFieldConst = "o usuário"
+	UserIdFieldConst       = "o usuário"
+	SpecificPostFieldConst = "o post especifico"
 )
 
 func NewListPostsRequest(
@@ -89,6 +91,12 @@ func (listPostsRequest *ListPostsRequest) ValidatePostsFilterFields(context *gin
 
 	if listPostsRequest.UserId != nil {
 		if err := requestEntityFieldsValidation.IsValidUUID(UserIdFieldConst, *listPostsRequest.UserId); err != nil {
+			return err
+		}
+	}
+
+	if listPostsRequest.SpecificPost != nil {
+		if err := requestEntityFieldsValidation.IsValidUUID(SpecificPostFieldConst, *listPostsRequest.SpecificPost); err != nil {
 			return err
 		}
 	}
@@ -148,6 +156,7 @@ func (listPostsRequest *ListPostsRequest) ConvertProposalFiltersIntoFilterDomain
 		listPostsRequest.Reward,
 		listPostsRequest.UserId,
 		listPostsRequest.OnlyFollowingPosts,
+		listPostsRequest.SpecificPost,
 		filterDomain.MaxItensPerPageConst,
 		nil,
 	)

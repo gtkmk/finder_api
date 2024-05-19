@@ -60,7 +60,6 @@ func ValidateFieldInArray(field, fieldName string, allowedValues []string) error
 		return helper.ErrorBuilder(helper.FieldCannotBeEmptyConst, fieldName)
 	}
 
-	fmt.Println("&&&&&&&&&&&&&&&&&&&&&&&&&&&&")
 	for _, val := range allowedValues {
 		fmt.Println(val, " ==:> ", field)
 		if field == val {
