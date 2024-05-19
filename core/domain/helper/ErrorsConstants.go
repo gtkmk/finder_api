@@ -107,6 +107,7 @@ const (
 	YouCannotFollowYourselfConst                         = "Você não pode seguir a si mesmo"
 	PostAnimalTypeNotRecognizedConst                     = "Tipo de animal não reconhecido."
 	PostAnimalSizeNotRecognizedConst                     = "Tamanho de animal não reconhecido."
+	CannotEditPostNotOwnedConst                          = "Não é possivel editar um post que não pertene a você."
 )
 
 const (
