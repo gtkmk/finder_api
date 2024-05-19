@@ -6,6 +6,8 @@ CREATE PROCEDURE `find_paginated_posts`(
     IN `user_id` VARCHAR(191),
     IN `only_following_posts` CHAR(1),
     IN `specific_post` VARCHAR(191),
+    IN `animal_type` VARCHAR(35),
+    IN `animal_size` VARCHAR(35),
     IN `result_limit` INT,
     IN `result_offset` INT
 )
@@ -67,6 +69,14 @@ BEGIN
 
     IF specific_post IS NOT NULL THEN
         SET @query = CONCAT(@query, ' AND post.id = ''', specific_post, '''');
+    END IF;
+
+    IF animal_type IS NOT NULL THEN
+        SET @query = CONCAT(@query, ' AND post.animal_type = ''', animal_type, '''');
+    END IF;
+
+    IF animal_size IS NOT NULL THEN
+        SET @query = CONCAT(@query, ' AND post.animal_size = ''', animal_size, '''');
     END IF;
 
     SET @query = CONCAT(@query, ' ORDER BY post.created_at DESC LIMIT ', result_limit, ' OFFSET ', result_offset);

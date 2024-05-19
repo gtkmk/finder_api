@@ -22,6 +22,8 @@ type ListPostsRequest struct {
 	UserId               *string `form:"user_id"`
 	OnlyFollowingPosts   *string `form:"only_following_posts"`
 	SpecificPost         *string `form:"specific_post"`
+	AnimalType           *string `form:"animal_type"`
+	AnimalSize           *string `form:"animal_size"`
 	checkForSqlInjection sharedMethods.CheckForSqlInjectionInterface
 }
 
@@ -33,7 +35,6 @@ const (
 const (
 	RequestRewardFieldNameConst             = "recompensa"
 	RequestOnlyFollowingPostsFieldNameConst = "apenas posts de conhecidos"
-	RequestLostFoundFieldNameConst          = "em análise"
 	RequestOrdenationFieldNameConst         = "ordenação por campo"
 	RequestOrdenationTypeFieldNameConst     = "ordenação por tipo"
 )
@@ -101,6 +102,18 @@ func (listPostsRequest *ListPostsRequest) ValidatePostsFilterFields(context *gin
 		}
 	}
 
+	if listPostsRequest.AnimalType != nil {
+		if err := listPostsRequest.verifyIfAnimalTypeIsValid(*listPostsRequest.AnimalType); err != nil {
+			return err
+		}
+	}
+
+	if listPostsRequest.AnimalSize != nil {
+		if err := listPostsRequest.verifyIfAnimalSizeIsValid(*listPostsRequest.AnimalSize); err != nil {
+			return err
+		}
+	}
+
 	return nil
 }
 
@@ -147,6 +160,35 @@ func (listPostsRequest *ListPostsRequest) verifyIfOnlyFollowingPostsIsValid(only
 	}
 }
 
+func (listPostsRequest *ListPostsRequest) verifyIfAnimalTypeIsValid(anmalType string) error {
+	validOptions := map[string]struct{}{
+		postDomain.AnimalTypeDogConst:   {},
+		postDomain.AnimalTypeCatConst:   {},
+		postDomain.AnimalTypeBirdConst:  {},
+		postDomain.AnimalTypeOtherConst: {},
+	}
+
+	if _, ok := validOptions[anmalType]; !ok {
+		return fmt.Errorf(helper.PostAnimalTypeNotRecognizedConst)
+	}
+
+	return nil
+}
+
+func (listPostsRequest *ListPostsRequest) verifyIfAnimalSizeIsValid(animalSize string) error {
+	validOptions := map[string]struct{}{
+		postDomain.AnimalSizeSmallConst:  {},
+		postDomain.AnimalSizeMediumConst: {},
+		postDomain.AnimalSizeBigConst:    {},
+	}
+
+	if _, ok := validOptions[animalSize]; !ok {
+		return fmt.Errorf(helper.PostAnimalSizeNotRecognizedConst)
+	}
+
+	return nil
+}
+
 func (listPostsRequest *ListPostsRequest) ConvertProposalFiltersIntoFilterDomain() *filterDomain.PostFilter {
 	filters := filterDomain.NewPostFilter(
 		listPostsRequest.Page,
@@ -157,6 +199,8 @@ func (listPostsRequest *ListPostsRequest) ConvertProposalFiltersIntoFilterDomain
 		listPostsRequest.UserId,
 		listPostsRequest.OnlyFollowingPosts,
 		listPostsRequest.SpecificPost,
+		listPostsRequest.AnimalType,
+		listPostsRequest.AnimalSize,
 		filterDomain.MaxItensPerPageConst,
 		nil,
 	)
