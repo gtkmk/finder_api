@@ -1,4 +1,5 @@
 CREATE PROCEDURE `find_paginated_posts`(
+    IN `logged_user_id` VARCHAR(191),
     IN `lost_found` VARCHAR(30),
     IN `neighborhood` TEXT,
     IN `reward` CHAR(1),
@@ -31,6 +32,10 @@ BEGIN
         usr_doc.mime_type AS post_author_avatar_mime_type,
         (SELECT COUNT(*) FROM comment WHERE comment.post_id = post.id) AS comments, 
         (SELECT COUNT(*) FROM interaction_likes WHERE interaction_likes.like_type = "post" AND interaction_likes.post_id = post.id) AS likes,
+        CASE
+			WHEN usr.id = ''', logged_user_id, ''' THEN true
+			    ELSE false
+		END AS is_own_post,
         COUNT(*) OVER() AS total_records
     FROM post
         INNER JOIN user usr ON post.user_id = usr.id

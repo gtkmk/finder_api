@@ -14,6 +14,7 @@ import (
 
 type ListPostsRequest struct {
 	uuid                 port.UuidInterface
+	LoggedUserId         string
 	Page                 *int64  `form:"page"`
 	Neighborhood         *string `form:"neighborhood"`
 	LostFound            *string `form:"lostFound"`
@@ -42,9 +43,11 @@ func NewListPostsRequest(
 	context *gin.Context,
 	uuid port.UuidInterface,
 	checkForSqlInjection sharedMethods.CheckForSqlInjectionInterface,
+	loggedUserId string,
 ) (*ListPostsRequest, error) {
 	listPostsRequest := &ListPostsRequest{
 		checkForSqlInjection: checkForSqlInjection,
+		LoggedUserId:         loggedUserId,
 	}
 	if err := context.ShouldBind(listPostsRequest); err != nil {
 		return nil, err
@@ -131,6 +134,7 @@ func (listPostsRequest *ListPostsRequest) verifyIfReanalysisIsValid(reanalysis *
 func (listPostsRequest *ListPostsRequest) ConvertProposalFiltersIntoFilterDomain() *filterDomain.PostFilter {
 	filters := filterDomain.NewPostFilter(
 		listPostsRequest.Page,
+		listPostsRequest.LoggedUserId,
 		listPostsRequest.Neighborhood,
 		listPostsRequest.LostFound,
 		listPostsRequest.Reward,

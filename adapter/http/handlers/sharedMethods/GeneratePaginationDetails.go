@@ -124,6 +124,7 @@ func (generatePaginationDetails *GeneratePaginationDetails) MapDBPostToPaginatio
 		"post_lostFound":       postLostFound,
 		"post_animal_type":     postAnimalType,
 		"post_animal_size":     postAnimalSize,
+		"is_own_post":          dbPost["is_own_post"].(int64),
 	}, nil
 }
 

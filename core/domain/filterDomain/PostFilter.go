@@ -5,7 +5,8 @@ const (
 )
 
 type PostFilter struct {
-	Page         *int64  `json:"page"`
+	Page         *int64 `json:"page"`
+	LoggedUserId string
 	Neighborhood *string `json:"neighborhood"`
 	LostFound    *string `json:"lostFound"`
 	Reward       *string `json:"reward"`
@@ -16,6 +17,7 @@ type PostFilter struct {
 
 func NewPostFilter(
 	Page *int64,
+	LoggedUserId string,
 	Neighborhood *string,
 	LostFound *string,
 	Reward *string,
@@ -25,6 +27,7 @@ func NewPostFilter(
 ) *PostFilter {
 	return &PostFilter{
 		Page,
+		LoggedUserId,
 		Neighborhood,
 		LostFound,
 		Reward,
