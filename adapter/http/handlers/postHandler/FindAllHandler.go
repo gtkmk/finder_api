@@ -1,6 +1,8 @@
 package postHandler
 
 import (
+	"fmt"
+
 	"github.com/gin-gonic/gin"
 
 	handlerSharedMethods "github.com/gtkmk/finder_api/adapter/http/handlers/sharedMethods"
@@ -47,12 +49,10 @@ func (findPostAllHandler *FindPostAllHandler) Handle(context *gin.Context) {
 			findPostAllHandler.customError.ThrowError(extractErr.Error()),
 			routesConstants.InternarServerErrorConst,
 		)
-
 		return
 	}
 
 	postsFilters, err := findPostAllHandler.definePostsFilter(context, loggedUserId)
-
 	if err != nil {
 		jsonResponse.ThrowError(
 			routesConstants.MessageKeyConst,
@@ -60,6 +60,15 @@ func (findPostAllHandler *FindPostAllHandler) Handle(context *gin.Context) {
 			routesConstants.BadRequestConst,
 		)
 		return
+	}
+
+	isOwnProfile := context.Query("is_own_profile")
+
+	fmt.Println("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
+	fmt.Println(isOwnProfile)
+	fmt.Println("*********************************")
+	if isOwnProfile != "" {
+		postsFilters.UserId = &loggedUserId
 	}
 
 	calculateQueryOffsetSharedMethod := sharedMethods.NewCalculateQueryOffset()
