@@ -1,8 +1,6 @@
 package postHandler
 
 import (
-	"fmt"
-
 	"github.com/gin-gonic/gin"
 
 	handlerSharedMethods "github.com/gtkmk/finder_api/adapter/http/handlers/sharedMethods"
@@ -64,9 +62,6 @@ func (findPostAllHandler *FindPostAllHandler) Handle(context *gin.Context) {
 
 	isOwnProfile := context.Query("is_own_profile")
 
-	fmt.Println("kkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkkk")
-	fmt.Println(isOwnProfile)
-	fmt.Println("*********************************")
 	if isOwnProfile != "" {
 		postsFilters.UserId = &loggedUserId
 	}
