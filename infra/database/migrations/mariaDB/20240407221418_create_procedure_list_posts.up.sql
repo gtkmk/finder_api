@@ -31,6 +31,7 @@ BEGIN
         usr.id AS author_id,
         usr.name AS post_author,
         usr.user_name AS post_author_username,
+        usr.cellphone_number AS post_author_cellphone,
         usr_doc.path AS post_author_avatar,
         usr_doc.type AS post_author_avatar_type,
         usr_doc.mime_type AS post_author_avatar_mime_type,
