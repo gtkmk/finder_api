@@ -99,7 +99,7 @@ func (postCreatePostHandler *PostEditPostHandler) Handle(context *gin.Context) {
 		file.NewFileFactory(),
 		*post,
 		transaction,
-	).Execute(); err != nil {
+	).Execute(loggedUserId); err != nil {
 		jsonResponse.ThrowError(
 			routesConstants.MessageKeyConst,
 			err,

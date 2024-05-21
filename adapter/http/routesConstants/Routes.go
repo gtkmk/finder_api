@@ -19,7 +19,7 @@ const (
 	PostForgotPasswordRouteConst  = "/user/forgot-password"
 	GetLoggedUserRouteConst       = "/logged-user"
 	GetUserDetailsRouteConst      = "/user"
-	GetUsersListRouteConst        = "/users"
+	GetUsersListByNameRouteConst  = "/users"
 
 	PostCreatePostRouteConst   = "/post"
 	PostFindAllPostsRouteConst = "/posts"

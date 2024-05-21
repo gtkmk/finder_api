@@ -85,7 +85,7 @@ func (deletePostHandler *DeletePostHandler) Handle(context *gin.Context) {
 		return
 	}
 
-	jsonResponse.SendJson(routesConstants.MessageKeyConst, success.SuccessfullyDeletedCommentConst, routesConstants.CreatedConst)
+	jsonResponse.SendJson(routesConstants.MessageKeyConst, success.SuccessfullyDeletedPostConst, routesConstants.CreatedConst)
 }
 
 func (deletePostHandler *DeletePostHandler) openTableConnection(transaction port.ConnectionInterface) {

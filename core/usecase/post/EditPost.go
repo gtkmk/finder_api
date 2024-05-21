@@ -34,8 +34,12 @@ func NewEditPost(
 	}
 }
 
-func (editPost *EditPost) Execute() error {
+func (editPost *EditPost) Execute(loggedUserId string) error {
 	if err := editPost.verifyIfPostExists(); err != nil {
+		return err
+	}
+
+	if err := editPost.verifyIfPostBelongsToUser(loggedUserId); err != nil {
 		return err
 	}
 
@@ -73,6 +77,14 @@ func (editPost *EditPost) verifyIfPostExists() error {
 	}
 
 	editPost.FoundPost = post
+
+	return nil
+}
+
+func (editPost *EditPost) verifyIfPostBelongsToUser(loggedUserId string) error {
+	if editPost.FoundPost.UserId != loggedUserId {
+		return editPost.ThrowError(helper.CannotEditPostNotOwnedConst)
+	}
 
 	return nil
 }

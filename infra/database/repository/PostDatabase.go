@@ -69,14 +69,19 @@ func (postDatabase *PostDatabase) CreatePost(post *postDomain.Post) error {
 func (postDatabase *PostDatabase) FindAllPosts(
 	filter *filterDomain.PostFilter,
 ) ([]map[string]interface{}, error) {
-	query := `CALL find_paginated_posts (?, ?, ?, ?, ?, ?)`
+	query := `CALL find_paginated_posts (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	dbProposals, err := postDatabase.connection.Rows(
 		query,
+		filter.LoggedUserId,
 		filter.LostFound,
 		filter.Neighborhood,
 		filter.Reward,
 		filter.UserId,
+		filter.OnlyFollowingPosts,
+		filter.SpecificPost,
+		filter.AnimalType,
+		filter.AnimalSize,
 		filter.Limit,
 		filter.OffSet,
 	)
