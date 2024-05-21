@@ -237,6 +237,10 @@ func (postRequest *PostRequest) validatePrivacy() error {
 }
 
 func (postRequest *PostRequest) validateLostFound() error {
+	if len(*postRequest.LostFound) == 0 {
+		postRequest.LostFound = nil
+	}
+
 	if postRequest.LostFound != nil {
 		return requestEntityFieldsValidation.ValidateFieldInArray(
 			*postRequest.LostFound,
@@ -264,7 +268,7 @@ func (postRequest *PostRequest) validateAnimalFields() error {
 		}
 	}
 
-	if postRequest.AnimalType != nil {
+	if postRequest.AnimalType != nil || *postRequest.AnimalType != "" {
 		if err := requestEntityFieldsValidation.ValidateFieldInArray(
 			*postRequest.AnimalType,
 			AnimalTypeFieldConst,
@@ -274,7 +278,7 @@ func (postRequest *PostRequest) validateAnimalFields() error {
 		}
 	}
 
-	if postRequest.AnimalSize != nil {
+	if postRequest.AnimalSize != nil || *postRequest.AnimalSize != "" {
 		if err := requestEntityFieldsValidation.ValidateFieldInArray(
 			*postRequest.AnimalSize,
 			AnimalSizeFieldConst,
