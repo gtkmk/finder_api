@@ -9,4 +9,5 @@ const (
 	SuccessfullyDeletedPostConst            = "Publicação removida com sucesso."
 	SuccessfullyCreatedCommentConst         = "Comentário criado com sucesso."
 	SuccessfullyDeletedCommentConst         = "Comentário removido com sucesso."
+	SuccessfullyUpdatedFoundStatusConst     = "Status de encontrado atualizado com sucesso."
 )

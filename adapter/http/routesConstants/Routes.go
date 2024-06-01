@@ -26,6 +26,7 @@ const (
 	PostEditPostRouteConst     = "/post"
 	DeletePostRouteConst       = "/post"
 	FindPostParamsRouteConst   = "/post-params"
+	PostAnimalFoundRouteConst  = "/post/animal-found"
 
 	PostLikeRouteConst = "/like"
 

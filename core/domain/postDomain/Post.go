@@ -46,6 +46,11 @@ const (
 )
 
 const (
+	FoundOptionTrueConst  = "1"
+	FoundOptionFalseConst = "0"
+)
+
+const (
 	TranslatedRewardOptionTrueConst  = "possui recompensa"
 	TranslatedRewardOptionFalseConst = "sem recompensa"
 )
@@ -107,20 +112,22 @@ var AcceptedAnimalSizes = []string{
 }
 
 type Post struct {
-	Id          string                   `json:"id"`
-	Text        string                   `json:"text"`
-	Media       *documentDomain.Document `json:"media"`
-	Location    string                   `json:"location"`
-	Reward      bool                     `json:"reward"`
-	Privacy     string                   `json:"privacy"`
-	SharesCount int                      `json:"shares_count"`
-	Category    string                   `json:"category"`
-	LostFound   *string                  `json:"lost_found"`
-	AnimalType  *string                  `json:"animal_type"`
-	AnimalSize  *string                  `json:"animal_size"`
-	UserId      string                   `json:"user_id"`
-	CreatedAt   *time.Time               `json:"created_at"`
-	UpdatedAt   *time.Time               `json:"updated_at"`
+	Id                   string                   `json:"id"`
+	Text                 string                   `json:"text"`
+	Media                *documentDomain.Document `json:"media"`
+	Location             string                   `json:"location"`
+	Reward               bool                     `json:"reward"`
+	Privacy              string                   `json:"privacy"`
+	SharesCount          int                      `json:"shares_count"`
+	Category             string                   `json:"category"`
+	LostFound            *string                  `json:"lost_found"`
+	AnimalType           *string                  `json:"animal_type"`
+	AnimalSize           *string                  `json:"animal_size"`
+	Found                bool                     `json:"reward"`
+	UpdatedFoundStatusAt *time.Time               `json:"updated_found_status_at"`
+	UserId               string                   `json:"user_id"`
+	CreatedAt            *time.Time               `json:"created_at"`
+	UpdatedAt            *time.Time               `json:"updated_at"`
 }
 
 func NewPost(
@@ -135,24 +142,28 @@ func NewPost(
 	lostFound *string,
 	animalType *string,
 	animalSize *string,
+	found bool,
+	updatedFoundStatusAt *time.Time,
 	userID string,
 	createdAt *time.Time,
 	updatedAt *time.Time,
 ) *Post {
 	return &Post{
-		Id:          id,
-		Text:        text,
-		Media:       media,
-		Location:    location,
-		Reward:      reward,
-		Privacy:     privacy,
-		SharesCount: sharesCount,
-		Category:    category,
-		LostFound:   lostFound,
-		AnimalType:  animalType,
-		AnimalSize:  animalSize,
-		UserId:      userID,
-		CreatedAt:   createdAt,
-		UpdatedAt:   updatedAt,
+		Id:                   id,
+		Text:                 text,
+		Media:                media,
+		Location:             location,
+		Reward:               reward,
+		Privacy:              privacy,
+		SharesCount:          sharesCount,
+		Category:             category,
+		LostFound:            lostFound,
+		AnimalType:           animalType,
+		AnimalSize:           animalSize,
+		Found:                found,
+		UpdatedFoundStatusAt: updatedFoundStatusAt,
+		UserId:               userID,
+		CreatedAt:            createdAt,
+		UpdatedAt:            updatedAt,
 	}
 }

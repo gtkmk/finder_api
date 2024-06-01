@@ -290,11 +290,16 @@ func (userDatabase *UserDatabase) FindUsersListByName(userName string, loggedUse
 			CASE
 				WHEN EXISTS (SELECT 1 FROM follow WHERE follower_id = user.id AND followed_id = ?) THEN true
 				ELSE false
-			END AS is_followed
+			END AS is_followed,
+			document.path AS profilePicture
 		FROM
 			user
+			LEFT JOIN
+			document ON document.owner_id = user.id AND document.type = 'profile_picture' AND document.deleted_at IS NULL
 		WHERE 
-			(user.name LIKE ? OR user.user_name LIKE ?) AND user.id != ? AND user.deleted_at IS NULL
+			(user.name LIKE ? OR user.user_name LIKE ?)
+			AND user.id != ? 
+			AND user.deleted_at IS NULL
 	`
 
 	return userDatabase.connection.Rows(
