@@ -24,6 +24,11 @@ var DocumentTypesTranslations = map[string]string{
 	UserProfileBannerConst:  UserProfileBannerPortugueseConst,
 }
 
+var AcceptedUserProfileDocumentTypes = []string{
+	UserProfilePictureConst,
+	UserProfileBannerConst,
+}
+
 type Document struct {
 	ID            string
 	Type          string

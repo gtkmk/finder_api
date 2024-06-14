@@ -35,7 +35,8 @@ const (
 	DeleteCommentRouteConst       = "/comment"
 	FindFindAllCommentsRouteConst = "/comments"
 
-	FindDocumentBase64RouteConst = "/document/imageBase64"
+	FindDocumentBase64RouteConst       = "/document/imageBase64"
+	UpdateChangeProfileImageRouteConst = "/document/changeProfileImage"
 
 	PostFollowRouteConst = "/follow"
 
