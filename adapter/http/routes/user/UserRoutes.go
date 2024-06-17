@@ -28,6 +28,7 @@ const (
 	SignUpHandlerKeyConst           string = "signUpHandler"
 	FindUserDetailsConst            string = "findUserDetails"
 	// === Route constants marker ===
+	UpdateUserUpdateUserInfoConst string = "UpdateUser"
 )
 
 type UserRoutes struct {
@@ -127,6 +128,12 @@ func (userRoutes *UserRoutes) Register() {
 	//)
 
 	// === Register route marker ===
+	userRoutes.PATCH(
+		routesConstants.PatchUserInfoRouteConst,
+		userRoutes.jwt.IsAuthorizedMiddleware(),
+		userRoutes.userHandlers[UpdateUserUpdateUserInfoConst].Handle,
+	)
+
 }
 
 func createMapOfUserHandlers(
@@ -184,5 +191,6 @@ func createMapOfUserHandlers(
 			contextExtractor,
 		),
 		// === Register handler marker ===
+		UpdateUserUpdateUserInfoConst: userHandler.NewUpdateUserUpdateUserInfoHandler(connection, uuid, contextExtractor),
 	}
 }

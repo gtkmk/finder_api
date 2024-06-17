@@ -20,6 +20,7 @@ const (
 	GetLoggedUserRouteConst       = "/logged-user"
 	GetUserDetailsRouteConst      = "/user"
 	GetUsersListByNameRouteConst  = "/users"
+	PatchUserInfoRouteConst       = "/user/info"
 
 	PostCreatePostRouteConst   = "/post"
 	PostFindAllPostsRouteConst = "/posts"

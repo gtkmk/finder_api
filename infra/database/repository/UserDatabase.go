@@ -311,3 +311,22 @@ func (userDatabase *UserDatabase) FindUsersListByName(userName string, loggedUse
 		loggedUserId,
 	)
 }
+
+func (userDatabase *UserDatabase) UpdateUserEmailAndCellphoneNumber(userId string, newName string, newCellphoneNumber string) error {
+	updatedAt, err := datetimeDomain.CreateNow()
+	if err != nil {
+		return err
+	}
+
+	query := `UPDATE user
+                    SET name = ?, cellphone_number = ?, updated_at = ?  
+                    WHERE id = ? AND deleted_at IS NULL`
+
+	var userDb models.User
+
+	if err := userDatabase.connection.Raw(query, &userDb, newName, newCellphoneNumber, updatedAt, userId); err != nil {
+		return err
+	}
+
+	return nil
+}

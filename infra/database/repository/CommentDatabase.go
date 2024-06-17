@@ -148,7 +148,7 @@ func (commentDatabase *CommentDatabase) FindAllComments(postId string, loggedUse
 		INNER JOIN 
 			user ON comment.user_id = user.id
 		LEFT JOIN 
-			document ON document.owner_id = user.id AND document.type = 'profile_picture'
+			document ON document.owner_id = user.id AND document.type = 'profile_picture' AND document.deleted_at IS NULL
 		LEFT JOIN (
 			SELECT 
 				comment_id,
@@ -170,6 +170,7 @@ func (commentDatabase *CommentDatabase) FindAllComments(postId string, loggedUse
 		) AS total_records
 		WHERE 
 			comment.post_id = ?
+			AND comment.deleted_at IS NULL
 		ORDER BY 
 			comment.created_at DESC
 		LIMIT 
