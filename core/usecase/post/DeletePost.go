@@ -15,7 +15,7 @@ type DeletePost struct {
 	port.CustomErrorInterface
 }
 
-const checkPointDeleteCommentTransactionNameConst = "editComment"
+const checkPointDeletePostTransactionNameConst = "deletePost"
 
 func NewDeletePost(
 	postDatabase repositories.PostRepositoryInterface,
@@ -37,7 +37,7 @@ func (deleteComment *DeletePost) Execute() error {
 		return err
 	}
 
-	if err := deleteComment.Transaction.SavePoint(checkPointDeleteCommentTransactionNameConst); err != nil {
+	if err := deleteComment.Transaction.SavePoint(checkPointDeletePostTransactionNameConst); err != nil {
 		return deleteComment.ThrowError(err.Error())
 	}
 
@@ -88,7 +88,7 @@ func (deleteComment *DeletePost) deletePost() error {
 }
 
 func (deleteComment *DeletePost) rollbackToSavePointAndCommit() error {
-	if transactErr := deleteComment.Transaction.RollbackTo(checkPointDeleteCommentTransactionNameConst); transactErr != nil {
+	if transactErr := deleteComment.Transaction.RollbackTo(checkPointDeletePostTransactionNameConst); transactErr != nil {
 		return deleteComment.ThrowError(transactErr.Error())
 	}
 

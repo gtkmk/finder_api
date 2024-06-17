@@ -23,8 +23,11 @@ BEGIN
         post.animal_type AS post_animal_type,
         post.animal_size AS post_animal_size,
         post.shares_count AS shares,
+        post.found AS found_status,
+        post.updated_found_status_at AS updated_found_status_at,
         post.user_id AS post_author_id,
         post.created_at AS created_at,
+        post.updated_at AS updated_at,
         doc.path AS post_media,
         doc.type AS post_media_type,
         doc.mime_type AS post_mime_type,
@@ -35,7 +38,7 @@ BEGIN
         usr_doc.path AS post_author_avatar,
         usr_doc.type AS post_author_avatar_type,
         usr_doc.mime_type AS post_author_avatar_mime_type,
-        (SELECT COUNT(*) FROM comment WHERE comment.post_id = post.id) AS comments, 
+        (SELECT COUNT(*) FROM comment WHERE comment.post_id = post.id AND comment.deleted_at IS NULL) AS comments, 
         (SELECT COUNT(*) FROM interaction_likes WHERE interaction_likes.like_type = "post" AND interaction_likes.post_id = post.id) AS likes,
         CASE
 			WHEN usr.id = ''', logged_user_id, ''' THEN true
@@ -45,7 +48,7 @@ BEGIN
     FROM post
         INNER JOIN user usr ON post.user_id = usr.id
         INNER JOIN document doc ON post.id = doc.post_id
-        LEFT JOIN document usr_doc ON usr.id = usr_doc.owner_id AND usr_doc.type = "profile_picture"
+        LEFT JOIN document usr_doc ON usr.id = usr_doc.owner_id AND usr_doc.type = "profile_picture" AND usr_doc.deleted_at IS NULL
     WHERE post.deleted_at IS NULL');
 
     IF lost_found IS NOT NULL THEN
@@ -65,7 +68,7 @@ BEGIN
     END IF;
     
     IF only_following_posts THEN
-        SET @query = CONCAT(@query, ' AND post.user_id IN (SELECT followed_id FROM follow WHERE follower_id = ''', logged_user_id, ''')');
+        SET @query = CONCAT(@query, ' AND post.user_id IN (SELECT follower_id FROM follow WHERE followed_id = ''', logged_user_id, ''')');
     END IF;
 
     IF specific_post IS NOT NULL THEN

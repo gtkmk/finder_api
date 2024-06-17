@@ -118,6 +118,8 @@ func (postDatabase *PostDatabase) FindPostByID(id string) (*postDomain.Post, err
 		&databasePost.LostFound,
 		&databasePost.AnimalType,
 		&databasePost.AnimalSize,
+		databasePost.Found,
+		&databasePost.UpdatedFoundStatusAt.Time,
 		databasePost.UserId,
 		&databasePost.CreatedAt.Time,
 		&databasePost.UpdatedAt.Time,
@@ -182,4 +184,31 @@ func (postDatabase *PostDatabase) DeletePost(id string) error {
 		deletedAt,
 		id,
 	)
+}
+
+func (postDatabase *PostDatabase) UpdatePostFoundStatus(id string, postFoundStatus string) error {
+	updatedAt, err := datetimeDomain.CreateNow()
+	if err != nil {
+		return err
+	}
+
+	var dbPost *models.Post
+
+	query := `
+		UPDATE post SET 
+			found = ?,
+			updated_found_status_at = ?
+		WHERE id = ?`
+
+	if err := postDatabase.connection.Raw(
+		query,
+		&dbPost,
+		postFoundStatus,
+		updatedAt,
+		id,
+	); err != nil {
+		return err
+	}
+
+	return nil
 }

@@ -365,6 +365,8 @@ func (postRequest *PostRequest) BuildPostObject(postId *string) (*postDomain.Pos
 		postRequest.LostFound,
 		postRequest.AnimalType,
 		postRequest.AnimalSize,
+		false,
+		nil,
 		postRequest.UserId,
 		&dateTime,
 		nil,

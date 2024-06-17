@@ -20,12 +20,14 @@ const (
 	GetLoggedUserRouteConst       = "/logged-user"
 	GetUserDetailsRouteConst      = "/user"
 	GetUsersListByNameRouteConst  = "/users"
+	PatchUserInfoRouteConst       = "/user/info"
 
 	PostCreatePostRouteConst   = "/post"
 	PostFindAllPostsRouteConst = "/posts"
 	PostEditPostRouteConst     = "/post"
 	DeletePostRouteConst       = "/post"
 	FindPostParamsRouteConst   = "/post-params"
+	PostAnimalFoundRouteConst  = "/post/animal-found"
 
 	PostLikeRouteConst = "/like"
 
@@ -34,7 +36,8 @@ const (
 	DeleteCommentRouteConst       = "/comment"
 	FindFindAllCommentsRouteConst = "/comments"
 
-	FindDocumentBase64RouteConst = "/document/imageBase64"
+	FindDocumentBase64RouteConst       = "/document/imageBase64"
+	UpdateChangeProfileImageRouteConst = "/document/changeProfileImage"
 
 	PostFollowRouteConst = "/follow"
 

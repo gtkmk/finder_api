@@ -28,7 +28,7 @@ func (likeDatabase *LikeDatabase) ConfirmExistingLike(likeInfo *likeDomain.Like)
 			user_id,
 			created_at
 		FROM interaction_likes
-		WHERE like_type = ? AND (post_id = ? OR comment_id = ?)`
+		WHERE like_type = ? AND (post_id = ? OR comment_id = ?) AND user_id = ?`
 
 	var databaseLike *models.Like
 
@@ -38,6 +38,7 @@ func (likeDatabase *LikeDatabase) ConfirmExistingLike(likeInfo *likeDomain.Like)
 		likeInfo.LikeType,
 		likeInfo.PostId,
 		likeInfo.CommentId,
+		likeInfo.UserId,
 	); err != nil {
 		return false, nil, err
 	}
