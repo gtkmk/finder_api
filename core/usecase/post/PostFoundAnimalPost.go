@@ -3,6 +3,7 @@ package postUsecase
 import (
 	"github.com/gtkmk/finder_api/core/domain/customError"
 	"github.com/gtkmk/finder_api/core/domain/helper"
+	"github.com/gtkmk/finder_api/core/domain/postDomain"
 	"github.com/gtkmk/finder_api/core/port"
 	"github.com/gtkmk/finder_api/core/port/repositories"
 )
@@ -11,7 +12,7 @@ type FoundAnimalPost struct {
 	PostDatabase repositories.PostRepositoryInterface
 	Transaction  port.ConnectionInterface
 	PostId       string
-	FoundStatus  string
+	FoundPost    postDomain.Post
 	LoggedUserId string
 	port.CustomErrorInterface
 }
@@ -22,14 +23,12 @@ func NewFoundAnimalPost(
 	postDatabase repositories.PostRepositoryInterface,
 	transaction port.ConnectionInterface,
 	postId string,
-	foundStatus string,
 	loggedUserId string,
 ) *FoundAnimalPost {
 	return &FoundAnimalPost{
 		PostDatabase:         postDatabase,
 		Transaction:          transaction,
 		PostId:               postId,
-		FoundStatus:          foundStatus,
 		LoggedUserId:         loggedUserId,
 		CustomErrorInterface: customError.NewCustomError(),
 	}
@@ -77,13 +76,15 @@ func (foundAnimalPost *FoundAnimalPost) verifyIfPostExistsAndCanBeUpdated() erro
 		return foundAnimalPost.ThrowError(helper.UnauthorizedConst)
 	}
 
+	foundAnimalPost.FoundPost = *post
+
 	return nil
 }
 
 func (foundAnimalPost *FoundAnimalPost) updatePostFoundStatus() error {
 	if err := foundAnimalPost.PostDatabase.UpdatePostFoundStatus(
 		foundAnimalPost.PostId,
-		foundAnimalPost.FoundStatus,
+		!foundAnimalPost.FoundPost.Found,
 	); err != nil {
 		return foundAnimalPost.ThrowError(err.Error())
 	}
