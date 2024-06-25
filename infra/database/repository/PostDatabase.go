@@ -186,7 +186,7 @@ func (postDatabase *PostDatabase) DeletePost(id string) error {
 	)
 }
 
-func (postDatabase *PostDatabase) UpdatePostFoundStatus(id string, postFoundStatus string) error {
+func (postDatabase *PostDatabase) UpdatePostFoundStatus(id string, postFoundStatus bool) error {
 	updatedAt, err := datetimeDomain.CreateNow()
 	if err != nil {
 		return err

@@ -118,7 +118,7 @@ func (generatePaginationDetails *GeneratePaginationDetails) MapDBPostToPaginatio
 		"post_author_cellphone":   dbPost["post_author_cellphone"].(string),
 		"post_author_avatar":      dbPost["post_author_avatar"].(string),
 		"text":                    dbPost["text"].(string),
-		"found_status":            helper.ParseInt64(dbPost["found_status"].(string)),
+		"found_status":            dbPost["found_status"].(int64) > 0,
 		"updated_found_status_at": postUpdatedFoundStatusAt,
 		"updated_at":              postUpdatedAt,
 		"created_at":              postDate,

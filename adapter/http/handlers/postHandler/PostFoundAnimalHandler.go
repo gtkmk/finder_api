@@ -6,7 +6,6 @@ import (
 	"github.com/gtkmk/finder_api/adapter/http/routesConstants"
 	"github.com/gtkmk/finder_api/core/domain/customError"
 	"github.com/gtkmk/finder_api/core/domain/helper"
-	"github.com/gtkmk/finder_api/core/domain/postDomain"
 	"github.com/gtkmk/finder_api/core/domain/success"
 	"github.com/gtkmk/finder_api/core/port"
 	"github.com/gtkmk/finder_api/core/port/repositories"
@@ -59,16 +58,6 @@ func (foundAnimalHandler *FoundAnimalHandler) Handle(context *gin.Context) {
 		return
 	}
 
-	foundStatus, err := foundAnimalHandler.getFoundStatus(context)
-	if err != nil {
-		jsonResponse.ThrowError(
-			routesConstants.MessageKeyConst,
-			err,
-			routesConstants.InternarServerErrorConst,
-		)
-		return
-	}
-
 	transaction, err := foundAnimalHandler.connection.BeginTransaction()
 	if err != nil {
 		jsonResponse.ThrowError(
@@ -85,7 +74,6 @@ func (foundAnimalHandler *FoundAnimalHandler) Handle(context *gin.Context) {
 		foundAnimalHandler.postDatabase,
 		transaction,
 		postId,
-		foundStatus,
 		loggedUserId,
 	).Execute(); err != nil {
 		jsonResponse.ThrowError(
@@ -105,18 +93,6 @@ func (foundAnimalHandler *FoundAnimalHandler) getPostId(context *gin.Context) (s
 		return "", helper.ErrorBuilder(helper.FieldIsMandatoryConst, "post-id")
 	}
 	return postId, nil
-}
-
-func (foundAnimalHandler *FoundAnimalHandler) getFoundStatus(context *gin.Context) (string, error) {
-	foundStatus := context.Query("found")
-
-	if foundStatus == "" {
-		return "", helper.ErrorBuilder(helper.FieldIsMandatoryConst, "found")
-	}
-	if foundStatus != postDomain.FoundOptionTrueConst && foundStatus != postDomain.FoundOptionFalseConst {
-		return "", helper.ErrorBuilder(helper.FieldNotInAllowedValuesConst, "found")
-	}
-	return foundStatus, nil
 }
 
 func (foundAnimalHandler *FoundAnimalHandler) openTableConnection(transaction port.ConnectionInterface) {
