@@ -40,8 +40,17 @@ func NewFindPostAllHandler(
 func (findPostAllHandler *FindPostAllHandler) Handle(context *gin.Context) {
 	jsonResponse := routes.NewJsonResponse(context, findPostAllHandler.connection, findPostAllHandler.uuid)
 
-	postsFilters, err := findPostAllHandler.defineProposalsFilter(context)
+	loggedUserId, extractErr := findPostAllHandler.ContextExtractor.Extract(context)
+	if extractErr != nil {
+		jsonResponse.ThrowError(
+			routesConstants.MessageKeyConst,
+			findPostAllHandler.customError.ThrowError(extractErr.Error()),
+			routesConstants.InternarServerErrorConst,
+		)
+		return
+	}
 
+	postsFilters, err := findPostAllHandler.definePostsFilter(context, loggedUserId)
 	if err != nil {
 		jsonResponse.ThrowError(
 			routesConstants.MessageKeyConst,
@@ -49,6 +58,12 @@ func (findPostAllHandler *FindPostAllHandler) Handle(context *gin.Context) {
 			routesConstants.BadRequestConst,
 		)
 		return
+	}
+
+	isOwnProfile := context.Query("is_own_profile")
+
+	if isOwnProfile != "" {
+		postsFilters.UserId = &loggedUserId
 	}
 
 	calculateQueryOffsetSharedMethod := sharedMethods.NewCalculateQueryOffset()
@@ -84,8 +99,9 @@ func (findPostAllHandler *FindPostAllHandler) Handle(context *gin.Context) {
 	jsonResponse.SendJson(routesConstants.DataKeyConst, map[string]interface{}{"posts": responsePosts}, routesConstants.StatusOk)
 }
 
-func (findPostAllHandler *FindPostAllHandler) defineProposalsFilter(
+func (findPostAllHandler *FindPostAllHandler) definePostsFilter(
 	context *gin.Context,
+	loggedUserId string,
 ) (
 	*filterDomain.PostFilter,
 	error,
@@ -96,6 +112,7 @@ func (findPostAllHandler *FindPostAllHandler) defineProposalsFilter(
 		context,
 		findPostAllHandler.uuid,
 		checkForSqlInjectionSharedMethod,
+		loggedUserId,
 	)
 	if err != nil {
 		return nil, findPostAllHandler.customError.ThrowError(err.Error())

@@ -18,7 +18,7 @@ import (
 const (
 	GetLoggedUserKeyConst           string = "getLoggedUser"
 	GetUserKeyConst                 string = "getUser"
-	GetUserListKeyConst             string = "getUserList"
+	GetUserListByNameConst          string = "getUserListByName"
 	PatchUserFirstAccessKeyConst    string = "patchUserFirstAccess"
 	PatchUserForgotPasswordKeyConst string = "patchUserForgotPassword"
 	PatchResetUserPasswordKeyConst  string = "patchResetUserPassword"
@@ -28,6 +28,7 @@ const (
 	SignUpHandlerKeyConst           string = "signUpHandler"
 	FindUserDetailsConst            string = "findUserDetails"
 	// === Route constants marker ===
+	UpdateUserUpdateUserInfoConst string = "UpdateUser"
 )
 
 type UserRoutes struct {
@@ -85,18 +86,18 @@ func (userRoutes *UserRoutes) Register() {
 		userRoutes.userHandlers[FindUserDetailsConst].Handle,
 	)
 
+	userRoutes.GET(
+		routesConstants.GetUsersListByNameRouteConst,
+		userRoutes.jwt.IsAuthorizedMiddleware(),
+		userRoutes.userHandlers[GetUserListByNameConst].Handle,
+	)
+
 	//Erro em algum lugar por aqui:
 
 	//userRoutes.GET(
 	//	routesConstants.GetUserRouteConst,
 	//	userRoutes.jwt.IsAuthorizedMiddleware(),
 	//	userRoutes.userHandlers[GetUserKeyConst].Handle,
-	//)
-	//
-	//userRoutes.GET(
-	//	routesConstants.GetUsersListRouteConst,
-	//	userRoutes.jwt.IsAuthorizedMiddleware(),
-	//	userRoutes.userHandlers[GetUserListKeyConst].Handle,
 	//)
 	//
 	//userRoutes.PATCH(
@@ -127,6 +128,12 @@ func (userRoutes *UserRoutes) Register() {
 	//)
 
 	// === Register route marker ===
+	userRoutes.PATCH(
+		routesConstants.PatchUserInfoRouteConst,
+		userRoutes.jwt.IsAuthorizedMiddleware(),
+		userRoutes.userHandlers[UpdateUserUpdateUserInfoConst].Handle,
+	)
+
 }
 
 func createMapOfUserHandlers(
@@ -176,7 +183,14 @@ func createMapOfUserHandlers(
 		FindUserDetailsConst: userHandler.NewFindUserUserDetailsHandler(
 			connection,
 			uuid,
+			contextExtractor,
+		),
+		GetUserListByNameConst: userHandler.NewFindUsersListByNameHandler(
+			connection,
+			uuid,
+			contextExtractor,
 		),
 		// === Register handler marker ===
+		UpdateUserUpdateUserInfoConst: userHandler.NewUpdateUserUpdateUserInfoHandler(connection, uuid, contextExtractor),
 	}
 }

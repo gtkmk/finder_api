@@ -2,6 +2,7 @@ package repository
 
 import (
 	"database/sql"
+	"fmt"
 	"strings"
 
 	"github.com/gtkmk/finder_api/core/domain/datetimeDomain"
@@ -221,7 +222,7 @@ func (userDatabase *UserDatabase) ResetUserPassword(
 	return nil
 }
 
-func (userDatabase *UserDatabase) FindCompleteUserInfoByID(userId string) ([]map[string]interface{}, error) {
+func (userDatabase *UserDatabase) FindCompleteUserInfoByID(userId, loggedUserId string) ([]map[string]interface{}, error) {
 	query := `
 		SELECT 
 			user.id,
@@ -238,7 +239,19 @@ func (userDatabase *UserDatabase) FindCompleteUserInfoByID(userId string) ([]map
 			(SELECT COUNT(*) FROM post WHERE user_id = user.id AND lost_found = 'found' AND deleted_at IS NULL) AS found_posts_count,
 			(SELECT COUNT(*) FROM post WHERE user_id = user.id AND deleted_at IS NULL) AS total_posts_count,
 			docPic.path AS profile_picture_path,
-			docBan.path AS profile_banner_picture_path
+			docBan.path AS profile_banner_picture_path,
+			CASE
+				WHEN user.id = ? THEN true
+				ELSE false
+			END AS is_own_profile,
+			CASE
+				WHEN EXISTS (SELECT 1 FROM follow WHERE follower_id = ? AND followed_id = user.id) THEN true
+				ELSE false
+			END AS is_following,
+			CASE
+				WHEN EXISTS (SELECT 1 FROM follow WHERE follower_id = user.id AND followed_id = ?) THEN true
+				ELSE false
+			END AS is_followed
 		FROM
 				user
 		INNER JOIN 
@@ -249,11 +262,71 @@ func (userDatabase *UserDatabase) FindCompleteUserInfoByID(userId string) ([]map
     		user.id = ? AND user.deleted_at IS NULL
 	`
 
-	dbProposal, err := userDatabase.connection.Rows(query, userId)
+	dbUser, err := userDatabase.connection.Rows(
+		query,
+		loggedUserId,
+		loggedUserId,
+		loggedUserId,
+		userId,
+	)
 
 	if err != nil {
 		return nil, err
 	}
 
-	return dbProposal, nil
+	return dbUser, nil
+}
+
+func (userDatabase *UserDatabase) FindUsersListByName(userName string, loggedUserId string) ([]map[string]interface{}, error) {
+	query := `
+		SELECT 
+			user.id,
+			user.name,
+			user.user_name,
+			CASE
+				WHEN EXISTS (SELECT 1 FROM follow WHERE follower_id = ? AND followed_id = user.id) THEN true
+				ELSE false
+			END AS is_following,
+			CASE
+				WHEN EXISTS (SELECT 1 FROM follow WHERE follower_id = user.id AND followed_id = ?) THEN true
+				ELSE false
+			END AS is_followed,
+			document.path AS profilePicture
+		FROM
+			user
+			LEFT JOIN
+			document ON document.owner_id = user.id AND document.type = 'profile_picture' AND document.deleted_at IS NULL
+		WHERE 
+			(user.name LIKE ? OR user.user_name LIKE ?)
+			AND user.id != ? 
+			AND user.deleted_at IS NULL
+	`
+
+	return userDatabase.connection.Rows(
+		query,
+		loggedUserId,
+		loggedUserId,
+		fmt.Sprintf("%%%s%%", userName),
+		fmt.Sprintf("%%%s%%", userName),
+		loggedUserId,
+	)
+}
+
+func (userDatabase *UserDatabase) UpdateUserEmailAndCellphoneNumber(userId string, newName string, newCellphoneNumber string) error {
+	updatedAt, err := datetimeDomain.CreateNow()
+	if err != nil {
+		return err
+	}
+
+	query := `UPDATE user
+                    SET name = ?, cellphone_number = ?, updated_at = ?  
+                    WHERE id = ? AND deleted_at IS NULL`
+
+	var userDb models.User
+
+	if err := userDatabase.connection.Raw(query, &userDb, newName, newCellphoneNumber, updatedAt, userId); err != nil {
+		return err
+	}
+
+	return nil
 }

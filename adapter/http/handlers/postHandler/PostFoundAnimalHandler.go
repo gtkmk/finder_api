@@ -13,7 +13,7 @@ import (
 	"github.com/gtkmk/finder_api/infra/database/repository"
 )
 
-type DeletePostHandler struct {
+type FoundAnimalHandler struct {
 	connection       port.ConnectionInterface
 	uuid             port.UuidInterface
 	ContextExtractor port.HttpContextValuesExtractorInterface
@@ -21,12 +21,12 @@ type DeletePostHandler struct {
 	port.CustomErrorInterface
 }
 
-func NewDeletePostHandler(
+func NewPostAnimalFoundHandler(
 	connection port.ConnectionInterface,
 	uuid port.UuidInterface,
 	contextExtractor port.HttpContextValuesExtractorInterface,
 ) port.HandlerInterface {
-	return &DeletePostHandler{
+	return &FoundAnimalHandler{
 		connection:           connection,
 		uuid:                 uuid,
 		ContextExtractor:     contextExtractor,
@@ -34,45 +34,44 @@ func NewDeletePostHandler(
 	}
 }
 
-func (deletePostHandler *DeletePostHandler) Handle(context *gin.Context) {
-	jsonResponse := routes.NewJsonResponse(context, deletePostHandler.connection, deletePostHandler.uuid)
+func (foundAnimalHandler *FoundAnimalHandler) Handle(context *gin.Context) {
+	jsonResponse := routes.NewJsonResponse(context, foundAnimalHandler.connection, foundAnimalHandler.uuid)
 
-	loggedUserId, extractErr := deletePostHandler.ContextExtractor.Extract(context)
+	loggedUserId, extractErr := foundAnimalHandler.ContextExtractor.Extract(context)
 	if extractErr != nil {
 		jsonResponse.ThrowError(
 			routesConstants.MessageKeyConst,
-			deletePostHandler.ThrowError(extractErr.Error()),
+			foundAnimalHandler.ThrowError(extractErr.Error()),
 			routesConstants.InternarServerErrorConst,
 		)
 
 		return
 	}
 
-	postId := context.Query("post-id")
-	if postId == "" {
-		jsonResponse.ThrowError(
-			routesConstants.MessageKeyConst,
-			helper.ErrorBuilder(helper.FieldIsMandatoryConst, "post-id"),
-			routesConstants.InternarServerErrorConst,
-		)
-
-		return
-	}
-
-	transaction, err := deletePostHandler.connection.BeginTransaction()
+	postId, err := foundAnimalHandler.getPostId(context)
 	if err != nil {
 		jsonResponse.ThrowError(
 			routesConstants.MessageKeyConst,
-			deletePostHandler.ThrowError(err.Error()),
+			err,
 			routesConstants.InternarServerErrorConst,
 		)
 		return
 	}
 
-	deletePostHandler.openTableConnection(transaction)
+	transaction, err := foundAnimalHandler.connection.BeginTransaction()
+	if err != nil {
+		jsonResponse.ThrowError(
+			routesConstants.MessageKeyConst,
+			foundAnimalHandler.ThrowError(err.Error()),
+			routesConstants.InternarServerErrorConst,
+		)
+		return
+	}
 
-	if err := postUsecase.NewDeletePost(
-		deletePostHandler.postDatabase,
+	foundAnimalHandler.openTableConnection(transaction)
+
+	if err := postUsecase.NewFoundAnimalPost(
+		foundAnimalHandler.postDatabase,
 		transaction,
 		postId,
 		loggedUserId,
@@ -85,9 +84,17 @@ func (deletePostHandler *DeletePostHandler) Handle(context *gin.Context) {
 		return
 	}
 
-	jsonResponse.SendJson(routesConstants.MessageKeyConst, success.SuccessfullyDeletedPostConst, routesConstants.CreatedConst)
+	jsonResponse.SendJson(routesConstants.MessageKeyConst, success.SuccessfullyUpdatedFoundStatusConst, routesConstants.CreatedConst)
 }
 
-func (deletePostHandler *DeletePostHandler) openTableConnection(transaction port.ConnectionInterface) {
-	deletePostHandler.postDatabase = repository.NewPostDatabase(transaction)
+func (foundAnimalHandler *FoundAnimalHandler) getPostId(context *gin.Context) (string, error) {
+	postId := context.Query("post-id")
+	if postId == "" {
+		return "", helper.ErrorBuilder(helper.FieldIsMandatoryConst, "post-id")
+	}
+	return postId, nil
+}
+
+func (foundAnimalHandler *FoundAnimalHandler) openTableConnection(transaction port.ConnectionInterface) {
+	foundAnimalHandler.postDatabase = repository.NewPostDatabase(transaction)
 }

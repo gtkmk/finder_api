@@ -100,6 +100,7 @@ func createMapOfCommentHandlers(
 		FindCommentFindAllConst: commentHandler.NewFindAllCommentsHandler(
 			connection,
 			uuid,
+			contextExtractor,
 		),
 		// === Register handler marker ===
 	}

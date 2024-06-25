@@ -125,7 +125,7 @@ func (commentDatabase *CommentDatabase) DeleteComment(
 	)
 }
 
-func (commentDatabase *CommentDatabase) FindAllComments(postId string, offset int64, limit int64) ([]map[string]interface{}, error) {
+func (commentDatabase *CommentDatabase) FindAllComments(postId string, loggedUserId string, offset int64, limit int64) ([]map[string]interface{}, error) {
 	query := `
 		SELECT 
 			comment.id AS comment_id,
@@ -138,13 +138,17 @@ func (commentDatabase *CommentDatabase) FindAllComments(postId string, offset in
 			document.path AS comment_author_avatar,
 			document.mime_type AS comment_author_avatar_mime_type,
 			COALESCE(likes.likes_count, 0) AS likes,
+			CASE
+				WHEN user.id = ? THEN true
+				ELSE false
+			END AS is_own_comment,
 			total_records.total_count AS total_records
 		FROM
 			comment
 		INNER JOIN 
 			user ON comment.user_id = user.id
 		LEFT JOIN 
-			document ON document.owner_id = user.id AND document.type = 'profile_picture'
+			document ON document.owner_id = user.id AND document.type = 'profile_picture' AND document.deleted_at IS NULL
 		LEFT JOIN (
 			SELECT 
 				comment_id,
@@ -166,6 +170,7 @@ func (commentDatabase *CommentDatabase) FindAllComments(postId string, offset in
 		) AS total_records
 		WHERE 
 			comment.post_id = ?
+			AND comment.deleted_at IS NULL
 		ORDER BY 
 			comment.created_at DESC
 		LIMIT 
@@ -177,6 +182,7 @@ func (commentDatabase *CommentDatabase) FindAllComments(postId string, offset in
 
 	dbComments, err := commentDatabase.connection.Rows(
 		query,
+		loggedUserId,
 		postId,
 		postId,
 		limit,

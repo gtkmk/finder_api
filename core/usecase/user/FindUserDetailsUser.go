@@ -21,12 +21,12 @@ func NewFindUserUserDetails(
 	}
 }
 
-func (findUserUserDetails *FindUserUserDetails) Execute(userId string) ([]map[string]interface{}, error) {
+func (findUserUserDetails *FindUserUserDetails) Execute(userId string, loggedUserId string) ([]map[string]interface{}, error) {
 	if err := findUserUserDetails.verifyIfUserExists(userId); err != nil {
 		return nil, err
 	}
 
-	dbProposal, err := findUserUserDetails.UserDatabase.FindCompleteUserInfoByID(userId)
+	dbProposal, err := findUserUserDetails.UserDatabase.FindCompleteUserInfoByID(userId, loggedUserId)
 
 	if err != nil {
 		return nil, findUserUserDetails.CustomError.ThrowError(err.Error())

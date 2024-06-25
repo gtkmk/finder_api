@@ -11,4 +11,5 @@ type PostRepositoryInterface interface {
 	FindPostByID(id string) (*postDomain.Post, error)
 	EditPost(post *postDomain.Post) error
 	DeletePost(id string) error
+	UpdatePostFoundStatus(id string, postFoundStatus bool) error
 }

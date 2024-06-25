@@ -69,14 +69,19 @@ func (postDatabase *PostDatabase) CreatePost(post *postDomain.Post) error {
 func (postDatabase *PostDatabase) FindAllPosts(
 	filter *filterDomain.PostFilter,
 ) ([]map[string]interface{}, error) {
-	query := `CALL find_paginated_posts (?, ?, ?, ?, ?, ?)`
+	query := `CALL find_paginated_posts (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`
 
 	dbProposals, err := postDatabase.connection.Rows(
 		query,
+		filter.LoggedUserId,
 		filter.LostFound,
 		filter.Neighborhood,
 		filter.Reward,
 		filter.UserId,
+		filter.OnlyFollowingPosts,
+		filter.SpecificPost,
+		filter.AnimalType,
+		filter.AnimalSize,
 		filter.Limit,
 		filter.OffSet,
 	)
@@ -113,6 +118,8 @@ func (postDatabase *PostDatabase) FindPostByID(id string) (*postDomain.Post, err
 		&databasePost.LostFound,
 		&databasePost.AnimalType,
 		&databasePost.AnimalSize,
+		databasePost.Found,
+		&databasePost.UpdatedFoundStatusAt.Time,
 		databasePost.UserId,
 		&databasePost.CreatedAt.Time,
 		&databasePost.UpdatedAt.Time,
@@ -177,4 +184,31 @@ func (postDatabase *PostDatabase) DeletePost(id string) error {
 		deletedAt,
 		id,
 	)
+}
+
+func (postDatabase *PostDatabase) UpdatePostFoundStatus(id string, postFoundStatus bool) error {
+	updatedAt, err := datetimeDomain.CreateNow()
+	if err != nil {
+		return err
+	}
+
+	var dbPost *models.Post
+
+	query := `
+		UPDATE post SET 
+			found = ?,
+			updated_found_status_at = ?
+		WHERE id = ?`
+
+	if err := postDatabase.connection.Raw(
+		query,
+		&dbPost,
+		postFoundStatus,
+		updatedAt,
+		id,
+	); err != nil {
+		return err
+	}
+
+	return nil
 }

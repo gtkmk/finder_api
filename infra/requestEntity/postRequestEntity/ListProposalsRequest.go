@@ -14,37 +14,45 @@ import (
 
 type ListPostsRequest struct {
 	uuid                 port.UuidInterface
+	LoggedUserId         string
 	Page                 *int64  `form:"page"`
 	Neighborhood         *string `form:"neighborhood"`
 	LostFound            *string `form:"lostFound"`
 	Reward               *string `form:"reward"`
 	UserId               *string `form:"user_id"`
+	OnlyFollowingPosts   *string `form:"only_following_posts"`
+	SpecificPost         *string `form:"specific_post"`
+	AnimalType           *string `form:"animal_type"`
+	AnimalSize           *string `form:"animal_size"`
 	checkForSqlInjection sharedMethods.CheckForSqlInjectionInterface
 }
 
 const (
-	TrueRewardValueConst  = "1"
-	FalseRewardValueConst = "0"
+	TrueValueConst  = "1"
+	FalseValueConst = "0"
 )
 
 const (
-	RequestRewardFieldNameConst         = "recompensa"
-	RequestLostFoundFieldNameConst      = "em análise"
-	RequestOrdenationFieldNameConst     = "ordenação por campo"
-	RequestOrdenationTypeFieldNameConst = "ordenação por tipo"
+	RequestRewardFieldNameConst             = "recompensa"
+	RequestOnlyFollowingPostsFieldNameConst = "apenas posts de conhecidos"
+	RequestOrdenationFieldNameConst         = "ordenação por campo"
+	RequestOrdenationTypeFieldNameConst     = "ordenação por tipo"
 )
 
 const (
-	UserIdFieldConst = "o usuário"
+	UserIdFieldConst       = "o usuário"
+	SpecificPostFieldConst = "o post especifico"
 )
 
 func NewListPostsRequest(
 	context *gin.Context,
 	uuid port.UuidInterface,
 	checkForSqlInjection sharedMethods.CheckForSqlInjectionInterface,
+	loggedUserId string,
 ) (*ListPostsRequest, error) {
 	listPostsRequest := &ListPostsRequest{
 		checkForSqlInjection: checkForSqlInjection,
+		LoggedUserId:         loggedUserId,
 	}
 	if err := context.ShouldBind(listPostsRequest); err != nil {
 		return nil, err
@@ -76,8 +84,32 @@ func (listPostsRequest *ListPostsRequest) ValidatePostsFilterFields(context *gin
 		}
 	}
 
+	if listPostsRequest.OnlyFollowingPosts != nil {
+		if err := listPostsRequest.verifyIfOnlyFollowingPostsIsValid(listPostsRequest.OnlyFollowingPosts); err != nil {
+			return err
+		}
+	}
+
 	if listPostsRequest.UserId != nil {
 		if err := requestEntityFieldsValidation.IsValidUUID(UserIdFieldConst, *listPostsRequest.UserId); err != nil {
+			return err
+		}
+	}
+
+	if listPostsRequest.SpecificPost != nil {
+		if err := requestEntityFieldsValidation.IsValidUUID(SpecificPostFieldConst, *listPostsRequest.SpecificPost); err != nil {
+			return err
+		}
+	}
+
+	if listPostsRequest.AnimalType != nil {
+		if err := listPostsRequest.verifyIfAnimalTypeIsValid(*listPostsRequest.AnimalType); err != nil {
+			return err
+		}
+	}
+
+	if listPostsRequest.AnimalSize != nil {
+		if err := listPostsRequest.verifyIfAnimalSizeIsValid(*listPostsRequest.AnimalSize); err != nil {
 			return err
 		}
 	}
@@ -118,23 +150,57 @@ func (listPostsRequest *ListPostsRequest) verifyIfRewardIsValid(reward *string) 
 	}
 }
 
-func (listPostsRequest *ListPostsRequest) verifyIfReanalysisIsValid(reanalysis *string) error {
-	switch *reanalysis {
-	case TrueRewardValueConst,
-		FalseRewardValueConst:
+func (listPostsRequest *ListPostsRequest) verifyIfOnlyFollowingPostsIsValid(onlyFollowingPosts *string) error {
+	switch *onlyFollowingPosts {
+	case TrueValueConst,
+		FalseValueConst:
 		return nil
 	default:
-		return fmt.Errorf(helper.OptionNotRecognizedMessageConst, RequestRewardFieldNameConst)
+		return fmt.Errorf(helper.OptionNotRecognizedMessageConst, RequestOnlyFollowingPostsFieldNameConst)
 	}
+}
+
+func (listPostsRequest *ListPostsRequest) verifyIfAnimalTypeIsValid(anmalType string) error {
+	validOptions := map[string]struct{}{
+		postDomain.AnimalTypeDogConst:   {},
+		postDomain.AnimalTypeCatConst:   {},
+		postDomain.AnimalTypeBirdConst:  {},
+		postDomain.AnimalTypeOtherConst: {},
+	}
+
+	if _, ok := validOptions[anmalType]; !ok {
+		return fmt.Errorf(helper.PostAnimalTypeNotRecognizedConst)
+	}
+
+	return nil
+}
+
+func (listPostsRequest *ListPostsRequest) verifyIfAnimalSizeIsValid(animalSize string) error {
+	validOptions := map[string]struct{}{
+		postDomain.AnimalSizeSmallConst:  {},
+		postDomain.AnimalSizeMediumConst: {},
+		postDomain.AnimalSizeBigConst:    {},
+	}
+
+	if _, ok := validOptions[animalSize]; !ok {
+		return fmt.Errorf(helper.PostAnimalSizeNotRecognizedConst)
+	}
+
+	return nil
 }
 
 func (listPostsRequest *ListPostsRequest) ConvertProposalFiltersIntoFilterDomain() *filterDomain.PostFilter {
 	filters := filterDomain.NewPostFilter(
 		listPostsRequest.Page,
+		listPostsRequest.LoggedUserId,
 		listPostsRequest.Neighborhood,
 		listPostsRequest.LostFound,
 		listPostsRequest.Reward,
 		listPostsRequest.UserId,
+		listPostsRequest.OnlyFollowingPosts,
+		listPostsRequest.SpecificPost,
+		listPostsRequest.AnimalType,
+		listPostsRequest.AnimalSize,
 		filterDomain.MaxItensPerPageConst,
 		nil,
 	)

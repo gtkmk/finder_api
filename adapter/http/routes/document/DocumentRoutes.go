@@ -9,13 +9,15 @@ import (
 	"github.com/gtkmk/finder_api/core/domain/jwtAuth"
 	"github.com/gtkmk/finder_api/core/port"
 	"github.com/gtkmk/finder_api/infra/envMode"
+	"github.com/gtkmk/finder_api/infra/httpContextValuesExtractor"
 
 	"github.com/gin-gonic/gin"
 )
 
 const (
 	// === Route constants marker ===
-	FindDocumentImageBase64Const string = "FindDocument"
+	FindDocumentImageBase64Const          string = "FindDocument"
+	UpdateDocumentChangeProfileImageConst string = "UpdateDocument"
 )
 
 type DocumentRoutes struct {
@@ -52,6 +54,11 @@ func (documentRoutes *DocumentRoutes) Register() {
 		documentRoutes.documentHandlers[FindDocumentImageBase64Const].Handle,
 	)
 
+	documentRoutes.PATCH(
+		routesConstants.UpdateChangeProfileImageRouteConst,
+		documentRoutes.jwt.IsAuthorizedMiddleware(),
+		documentRoutes.documentHandlers[UpdateDocumentChangeProfileImageConst].Handle,
+	)
 }
 
 func createMapOfDocumentHandlers(
@@ -60,10 +67,11 @@ func createMapOfDocumentHandlers(
 	uuid port.UuidInterface,
 	passwordEncryption port.EncryptionInterface,
 ) map[string]port.HandlerInterface {
-	// contextExtractor := httpContextValuesExtractor.NewHttpContextValuesExtractor()
+	contextExtractor := httpContextValuesExtractor.NewHttpContextValuesExtractor()
 
 	return map[string]port.HandlerInterface{
 		// === Register handler marker ===
-		FindDocumentImageBase64Const: documentHandler.NewFindDocumentImageBase64Handler(connection, uuid),
+		FindDocumentImageBase64Const:          documentHandler.NewFindDocumentImageBase64Handler(connection, uuid),
+		UpdateDocumentChangeProfileImageConst: documentHandler.NewUpdateDocumentChangeProfileImageHandler(connection, uuid, contextExtractor),
 	}
 }

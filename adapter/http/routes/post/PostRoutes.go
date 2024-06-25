@@ -15,11 +15,12 @@ import (
 )
 
 const (
-	CreatePost     string = "createPost"
-	FindAllPosts   string = "findAllPosts"
-	EditPost       string = "editPost"
-	DeletePost     string = "deletePost"
-	FindPostParams string = "findPostParams"
+	CreatePost      string = "createPost"
+	FindAllPosts    string = "findAllPosts"
+	EditPost        string = "editPost"
+	DeletePost      string = "deletePost"
+	FindPostParams  string = "findPostParams"
+	PostAnimalFound string = "postAnimalFound"
 	// === Route constants marker ===
 )
 
@@ -79,6 +80,12 @@ func (postRoutes *PostRoutes) Register() {
 		postRoutes.jwt.IsAuthorizedMiddleware(),
 		postRoutes.postHandlers[FindPostParams].Handle,
 	)
+
+	postRoutes.POST(
+		routesConstants.PostAnimalFoundRouteConst,
+		postRoutes.jwt.IsAuthorizedMiddleware(),
+		postRoutes.postHandlers[PostAnimalFound].Handle,
+	)
 	// === Register route marker ===
 }
 
@@ -114,6 +121,11 @@ func createMapOfPostHandlers(
 		FindPostParams: postHandler.NewFindPostPostParamsHandler(
 			connection,
 			uuid,
+		),
+		PostAnimalFound: postHandler.NewPostAnimalFoundHandler(
+			connection,
+			uuid,
+			contextExtractor,
 		),
 		// === Register handler marker ===
 	}

@@ -1,11 +1,12 @@
 package middleware
 
 import (
+	"net/http"
+
 	"github.com/gtkmk/finder_api/adapter/http/routes"
 	"github.com/gtkmk/finder_api/adapter/http/routesConstants"
 	"github.com/gtkmk/finder_api/core/domain/jwtAuth"
 	"github.com/gtkmk/finder_api/core/port"
-	"net/http"
 
 	"github.com/gin-gonic/gin"
 )

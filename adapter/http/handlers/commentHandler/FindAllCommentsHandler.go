@@ -20,21 +20,24 @@ const (
 )
 
 type FindAllCommentsHandler struct {
-	Connection      port.ConnectionInterface
-	Uuid            port.UuidInterface
-	CommentDatabase repositories.CommentRepository
-	PostDatabase    repositories.PostRepositoryInterface
-	CustomError     port.CustomErrorInterface
+	Connection       port.ConnectionInterface
+	Uuid             port.UuidInterface
+	ContextExtractor port.HttpContextValuesExtractorInterface
+	CommentDatabase  repositories.CommentRepository
+	PostDatabase     repositories.PostRepositoryInterface
+	CustomError      port.CustomErrorInterface
 }
 
 func NewFindAllCommentsHandler(
 	connection port.ConnectionInterface,
 	uuid port.UuidInterface,
+	contextExtractor port.HttpContextValuesExtractorInterface,
 ) port.HandlerInterface {
 	return &FindAllCommentsHandler{
-		Connection:  connection,
-		Uuid:        uuid,
-		CustomError: customError.NewCustomError(),
+		Connection:       connection,
+		Uuid:             uuid,
+		ContextExtractor: contextExtractor,
+		CustomError:      customError.NewCustomError(),
 	}
 }
 
@@ -42,6 +45,17 @@ func (findCommentFindAllHandler *FindAllCommentsHandler) Handle(context *gin.Con
 	jsonResponse := routes.NewJsonResponse(context, findCommentFindAllHandler.Connection, findCommentFindAllHandler.Uuid)
 
 	postId, actualPage, err := findCommentFindAllHandler.defineCommentsFilter(context)
+
+	loggedUserId, extractErr := findCommentFindAllHandler.ContextExtractor.Extract(context)
+	if extractErr != nil {
+		jsonResponse.ThrowError(
+			routesConstants.MessageKeyConst,
+			findCommentFindAllHandler.CustomError.ThrowError(extractErr.Error()),
+			routesConstants.InternarServerErrorConst,
+		)
+
+		return
+	}
 
 	if err != nil {
 		jsonResponse.ThrowError(
@@ -62,7 +76,7 @@ func (findCommentFindAllHandler *FindAllCommentsHandler) Handle(context *gin.Con
 		findCommentFindAllHandler.CommentDatabase,
 		findCommentFindAllHandler.PostDatabase,
 		findCommentFindAllHandler.CustomError,
-	).Execute(int(actualPage))
+	).Execute(int(actualPage), loggedUserId)
 
 	if err != nil {
 		jsonResponse.ThrowError(
@@ -128,12 +142,12 @@ func (findCommentFindAllHandler *FindAllCommentsHandler) transformCommentsIntoPa
 
 	comments = make([]map[string]interface{}, len(dbComments))
 	for i, value := range dbComments {
-		proposal, err := generatePaginationDetails.MapDBCommentsToPaginationDetails(value)
+		comment, err := generatePaginationDetails.MapDBCommentsToPaginationDetails(value)
 		if err != nil {
 			return nil, err
 		}
 
-		comments[i] = proposal
+		comments[i] = comment
 	}
 
 	totalComments := dbComments[0]["total_records"].(int64)
