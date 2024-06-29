@@ -26,6 +26,12 @@ import (
 
 const DefaultPortConst = ":8089"
 
+const (
+	OriginLocalhostConst   = "http://localhost"
+	OriginProdHostConst    = "http://34.125.28.161"
+	OriginProdHostSecConst = "http://34.125.28.161:3000"
+)
+
 type HttpServer struct {
 	server            *http.Server
 	app               *gin.Engine
@@ -156,7 +162,11 @@ func (httpServer *HttpServer) gracefulShutdown() error {
 func (httpServer *HttpServer) corsConfig() {
 	headers := handlers.AllowedHeaders([]string{"Origin", "Content-Type", "Accept", "Content-Length", "Accept-Language", "Accept-Encoding", "Connection", "Access-Control-Allow-Origin"})
 
-	origins := handlers.AllowedOrigins([]string{"*"})
+	origins := handlers.AllowedOrigins([]string{
+		OriginLocalhostConst,
+		OriginProdHostConst,
+		OriginProdHostSecConst,
+	})
 
 	methods := handlers.AllowedMethods([]string{helper.GET, helper.POST, helper.PUT, helper.PATCH, helper.DELETE, helper.OPTIONS})
 	credentials := handlers.AllowCredentials()
