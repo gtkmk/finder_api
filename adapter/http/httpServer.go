@@ -17,7 +17,6 @@ import (
 	"github.com/gtkmk/finder_api/adapter/http/routes/user"
 	"github.com/gtkmk/finder_api/core/port"
 	"github.com/gtkmk/finder_api/infra/client"
-	"github.com/gtkmk/finder_api/infra/envMode"
 	"github.com/gtkmk/finder_api/infra/notification"
 
 	"github.com/gin-gonic/gin"
@@ -157,9 +156,7 @@ func (httpServer *HttpServer) gracefulShutdown() error {
 func (httpServer *HttpServer) corsConfig() {
 	headers := handlers.AllowedHeaders([]string{"Origin", "Content-Type", "Accept", "Content-Length", "Accept-Language", "Accept-Encoding", "Connection", "Access-Control-Allow-Origin"})
 
-	origins := handlers.AllowedOrigins([]string{
-		envMode.FrontUrlConst,
-	})
+	origins := handlers.AllowedOrigins([]string{"*"})
 
 	methods := handlers.AllowedMethods([]string{helper.GET, helper.POST, helper.PUT, helper.PATCH, helper.DELETE, helper.OPTIONS})
 	credentials := handlers.AllowCredentials()
