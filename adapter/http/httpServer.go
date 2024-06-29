@@ -25,7 +25,7 @@ import (
 )
 
 const (
-	OriginLocalhostConst = "http://localhost:3000"
+	OriginLocalhostConst = "http://localhost"
 )
 
 const DefaultPortConst = ":8089"
