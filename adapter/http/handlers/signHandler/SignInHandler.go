@@ -1,6 +1,7 @@
 package signHandler
 
 import (
+	"fmt"
 	"os"
 
 	"github.com/gin-gonic/gin"
@@ -40,6 +41,7 @@ func NewSignInHandler(
 }
 
 func (signInHandler *SignInHandler) Handle(context *gin.Context) {
+	fmt.Println("(((((((((((())))))))))))")
 	jsonResponse := routes.NewJsonResponse(context, signInHandler.connection, signInHandler.uuid)
 
 	credentials, err := signInHandler.defineCredentials(context)
@@ -84,6 +86,7 @@ func (signInHandler *SignInHandler) openTableConnection() {
 
 func (signInHandler *SignInHandler) writeCookie(context *gin.Context, token string) {
 	context.Writer.Header().Set("Access-Control-Allow-Credentials", "true")
+	fmt.Println("token: ", token)
 	domain := os.Getenv(envMode.ApplicationDomainConst)
 	context.SetCookie(
 		"token",
