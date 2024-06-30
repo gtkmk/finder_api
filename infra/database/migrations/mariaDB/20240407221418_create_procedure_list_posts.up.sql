@@ -44,11 +44,13 @@ BEGIN
 			WHEN usr.id = ''', logged_user_id, ''' THEN true
 			    ELSE false
 		END AS is_own_post,
+        IF(il.user_id IS NOT NULL, 1, 0) AS liked,
         COUNT(*) OVER() AS total_records
     FROM post
         INNER JOIN user usr ON post.user_id = usr.id
         INNER JOIN document doc ON post.id = doc.post_id
         LEFT JOIN document usr_doc ON usr.id = usr_doc.owner_id AND usr_doc.type = "profile_picture" AND usr_doc.deleted_at IS NULL
+        LEFT JOIN interaction_likes il ON post.id = il.post_id AND il.like_type = "post" AND il.user_id = ''', logged_user_id, '''
     WHERE post.deleted_at IS NULL');
 
     IF lost_found IS NOT NULL THEN

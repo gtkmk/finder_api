@@ -125,6 +125,7 @@ func (generatePaginationDetails *GeneratePaginationDetails) MapDBPostToPaginatio
 		"post_location":           dbPost["post_location"],
 		"post_media":              dbPost["post_media"].(string),
 		"likes":                   dbPost["likes"].(int64),
+		"liked":                   dbPost["liked"].(int64) > 0,
 		"shares":                  dbPost["shares"].(int64),
 		"comments":                dbPost["comments"].(int64),
 		"post_category":           dbPost["post_category"].(string),
