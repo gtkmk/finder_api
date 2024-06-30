@@ -26,6 +26,9 @@ import (
 
 const (
 	OriginLocalhostConst = "http://localhost"
+	OriginProdConst      = "http://34.125.28.161"
+	OriginProdTwoConst   = "http://34.125.28.161:3000"
+	OriginProdThreeConst = "http://34.125.28.161:3002"
 )
 
 const DefaultPortConst = ":8089"
@@ -162,6 +165,9 @@ func (httpServer *HttpServer) corsConfig() {
 
 	origins := handlers.AllowedOrigins([]string{
 		OriginLocalhostConst,
+		OriginProdConst,
+		OriginProdTwoConst,
+		OriginProdThreeConst,
 	})
 
 	methods := handlers.AllowedMethods([]string{helper.GET, helper.POST, helper.PUT, helper.PATCH, helper.DELETE, helper.OPTIONS})

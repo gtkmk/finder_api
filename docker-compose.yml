@@ -39,3 +39,15 @@ services:
       - "8089:8089"
     depends_on:
       - db
+  finder_front:
+    build:
+      context: ./finder_front
+      dockerfile: Dockerfile
+    container_name: finder_front
+    ports:
+      - '80:3000'
+    depends_on:
+      - finder_api
+    volumes:
+      - ./finder_front:/app
+      - /app/node_modules
