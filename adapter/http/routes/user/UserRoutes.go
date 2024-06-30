@@ -28,6 +28,7 @@ const (
 	SignUpHandlerKeyConst           string = "signUpHandler"
 	FindUserDetailsConst            string = "findUserDetails"
 	// === Route constants marker ===
+	FindUserListOfFollowersConst  string = "FindUser"
 	UpdateUserUpdateUserInfoConst string = "UpdateUser"
 )
 
@@ -128,6 +129,12 @@ func (userRoutes *UserRoutes) Register() {
 	//)
 
 	// === Register route marker ===
+	userRoutes.GET(
+		routesConstants.FindListOfFollowersRouteConst,
+		userRoutes.jwt.IsAuthorizedMiddleware(),
+		userRoutes.userHandlers[FindUserListOfFollowersConst].Handle,
+	)
+
 	userRoutes.PATCH(
 		routesConstants.PatchUserInfoRouteConst,
 		userRoutes.jwt.IsAuthorizedMiddleware(),
@@ -191,6 +198,8 @@ func createMapOfUserHandlers(
 			contextExtractor,
 		),
 		// === Register handler marker ===
+		FindUserListOfFollowersConst: userHandler.NewFindUserListOfFollowersHandler(connection, uuid, contextExtractor),
+
 		UpdateUserUpdateUserInfoConst: userHandler.NewUpdateUserUpdateUserInfoHandler(connection, uuid, contextExtractor),
 	}
 }

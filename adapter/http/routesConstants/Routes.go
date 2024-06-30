@@ -42,6 +42,7 @@ const (
 	PostFollowRouteConst = "/follow"
 
 	// === Route marker ===
+	FindListOfFollowersRouteConst = "/user/list-followers"
 )
 
 const (
