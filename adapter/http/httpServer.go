@@ -26,9 +26,9 @@ import (
 
 const (
 	OriginLocalhostConst = "http://localhost"
-	OriginProdConst      = "http://34.125.28.161"
-	OriginProdTwoConst   = "http://34.125.28.161:3000"
-	OriginProdThreeConst = "http://34.125.28.161:3002"
+	OriginProdConst      = "http://34.125.156.33"
+	OriginProdTwoConst   = "http://34.125.156.33:3000"
+	OriginProdThreeConst = "http://34.125.156.33:3002"
 )
 
 const DefaultPortConst = ":8089"
