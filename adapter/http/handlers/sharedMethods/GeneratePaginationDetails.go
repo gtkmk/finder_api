@@ -8,6 +8,7 @@ import (
 	"github.com/gtkmk/finder_api/core/domain/helper"
 	"github.com/gtkmk/finder_api/core/port"
 	"github.com/gtkmk/finder_api/core/port/sharedMethods"
+	"github.com/kr/pretty"
 )
 
 const (
@@ -103,10 +104,19 @@ func (generatePaginationDetails *GeneratePaginationDetails) MapDBPostToPaginatio
 		return nil, generatePaginationDetails.customError.ThrowError(dateErr.Error())
 	}
 
+	workingPostFoundStatus := false
+
+	pretty.Println(dbPost)
 	postLostFound := helper.RetrieveSafeInterfaceValue(dbPost["post_lost_found"], "").(string)
 	postAnimalType := helper.RetrieveSafeInterfaceValue(dbPost["post_animal_type"], "").(string)
 	postAnimalSize := helper.RetrieveSafeInterfaceValue(dbPost["post_animal_size"], "").(string)
-	// postFoundStatus := helper.RetrieveSafeInterfaceValue(dbPost["found_status"], "").(string)
+	postFoundStatus := helper.RetrieveSafeInterfaceValue(dbPost["found_status"], "").(string)
+	//TODO: REFACTOR THIS SHIT
+	if postFoundStatus != "" {
+		if postFoundStatus != "0" {
+			workingPostFoundStatus = true
+		}
+	}
 	postUpdatedAt := helper.RetrieveSafeInterfaceValue(dbPost["updated_at"], "").(string)
 	postUpdatedFoundStatusAt := helper.RetrieveSafeInterfaceValue(dbPost["updated_found_status_at"], "").(string)
 
@@ -118,7 +128,7 @@ func (generatePaginationDetails *GeneratePaginationDetails) MapDBPostToPaginatio
 		"post_author_cellphone":   dbPost["post_author_cellphone"].(string),
 		"post_author_avatar":      dbPost["post_author_avatar"].(string),
 		"text":                    dbPost["text"].(string),
-		"found_status":            dbPost["found_status"].(int64) > 0,
+		"found_status":            workingPostFoundStatus,
 		"updated_found_status_at": postUpdatedFoundStatusAt,
 		"updated_at":              postUpdatedAt,
 		"created_at":              postDate,
