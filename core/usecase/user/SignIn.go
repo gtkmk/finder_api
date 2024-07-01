@@ -1,9 +1,10 @@
 package userUsecase
 
 import (
-	"github.com/gtkmk/finder_api/core/domain/helper"
 	"os"
 	"time"
+
+	"github.com/gtkmk/finder_api/core/domain/helper"
 
 	"github.com/gtkmk/finder_api/core/domain/credentialsDomain"
 	"github.com/gtkmk/finder_api/core/domain/customError"
@@ -59,10 +60,6 @@ func (signIn *SignIn) Execute(userIP string, userDevice string) (string, error) 
 
 	if !checkPassword {
 		return "", signIn.ThrowError(helper.EmailOrPasswordIncorrectConst)
-	}
-
-	if err != nil {
-		return "", err
 	}
 
 	jwtAuthentication := jwtAuth.NewjwtAuth(os.Getenv(envMode.JwtSecretConst))
