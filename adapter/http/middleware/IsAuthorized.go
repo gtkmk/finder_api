@@ -1,6 +1,7 @@
 package middleware
 
 import (
+	"fmt"
 	"net/http"
 
 	"github.com/gtkmk/finder_api/adapter/http/routes"
@@ -37,7 +38,11 @@ func (isAuthorized *IsAuthorized) IsAuthorizedMiddleware() gin.HandlerFunc {
 
 		_, err := context.Request.Cookie("token")
 
+		fmt.Println("Token: ")
+		fmt.Println(context.Request.Cookie("token"))
+
 		if err != nil {
+			fmt.Println("err: ", err)
 			jsonResponse.SendJson(
 				routesConstants.MessageKeyConst,
 				err.Error(),
@@ -51,7 +56,10 @@ func (isAuthorized *IsAuthorized) IsAuthorizedMiddleware() gin.HandlerFunc {
 
 		token, err := isAuthorized.jwt.CheckJwt(context.Request)
 
+		fmt.Printf("token CheckJwt: %v\n", token)
+
 		if err != nil {
+			fmt.Println("err2: ", err)
 			jsonResponse.SendJson(
 				routesConstants.MessageKeyConst,
 				"Unauthorized",
