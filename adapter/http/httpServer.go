@@ -163,12 +163,7 @@ func (httpServer *HttpServer) gracefulShutdown() error {
 func (httpServer *HttpServer) corsConfig() {
 	headers := handlers.AllowedHeaders([]string{"Origin", "Content-Type", "Accept", "Content-Length", "Accept-Language", "Accept-Encoding", "Connection", "Access-Control-Allow-Origin"})
 
-	origins := handlers.AllowedOrigins([]string{
-		OriginLocalhostConst,
-		OriginProdConst,
-		OriginProdTwoConst,
-		OriginProdThreeConst,
-	})
+	origins := handlers.AllowedOrigins([]string{"*"})
 
 	methods := handlers.AllowedMethods([]string{helper.GET, helper.POST, helper.PUT, helper.PATCH, helper.DELETE, helper.OPTIONS})
 	credentials := handlers.AllowCredentials()
